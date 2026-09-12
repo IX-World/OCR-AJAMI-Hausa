@@ -1,5 +1,15 @@
 # OCR AJAMI Hausa — V7
 
+## Modèle V10 entraîné et publication Hugging Face
+
+Le checkpoint V10 entraîné est publié sur [IntelligenceResearchLab/Hausa-OCR-AJAMI](https://huggingface.co/IntelligenceResearchLab/Hausa-OCR-AJAMI). Sa copie reproductible, son vocabulaire, ses résultats et le code d'inférence sont dans `models/v10/`.
+
+Pour le republier depuis GitHub : **Actions → Publier V10 sur Hugging Face → Run workflow**, branche `main`. Le workflow utilise le secret Actions `HF_TOKEN` avec accès en écriture au dépôt cible. Il vérifie l'empreinte du checkpoint et publie les fichiers sans lancer d'entraînement. Pour remplacer le checkpoint à l'avenir, mettre à jour ensemble les poids, leur SHA256, le vocabulaire, la configuration et les métriques dans `models/v10/`.
+
+Cette publication héberge les fichiers du modèle ; elle ne crée pas un serveur d'inférence.
+
+## Entraînement V7
+
 `v7_nouveau.py` remplace V10 comme script d'entraînement. Il utilise le réseau CNN + BiLSTM + CTC de V7, avec augmentation dynamique sur 55 % des lignes TRAIN. `Hausa_repo_nouveau/` contient le nouveau dataset local téléchargé depuis `IntelligenceResearchLab/Hausa` sur Hugging Face, avec ses métadonnées et sa documentation d'origine.
 
 Avec Python, Pillow et PyTorch installés, depuis la racine du dépôt :
@@ -15,4 +25,4 @@ Le découpage préparé contient 3000 lignes TRAIN, 100 validation et 99 TEST. C
 
 Le meilleur checkpoint est choisi sur le CER de validation ; le TEST s'exécute automatiquement après l'entraînement. Les ensembles d'origine sont redistribués pour ce découpage : les scores ne sont pas directement comparables à ceux du précédent TEST de 299 lignes. Le vocabulaire est reconstruit sur le TRAIN uniquement.
 
-Les conditions d'utilisation et les crédits du dataset figurent dans [sa documentation](Hausa_repo_nouveau/README.md). Les images sont stockées directement dans Git, sans dépendance à Git LFS. Les caches de téléchargement, environnements Python et checkpoints d'entraînement ne font pas partie du dépôt.
+Les conditions d'utilisation et les crédits du dataset figurent dans [sa documentation](Hausa_repo_nouveau/README.md). Les images sont stockées directement dans Git, sans dépendance à Git LFS. Les caches de téléchargement et environnements Python ne font pas partie du dépôt. Le checkpoint V10 publié est conservé dans models/v10/.

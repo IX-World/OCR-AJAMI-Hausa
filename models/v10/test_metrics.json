@@ -1,0 +1,8 @@
+{
+  "cer": 0.3007341373885684,
+  "wer": 0.7518518518518519,
+  "exact_rate": 0.2976588628762542,
+  "selected_epoch": 25,
+  "dataset_fingerprint": "75d7626ee6d8e6fa05b6a2da60c4e6042d150cb81553514519f3107df9de56ec",
+  "selection": "minimum validation CER"
+}

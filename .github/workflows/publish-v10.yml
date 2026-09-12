@@ -1,0 +1,32 @@
+name: Publier V10 sur Hugging Face
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-v10-huggingface
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github
+            models/v10
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Installer le client Hugging Face
+        run: python -m pip install huggingface_hub==1.31.0
+      - name: Vérifier et publier le checkpoint entraîné
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python .github/scripts/publish_v10.py

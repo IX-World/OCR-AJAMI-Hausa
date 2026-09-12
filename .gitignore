@@ -3,6 +3,8 @@
 !/README.md
 !/v7_nouveau.py
 !/Hausa_repo_nouveau/
+!/.github/
+!/models/
 Hausa_repo_nouveau/.cache/
 __pycache__/
 *.pyc

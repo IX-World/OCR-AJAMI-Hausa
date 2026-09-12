@@ -1,0 +1,22 @@
+{
+  "batch_size": 24,
+  "epochs": 25,
+  "seed": 42,
+  "val_fraction": 0.1,
+  "train_count": 2800,
+  "val_count": 100,
+  "prepare_only": false,
+  "dataset_fingerprint": "75d7626ee6d8e6fa05b6a2da60c4e6042d150cb81553514519f3107df9de56ec",
+  "architecture": "V10_CNN_BiLSTM256x2_CTC",
+  "height": 96,
+  "views_per_image": 8,
+  "dynamic_augmentation": false,
+  "rtl_mirror": true,
+  "split_policy": "custom split from combined original train and test; not comparable to original test scores",
+  "selected_epoch": 25,
+  "val_cer": 0.3116701607267645,
+  "val_wer": 0.7649006622516556,
+  "test_count": 299,
+  "dataset_repo": "IntelligenceResearchLab/Hausa",
+  "torch_version": "2.5.1+cu121"
+}
