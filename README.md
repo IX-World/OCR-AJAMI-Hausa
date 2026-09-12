@@ -4,8 +4,6 @@
 
 Le checkpoint V10 entraîné est publié sur [IntelligenceResearchLab/Hausa-OCR-AJAMI](https://huggingface.co/IntelligenceResearchLab/Hausa-OCR-AJAMI). Sa copie reproductible, son vocabulaire, ses résultats et le code d'inférence sont dans `models/v10/`.
 
-Pour le republier depuis GitHub : **Actions → Publier V10 sur Hugging Face → Run workflow**, branche `main`. Le workflow utilise le secret Actions `HF_TOKEN` avec accès en écriture au dépôt cible. Il vérifie l'empreinte du checkpoint et publie les fichiers sans lancer d'entraînement. Pour remplacer le checkpoint à l'avenir, mettre à jour ensemble les poids, leur SHA256, le vocabulaire, la configuration et les métriques dans `models/v10/`.
-
 Cette publication héberge les fichiers du modèle ; elle ne crée pas un serveur d'inférence.
 
 ## Entraînement V7
