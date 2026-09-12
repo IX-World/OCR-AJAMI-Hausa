@@ -69,10 +69,20 @@ def prepare(args):
                 pools[name].append(row)
     if len(pools['train']) < 3:
         raise ValueError('Au moins 3 images train distinctes sont nécessaires.')
-    shuffled = sorted(pools['train'], key=lambda r: (r['sha256_pixels'], r['file_name']))
+    train_count = getattr(args, 'train_count', None)
+    candidates = pools['train'] if train_count is None else pools['train'] + pools['test']
+    shuffled = sorted(candidates, key=lambda r: (r['sha256_pixels'], r['file_name']))
     random.Random(args.seed).shuffle(shuffled)
-    val_count = max(1, min(len(shuffled) - 1, round(len(shuffled) * args.val_fraction)))
-    split = {'train': shuffled[val_count:], 'validation': shuffled[:val_count], 'test': pools['test']}
+    if train_count is None:
+        val_count = max(1, min(len(shuffled) - 1, round(len(shuffled) * args.val_fraction)))
+        split = {'train': shuffled[val_count:], 'validation': shuffled[:val_count], 'test': pools['test']}
+        split_policy = 'official test deduplicated; validation from official train'
+    else:
+        val_count = args.val_count
+        if train_count < 1 or val_count < 1 or train_count + val_count >= len(shuffled):
+            raise ValueError('Le total doit laisser au moins une ligne pour le test.')
+        split = {'train': shuffled[:train_count], 'validation': shuffled[train_count:train_count + val_count], 'test': shuffled[train_count + val_count:]}
+        split_policy = 'custom split from combined original train and test; not comparable to original test scores'
     invalid_ctc = []
     for row in split['train']:
         text = row['transcript']
@@ -91,7 +101,7 @@ def prepare(args):
     output = Path(args.output) / (datetime.now().strftime('%Y%m%d_%H%M%S_%f') + '_' + fingerprint[:8])
     output.mkdir(parents=True, exist_ok=False)
     config = vars(args).copy()
-    config.update(dataset=str(root), output=str(output.resolve()), dataset_fingerprint=fingerprint, architecture='V10_CNN_BiLSTM256x2_CTC', height=96, views_per_image=8, dynamic_augmentation=False, rtl_mirror=True, split_policy='official test deduplicated; 10% train validation by default')
+    config.update(dataset=str(root), output=str(output.resolve()), dataset_fingerprint=fingerprint, architecture='V7_CNN_BiLSTM256x2_CTC', height=96, views_per_image=1, dynamic_augmentation=True, augmentation_probability=0.55, rtl_mirror=True, split_policy=split_policy)
     report = {'counts': {name: len(rows) for name, rows in split.items()}, 'original_counts': {'train': len(raw_train), 'test': len(raw_test)}, 'duplicates_removed': duplicates, 'filename_corrections': corrections, 'unseen_characters': oov, 'vocab_size': len(vocab), 'dataset_fingerprint': fingerprint, 'note': 'Validation par lignes, pas par manuscrits. Les images identiques sont dédupliquées ; cela ne détecte pas les recadrages similaires.'}
     write_json(output / 'split.json', split)
     write_json(output / 'vocab.json', vocab)
@@ -101,7 +111,7 @@ def prepare(args):
     print('Résultats :', output.resolve(), flush=True)
     return (config, split, vocab)
 
-def train_v10(config):
+def train_v7(config):
     import os
     import json
     import csv
@@ -119,25 +129,27 @@ def train_v10(config):
     SPLIT_PATH = os.path.join(config['output'], 'split.json')
     VOCAB_PATH = os.path.join(config['output'], 'vocab.json')
     OUTPUT_DIR = config['output']
-    BEST_CER_PATH = os.path.join(OUTPUT_DIR, 'best_cer_v10.pt')
-    BEST_WER_PATH = os.path.join(OUTPUT_DIR, 'best_wer_v10.pt')
-    LAST_PATH = os.path.join(OUTPUT_DIR, 'last_v10.pt')
-    HISTORY_PATH = os.path.join(OUTPUT_DIR, 'history_v10.csv')
+    BEST_CER_PATH = os.path.join(OUTPUT_DIR, 'best_cer_v7.pt')
+    BEST_WER_PATH = os.path.join(OUTPUT_DIR, 'best_wer_v7.pt')
+    LAST_PATH = os.path.join(OUTPUT_DIR, 'last_v7.pt')
+    HISTORY_PATH = os.path.join(OUTPUT_DIR, 'history_v7.csv')
     HEIGHT = 96
     BATCH_SIZE = config['batch_size']
     BUCKET_SIZE = BATCH_SIZE * 8
-    VIEWS_PER_IMAGE = 8
+    VIEWS_PER_IMAGE = 1
+    AUGMENT_PROBABILITY = 0.55
     MAX_EPOCHS = config['epochs']
     INITIAL_LR = 0.001
     WEIGHT_DECAY = 0.0001
     NUM_WORKERS = 0
     SEED = config['seed']
     VRAM_LIMIT_MB = 5500
-    MIN_EPOCHS = 8
-    PATIENCE = 6
+    MIN_EPOCHS = 30
+    PATIENCE = 15
     MIN_DELTA = 0.0005
-    TREND_WINDOW = 5
-    SLOPE_THRESHOLD = 0.0008
+    TREND_WINDOW = 10
+    SLOPE_THRESHOLD = 0.001
+    TRAIN_LOSS_THRESHOLD = 0.20
     WINDOW_GAIN_THRESHOLD = 0.008
     V8_CER = 0.2895
     V8_WER = 0.758
@@ -173,57 +185,27 @@ def train_v10(config):
             return os.path.join(OLD_TEST_DIR, filename)
         raise ValueError('Source inconnue : ' + str(source))
 
-    def fixed_augmentation(image, variant, sample_index):
-        if variant == 0:
-            return image
-        rng = random.Random(SEED + sample_index * 10007 + variant * 1000003)
-        original_w, original_h = image.size
-        if variant == 1:
-            image = ImageEnhance.Brightness(image).enhance(rng.uniform(0.88, 1.1))
-            image = ImageEnhance.Contrast(image).enhance(rng.uniform(0.82, 1.18))
-            return image
-        if variant == 2:
-            if rng.random() < 0.5:
-                image = image.filter(ImageFilter.MinFilter(3))
-            else:
-                image = image.filter(ImageFilter.MaxFilter(3))
-            image = ImageEnhance.Contrast(image).enhance(rng.uniform(0.92, 1.1))
-            return image
-        if variant == 3:
-            scale = rng.uniform(0.72, 0.9)
-            w2 = max(8, round(original_w * scale))
-            h2 = max(8, round(original_h * scale))
-            image = image.resize((w2, h2), Image.Resampling.BILINEAR)
-            image = image.resize((original_w, original_h), Image.Resampling.BICUBIC)
-            return image
-        if variant == 4:
-            image = image.filter(ImageFilter.GaussianBlur(radius=rng.uniform(0.2, 0.55)))
-            image = ImageEnhance.Contrast(image).enhance(rng.uniform(0.94, 1.08))
-            return image
-        if variant == 5:
-            angle = rng.uniform(-1.0, 1.0)
+    def augment_image(image, rng):
+        if rng.random() < 0.4:
+            image = ImageEnhance.Brightness(image).enhance(rng.uniform(0.85, 1.15))
+        if rng.random() < 0.45:
+            image = ImageEnhance.Contrast(image).enhance(rng.uniform(0.82, 1.22))
+        if rng.random() < 0.25:
+            angle = rng.uniform(-1.25, 1.25)
             image = image.rotate(angle, resample=Image.Resampling.BICUBIC, expand=True, fillcolor=255)
-            return image
-        if variant == 6:
-            sx = rng.uniform(0.94, 1.06)
-            sy = rng.uniform(0.96, 1.04)
-            new_w = max(8, round(original_w * sx))
-            new_h = max(8, round(original_h * sy))
-            image = image.resize((new_w, new_h), Image.Resampling.BICUBIC)
-            return image
-        if variant == 7:
-            image = ImageEnhance.Brightness(image).enhance(rng.uniform(0.92, 1.07))
-            image = ImageEnhance.Contrast(image).enhance(rng.uniform(0.88, 1.14))
-            if rng.random() < 0.5:
-                image = image.filter(ImageFilter.GaussianBlur(radius=rng.uniform(0.12, 0.35)))
-            angle = rng.uniform(-0.6, 0.6)
-            image = image.rotate(angle, resample=Image.Resampling.BICUBIC, expand=True, fillcolor=255)
-            return image
+        morphology = rng.random()
+        if morphology < 0.06:
+            image = image.filter(ImageFilter.MinFilter(3))
+        elif morphology < 0.12:
+            image = image.filter(ImageFilter.MaxFilter(3))
+        if rng.random() < 0.1:
+            image = image.filter(ImageFilter.GaussianBlur(radius=rng.uniform(0.15, 0.55)))
         return image
 
-    class FixedTrainDataset(Dataset):
+    class DynamicTrainDataset(Dataset):
 
         def __init__(self, entries):
+            self.epoch = 0
             self.base_samples = []
             self.expected_widths = []
             for item in entries:
@@ -245,6 +227,9 @@ def train_v10(config):
                 for _ in range(VIEWS_PER_IMAGE):
                     self.expected_widths.append(expected)
 
+        def set_epoch(self, epoch):
+            self.epoch = epoch
+
         def __len__(self):
             return len(self.base_samples) * VIEWS_PER_IMAGE
 
@@ -253,7 +238,10 @@ def train_v10(config):
             variant = index % VIEWS_PER_IMAGE
             path, text, filename, source, _ = self.base_samples[base_index]
             image = Image.open(path).convert('L')
-            image = fixed_augmentation(image, variant, base_index)
+            rng = random.Random(SEED + self.epoch * 1000003 + base_index * 9176)
+            variant = int(rng.random() < AUGMENT_PROBABILITY)
+            if variant:
+                image = augment_image(image, rng)
             w, h = image.size
             new_w = max(4, round(w * HEIGHT / h))
             image = image.resize((new_w, HEIGHT), Image.Resampling.LANCZOS)
@@ -426,24 +414,24 @@ def train_v10(config):
         n = len(values)
         if n < 2:
             return 0.0
-        xm = (n - 1) / 2.0
-        ym = sum(values) / n
+        x_mean = (n - 1) / 2.0
+        y_mean = sum(values) / n
         numerator = 0.0
         denominator = 0.0
         for i, value in enumerate(values):
-            dx = i - xm
-            numerator += dx * (value - ym)
+            dx = i - x_mean
+            numerator += dx * (value - y_mean)
             denominator += dx * dx
         if denominator == 0:
             return 0.0
         return numerator / denominator
 
     def save_checkpoint(path, epoch, model, optimizer, val_cer, val_wer, val_exact):
-        torch.save({'epoch': epoch, 'model_state_dict': model.state_dict(), 'optimizer_state_dict': optimizer.state_dict(), 'val_cer': val_cer, 'val_wer': val_wer, 'val_exact_rate': val_exact, 'version': 'V10_FIXED_DATASET', 'height': HEIGHT, 'batch_size': BATCH_SIZE, 'base_train_images': len(train_entries), 'views_per_image': VIEWS_PER_IMAGE, 'virtual_train_size': len(train_entries) * VIEWS_PER_IMAGE, 'dynamic_augmentation': False, 'rtl_mirror': True, 'from_scratch': True, 'split': config['dataset_fingerprint'], 'vocab': vocab}, path)
+        torch.save({'epoch': epoch, 'model_state_dict': model.state_dict(), 'optimizer_state_dict': optimizer.state_dict(), 'val_cer': val_cer, 'val_wer': val_wer, 'val_exact_rate': val_exact, 'version': 'V7_DYNAMIC_AUG', 'height': HEIGHT, 'batch_size': BATCH_SIZE, 'base_train_images': len(train_entries), 'views_per_image': VIEWS_PER_IMAGE, 'virtual_train_size': len(train_entries) * VIEWS_PER_IMAGE, 'dynamic_augmentation': True, 'augmentation_probability': AUGMENT_PROBABILITY, 'rtl_mirror': True, 'from_scratch': True, 'split': config['dataset_fingerprint'], 'vocab': vocab}, path)
     print('=' * 72)
-    print('CREATION DATASET VIRTUEL V10')
+    print('CREATION DATASET VIRTUEL V7')
     print('=' * 72)
-    train_dataset = FixedTrainDataset(train_entries)
+    train_dataset = DynamicTrainDataset(train_entries)
     val_dataset = CleanDataset(val_entries)
     test_dataset = CleanDataset(test_entries)
     train_sampler = WidthBucketSampler(train_dataset, BATCH_SIZE, BUCKET_SIZE, SEED)
@@ -453,10 +441,10 @@ def train_v10(config):
     model = CRNN(NUM_CLASSES).to(DEVICE)
     criterion = nn.CTCLoss(blank=BLANK_ID, reduction='mean', zero_infinity=True)
     optimizer = torch.optim.AdamW(model.parameters(), lr=INITIAL_LR, weight_decay=WEIGHT_DECAY)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3, min_lr=1e-06)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5, min_lr=1e-06)
     print()
     print('=' * 72)
-    print('HAUSA CTC V10 - FIXED DATASET AUGMENTATION')
+    print('HAUSA CTC V7 - DYNAMIC AUGMENTATION')
     print('=' * 72)
     print('Images reelles TRAIN :', len(train_entries))
     print('Vues / image         :', VIEWS_PER_IMAGE)
@@ -465,7 +453,7 @@ def train_v10(config):
     print('Test final           :', len(test_dataset))
     print('Height               :', HEIGHT)
     print('Batch                :', BATCH_SIZE)
-    print('Aug dynamique        : OFF')
+    print('Aug dynamique        : 55 % des lignes TRAIN')
     print('Initialisation       : FROM SCRATCH')
     print()
     print('Ancien V9 TEST100 (autre jeu de test), CER :', V9_CER)
@@ -483,7 +471,9 @@ def train_v10(config):
     cer_history = []
     start_total = time.time()
     for epoch in range(1, MAX_EPOCHS + 1):
+        print(f'\nDEBUT EPOCH {epoch}/{MAX_EPOCHS} - {len(train_loader)} batches', flush=True)
         train_sampler.set_epoch(epoch)
+        train_dataset.set_epoch(epoch)
         model.train()
         running_loss = 0.0
         batches = 0
@@ -505,7 +495,12 @@ def train_v10(config):
             optimizer.step()
             running_loss += loss.item()
             batches += 1
+            if batches == 1 or batches % 20 == 0 or batches == len(train_loader):
+                elapsed = time.time() - start_epoch
+                remaining = elapsed / batches * (len(train_loader) - batches)
+                print(f'Epoch {epoch}/{MAX_EPOCHS} | batch {batches}/{len(train_loader)} | loss {loss.item():.4f} | temps {elapsed:.0f}s | restant estime {remaining / 60:.1f} min', flush=True)
         train_loss = running_loss / batches
+        print('TRAIN termine - validation en cours...', flush=True)
         val_cer, val_wer, val_exact, examples = evaluate(model, val_loader, 5)
         cer_history.append(val_cer)
         scheduler.step(val_cer)
@@ -572,7 +567,7 @@ def train_v10(config):
         with open(HISTORY_PATH, 'a', newline='', encoding='utf-8') as f:
             csv.writer(f).writerow([epoch, train_loss, val_cer, val_wer, val_exact, slope, window_gain, lr, seconds, vram_mb])
         save_checkpoint(LAST_PATH, epoch, model, optimizer, val_cer, val_wer, val_exact)
-        saturation = epoch >= MIN_EPOCHS and len(cer_history) >= TREND_WINDOW and (abs(slope) < SLOPE_THRESHOLD) and (window_gain < WINDOW_GAIN_THRESHOLD) and (without_improvement >= PATIENCE)
+        saturation = epoch >= MIN_EPOCHS and len(cer_history) >= TREND_WINDOW and (abs(slope) < SLOPE_THRESHOLD) and (window_gain < WINDOW_GAIN_THRESHOLD) and (train_loss < TRAIN_LOSS_THRESHOLD) and (without_improvement >= PATIENCE)
         if saturation:
             print()
             print('=' * 72)
@@ -589,7 +584,7 @@ def train_v10(config):
     minutes = (time.time() - start_total) / 60
     print()
     print('=' * 72)
-    print('RESUME FINAL V10')
+    print('RESUME FINAL V7')
     print('=' * 72)
     print('BEST epoch       :', checkpoint['epoch'])
     print('BEST VAL CER     :', round(checkpoint['val_cer'], 4))
@@ -620,18 +615,20 @@ def train_v10(config):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--dataset', default='C:\\ai-test\\Hausa_repo_nouveau')
-    parser.add_argument('--output', default=str(Path(__file__).resolve().parent / 'resultats_v10_nouveau'))
+    parser.add_argument('--output', default=str(Path(__file__).resolve().parent / 'resultats_v7_nouveau'))
     parser.add_argument('--batch-size', type=int, default=24)
-    parser.add_argument('--epochs', type=int, default=25)
+    parser.add_argument('--epochs', type=int, default=100)
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--val-fraction', type=float, default=0.1)
+    parser.add_argument('--train-count', type=int, default=3000)
+    parser.add_argument('--val-count', type=int, default=100)
     parser.add_argument('--prepare-only', action='store_true')
     args = parser.parse_args()
     if not 0 < args.val_fraction < 1 or args.batch_size < 1 or args.epochs < 1:
         parser.error('Paramètres invalides : vérifier val-fraction, batch-size et epochs.')
     config, split, vocab = prepare(args)
-    print('V10 :', len(split['train']) * 8, 'vues fixes par epoch', flush=True)
+    print('V7 :', len(split['train']), 'lignes par epoch, augmentation dynamique 55 %', flush=True)
     if not args.prepare_only:
-        train_v10(config)
+        train_v7(config)
 if __name__ == '__main__':
     main()
