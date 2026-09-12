@@ -1,0 +1,8 @@
+/*
+!/.gitignore
+!/README.md
+!/v10.py
+!/Hausa_repo_nouveau/
+Hausa_repo_nouveau/.cache/
+__pycache__/
+*.pyc
