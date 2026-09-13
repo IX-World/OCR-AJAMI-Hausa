@@ -1,8 +1,10 @@
 {
-  "cer": 0.3007341373885684,
-  "wer": 0.7518518518518519,
-  "exact_rate": 0.2976588628762542,
+  "cer": 0.2549638989169675,
+  "wer": 0.6963123644251626,
+  "exact_rate": 0.275,
   "selected_epoch": 25,
-  "dataset_fingerprint": "75d7626ee6d8e6fa05b6a2da60c4e6042d150cb81553514519f3107df9de56ec",
-  "selection": "minimum validation CER"
+  "test_count": 160,
+  "selection": "minimum validation CER",
+  "split_sha256": "7fa3222b5704792bdfcf376fcee5937f08c22876b17033dc1325f94dd3280912",
+  "verification": "Re-evaluated trained checkpoint on its saved test split; matches user screenshot rounded to 4 decimal places."
 }

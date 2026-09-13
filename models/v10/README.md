@@ -9,51 +9,53 @@ tags:
 - crnn
 ---
 
-# Hausa OCR Ajami — trained V10
+# Hausa OCR Ajami — V10, split 92/3/5
 
-PyTorch CNN + two-layer bidirectional LSTM (256 hidden units per direction) with CTC, trained on images of Hausa Ajami text to predict Latin-script transcriptions. This repository contains the **trained checkpoint**, not just the training code.
+This repository contains the **trained checkpoint** from `train_hausa_ctc_v10_nouveau_92_3_5.py`, published on 13 September 2026. It replaces the previous V10 checkpoint as the current version; the previous files remain in the repository history.
 
-## Checkpoint and measured results
+The model reads pre-segmented Hausa Ajami line images and predicts Latin-script transcriptions using a CNN, a two-layer bidirectional LSTM (256 hidden units per direction), and CTC with greedy decoding.
 
-`best_cer_v10.pt` was selected at **epoch 25** by minimum validation CER. It includes the model weights, vocabulary, preprocessing parameters and optimizer state from the local training run.
+## Checkpoint and verified results
 
-| Metric | Value |
-|---|---:|
-| Test CER | 0.3007341374 |
-| Test WER | 0.7518518519 |
-| Test exact-line rate | 0.2976588629 |
-| Test lines | 299 |
+`best_cer_v10.pt` is the checkpoint selected at **epoch 25** by minimum validation CER.
 
-These metrics were measured in the completed local run. Full precision is available in `test_metrics.json`; per-epoch validation results are in `history_v10.csv`.
+| Metric | Validation | Test |
+|---|---:|---:|
+| CER | 0.2473841555 | 0.2549638989 |
+| WER | 0.6258741259 | 0.6963123644 |
+| Exact-line rate | 0.2916666667 | 0.275 |
+| Lines | 96 | 160 |
+
+The checkpoint was reloaded and re-evaluated on its saved 160-line test split before publication. These results match the completed local training run's reported scores (CER 0.2550, WER 0.6963). No retraining was performed during publication. Full-precision test metrics and predictions are included.
 
 ## Training data and protocol
 
-Source dataset: [IntelligenceResearchLab/Hausa](https://huggingface.co/datasets/IntelligenceResearchLab/Hausa). The local snapshot contained 3,199 lines, redistributed into **2,800 training / 100 validation / 299 test** lines with seed 42. This is a custom line-level split, not the original official test split or a manuscript-held-out evaluation. Scores are not directly comparable with earlier V7/V9 experiments using different splits.
+Dataset: [IntelligenceResearchLab/Hausa](https://huggingface.co/datasets/IntelligenceResearchLab/Hausa), using the local `Hausa_repo_nouveau` snapshot. The saved **92/3/5 split** contains 3,198 examples: **2,942 training / 96 validation / 160 test**, with seed 42. See `split.json` for exact assignments. This is a line-level split, not a manuscript-held-out benchmark. These scores are not directly comparable with the previous V10 release, which used a different 299-line test set.
 
-Each training line had eight fixed views, producing 22,400 examples per epoch. Dynamic augmentation was disabled. Input height was 96 pixels, with aspect ratio preserved, grayscale conversion, horizontal mirroring for right-to-left input, and pixel normalization to [-1, 1]. Batch size was 24, using AdamW and a validation-driven learning-rate scheduler. The run completed 25 epochs. Labels use NFC normalization.
+Each training line has eight fixed views, for 23,536 examples per epoch. Dynamic augmentation is disabled. Training used 25 epochs, batch size 24, AdamW (initial LR 0.001, weight decay 0.0001), and ReduceLROnPlateau. Input preprocessing is grayscale, height 96 with aspect ratio preserved, horizontal mirroring for RTL input, and normalization to [-1, 1]. Labels use NFC normalization. The matching vocabulary has 81 entries, including CTC blank; it has no `<UNK>` entry.
 
 The dataset's attribution and usage conditions remain applicable; consult its dataset card. The repository's pre-existing license declaration is retained.
 
 ## Run inference
 
-Download this repository's files and install PyTorch and Pillow in your environment. The checkpoint was trained with PyTorch 2.5.1 + CUDA 12.1 and Pillow 12.3.0.
+Download the repository files and install PyTorch and Pillow. The checkpoint was validated with PyTorch 2.5.1 + CUDA 12.1 and Pillow 12.3.0.
 
 ```bash
 python predict.py path/to/line_image.png
 ```
 
-`model.py` contains the network definition. `predict.py` loads the trained weights and performs greedy CTC decoding on one text-line image. This is a custom PyTorch model, not a Transformers `AutoModel` checkpoint or a hosted inference endpoint. It expects pre-segmented lines, not complete pages.
-
-The single-image loading/inference path was checked before publication; this does not repeat the full benchmark. Batched padding can influence the bidirectional network, so single-image output may differ from batched evaluation.
+`predict.py` loads `best_cer_v10.pt` and the network in `model.py`, using the vocabulary stored in the checkpoint. This is a custom PyTorch model, not a Transformers `AutoModel` checkpoint or a hosted inference endpoint. It expects segmented line images, not complete pages. Batched padding can influence the bidirectional network; single-image predictions can differ from batched evaluation.
 
 ## Files
 
-- `best_cer_v10.pt`: trained checkpoint.
-- `vocab.json`: character-to-index mapping, including blank and unknown symbols.
-- `training_config.json`: training configuration and checkpoint validation scores.
-- `test_metrics.json`: final measured test metrics.
+- `best_cer_v10.pt`: trained checkpoint, including model weights and optimizer state.
+- `vocab.json`: matching character-to-index mapping.
+- `training_config.json`: checkpoint metadata and training settings.
+- `split.json`: saved split used by this training run.
+- `training_source.py`: original training script; it retains the original local paths and should be configured before running elsewhere.
 - `history_v10.csv`: per-epoch training and validation history.
-- `checkpoint_sha256.txt`: checksum of the uploaded checkpoint.
+- `test_metrics.json`, `test_predictions.csv`: verified results on the saved test split.
+- `checkpoint_sha256.txt`: checksum of the current checkpoint.
 - `model.py`, `predict.py`: local inference code.
 
-The word error rate remains high; outputs require review. No retraining was performed as part of publication.
+The word error rate remains high; outputs require review. The experiment does not establish generalization to unseen manuscripts or writers.

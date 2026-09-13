@@ -2,7 +2,9 @@
 
 ## Modèle V10 entraîné et publication Hugging Face
 
-Le checkpoint V10 entraîné est publié sur [IntelligenceResearchLab/Hausa-OCR-AJAMI](https://huggingface.co/IntelligenceResearchLab/Hausa-OCR-AJAMI). Sa copie reproductible, son vocabulaire, ses résultats et le code d'inférence sont dans `models/v10/`.
+Le dernier checkpoint **V10 nouveau 92/3/5**, issu de `train_hausa_ctc_v10_nouveau_92_3_5.py`, est publié sur [IntelligenceResearchLab/Hausa-OCR-AJAMI](https://huggingface.co/IntelligenceResearchLab/Hausa-OCR-AJAMI). Sa copie, son vocabulaire, le découpage exact, ses résultats et le code d'inférence sont dans `models/v10/`.
+
+Le checkpoint retenu est celui de l'epoch **25**, entraîné avec **2942 lignes TRAIN / 96 validation / 160 TEST**. La vérification du TEST donne **CER 25,496 %**, **WER 69,631 %** et **27,5 % de lignes exactes**. Ce test diffère de celui de l'ancienne V10 ; les scores ne sont pas directement comparables. L'ancienne version reste accessible dans l'historique Git.
 
 Cette publication héberge les fichiers du modèle ; elle ne crée pas un serveur d'inférence.
 

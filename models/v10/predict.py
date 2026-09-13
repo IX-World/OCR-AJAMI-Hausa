@@ -12,7 +12,8 @@ def predict(image_path, checkpoint_path):
     checkpoint = torch.load(checkpoint_path, map_location='cpu', weights_only=True)
     vocab = checkpoint['vocab']
     reverse = {i: c for c, i in vocab.items()}
-    reverse[vocab['<UNK>']] = '\ufffd'
+    if '<UNK>' in vocab:
+        reverse[vocab['<UNK>']] = '\ufffd'
     model = CRNN(len(vocab))
     model.load_state_dict(checkpoint['model_state_dict'], strict=True)
     model.to(device).eval()
