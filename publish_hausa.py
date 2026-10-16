@@ -101,7 +101,14 @@ def write_model_card(run):
         separation = "Tous les exemples valides du corpus HF sont répartis entre les trois ensembles, sans manuscrit partagé. Les sources 1 et 2 sont regroupées par copiste connu. Seules les deux annotations contradictoires restent en quarantaine. L'identité des autres copistes n'est pas documentée."
         validation_rule = "groupes entiers au plus près de 200 exemples de validation, puis de 400 exemples de test ; toutes les autres images sont entraînées"
         preparation += " Utiliser impérativement --all-images pour retrouver ce split."
+    source_limit = "Aucune source n'est partagée entre les partitions ; les références lexicales peuvent se répéter. L'indépendance des copistes non identifiés et l'absence de quasi-doublons restent à vérifier." if strict else "Des sources et des références lexicales peuvent être partagées entre les partitions."
     complete = load_complete_metrics(run, config, metrics)
+    measured_limit = ""
+    if complete:
+        train_scores = complete["partitions"]["train"]
+        measured_limit = f"Le WER du train ({train_scores['wer']:.2%}) et celui du test ({metrics['wer']:.2%}) montrent un écart de généralisation. Le WER de test est un taux d'erreur, pas un taux de réussite. Ce checkpoint est publié comme résultat expérimental reproductible ; ces scores ne démontrent pas une transcription autonome fiable."
+    with (run / "history.csv").open(encoding="utf-8-sig", newline="") as handle:
+        completed_epochs = len(list(csv.DictReader(handle)))
     audit_section = (run / "split_audit.md").read_text(encoding="utf-8") if load_split_audit(run, config, metrics) else ""
     if complete:
         result_table = "| Partition | Segments | CER | WER | UWER | Segments exacts |\n|---|---:|---:|---:|---:|---:|\n"
@@ -198,6 +205,7 @@ n'est réécrite pour faciliter le calcul du CER/WER.
 - Maximum {config['max_epochs']} époques ; minimum {config['min_epochs']} avant arrêt ;
   patience {config['patience']}, amélioration minimale 0,0005 pour la patience.
 - Sélection du checkpoint par minimum absolu du CER de validation.
+- Époques effectivement exécutées : {completed_epochs} ; checkpoint publié : époque {metrics['selected_epoch']}.
 - Float32 ; cuDNN benchmark ; déterminisme strict non imposé.
 - GPU : {config['gpu']} ; PyTorch {config['torch']} ; CUDA {config['cuda']} ;
   Python {config['python']} ; Pillow {config['pillow']}.
@@ -251,8 +259,11 @@ Cette expérience documente une transcription directe Ajami–latin sous contrai
 de données et de mémoire GPU. L'association CNN–BiLSTM–CTC est établie ;
 l'originalité éventuelle d'une adaptation doit être soutenue par des comparaisons
 et ablations, pas par le seul nom de l'architecture ou l'utilisation d'une GPU de 6 Go.
-Une seule graine ne mesure pas la variabilité entre entraînements. Des sources
-et des références lexicales peuvent être partagées entre les partitions.
+Une seule graine ne mesure pas la variabilité entre entraînements.
+{source_limit}
+
+{measured_limit}
+
 V13 reste une proposition : aucune amélioration ni aucun résultat V13 n'est revendiqué.
 '''
     (run / "README.md").write_text(card, encoding="utf-8")

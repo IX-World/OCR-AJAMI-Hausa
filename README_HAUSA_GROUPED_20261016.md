@@ -117,9 +117,17 @@ exactement le test public, est archivé et n’est plus utilisé par les command
 La V9 initiale 4 656/517/400 et la V10 arrêtée restent également archivées.
 Leurs scores ne décrivent pas ce nouveau protocole.
 
-Aucun modèle de cette nouvelle campagne n’est encore entraîné ni publié sur HF.
-Les nouveaux checkpoints, leurs résultats réels, le split et un README précis
-seront packagés après entraînement. Les scripts HF/GitHub refusent désormais un
-protocole qui partage les manuscrits ou qui écarte une partie du corpus valide.
-Le dépôt V9 prévu reste `IntelligenceResearchLab/Hausa-OCR-AJAMI-v9-20261015` ;
-le code et les commits GitHub sont attribués à **IX-World**. V13 reste une proposition.
+La **V9 est entraînée**, avec un checkpoint sélectionné à l'époque 33 sur
+48 époques exécutées. Test : CER **40,6935 %**, WER **86,9396 %**, UWER **86,1598 %**.
+Les résultats train/validation/test et l'audit sont documentés dans
+[son README](models/v9_all_grouped_20261016/README.md). L'écart important avec le
+train limite la généralisation ; ce n'est pas une revendication de transcription fiable.
+Les poids sont publiés sur
+[Hugging Face](https://huggingface.co/IntelligenceResearchLab/Hausa-OCR-AJAMI-v9-20261015)
+et dans une [release GitHub](https://github.com/IX-World/OCR-AJAMI-Hausa/releases/tag/v9-hausa-all-grouped-20261016).
+Le nom du dépôt HF conserve la date initialement prévue, tandis que la fiche
+documente l'entraînement réel du 16 octobre et le split de 5 573 images valides.
+Les autres modèles seront publiés après leurs entraînements et évaluations réels.
+Les scripts HF/GitHub refusent un protocole partageant les manuscrits ou écartant
+une partie du corpus valide. Le code et les commits GitHub sont attribués à
+**IX-World**. V13 reste une proposition.

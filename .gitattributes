@@ -15,6 +15,7 @@ publish_github_release.py text eol=lf
 models/v9_20261016/*.json text eol=lf
 models/v9_20261016/*.md text eol=lf
 models/v9_20261016/*.csv text eol=lf
+models/v9_all_grouped_20261016/* -text
 install_local.py text eol=lf
 tests/*.py text eol=lf
 README_HAUSA_20261015.md text eol=lf

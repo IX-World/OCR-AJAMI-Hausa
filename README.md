@@ -12,6 +12,26 @@ restent inconnues. Commandes et notebooks utilisent ce protocole commun.
 Les anciens checkpoints sont archivés ; les nouveaux modèles sont initialisés
 aléatoirement pour éviter l’exposition préalable aux nouvelles données de test.
 
+### V9 entraînée — 16 octobre 2026
+
+Le checkpoint de l'époque **33** est disponible sur
+[Hugging Face](https://huggingface.co/IntelligenceResearchLab/Hausa-OCR-AJAMI-v9-20261015)
+et dans la [release GitHub avec les poids](https://github.com/IX-World/OCR-AJAMI-Hausa/releases/tag/v9-hausa-all-grouped-20261016).
+Les [résultats et le README détaillé](models/v9_all_grouped_20261016/README.md)
+documentent le split **4 972 / 200 / 401**, l'entraînement depuis une initialisation
+aléatoire et l'audit sans chevauchement d'images exactes ni de manuscrits.
+
+| Partition | CER | WER | UWER |
+|---|---:|---:|---:|
+| Train | 4,60 % | 17,10 % | 16,30 % |
+| Validation | 47,28 % | 89,93 % | 87,92 % |
+| Test | 40,69 % | 86,94 % | 86,16 % |
+
+La publication expose un résultat expérimental reproductible. L'écart entre
+train et test montre une forte limite de généralisation. Ces scores ne se
+comparent pas directement à ceux des anciens tests. Les identités des copistes
+non documentés et les quasi-doublons restent à vérifier.
+
 ## Protocole initial archivé — 15 octobre 2026
 
 Les commandes locales, corrections du dataset, configurations et procédures

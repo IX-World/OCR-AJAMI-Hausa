@@ -5,6 +5,7 @@ import json
 import os
 import subprocess
 import zipfile
+from contextlib import contextmanager
 from pathlib import Path
 from urllib.parse import quote
 
@@ -12,6 +13,7 @@ import httpx
 from hausa_ocr.protocol import validate_partitions
 
 
+@contextmanager
 def github_client():
     token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if not token:
@@ -20,13 +22,12 @@ def github_client():
         token = credentials.get("password")
     if not token:
         raise RuntimeError("Connexion GitHub absente. Configurer Git Credential Manager ou GH_TOKEN.")
-    client = httpx.Client(headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}, timeout=httpx.Timeout(600, connect=30))
-    response = client.get("https://api.github.com/user")
-    response.raise_for_status()
-    if response.json()["login"] != "IX-World":
-        client.close()
-        raise ValueError("Cette publication doit etre effectuee par IX-World.")
-    return client
+    with httpx.Client(headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}, timeout=httpx.Timeout(600, connect=30)) as client:
+        response = client.get("https://api.github.com/user")
+        response.raise_for_status()
+        if response.json()["login"] != "IX-World":
+            raise ValueError("Cette publication doit etre effectuee par IX-World.")
+        yield client
 
 
 def publish(args):

@@ -23,6 +23,29 @@ from publish_hausa import load_run
 
 
 class ProtocolTests(unittest.TestCase):
+    def test_github_client_authenticates_once_and_closes_on_wrong_account(self):
+        import httpx
+        from publish_github_release import github_client
+        client_class = httpx.Client
+        for login in ("IX-World", "another-account"):
+            clients = []
+            def make_client(**kwargs):
+                kwargs["transport"] = httpx.MockTransport(lambda request: httpx.Response(200, json={"login": login}))
+                client = client_class(**kwargs)
+                clients.append(client)
+                return client
+            with self.subTest(login=login), patch.dict("os.environ", {"GH_TOKEN": "mock-token"}), patch("publish_github_release.httpx.Client", side_effect=make_client):
+                if login == "IX-World":
+                    with github_client() as client:
+                        self.assertFalse(client.is_closed)
+                        self.assertEqual(client.get("https://api.github.com/user").json()["login"], login)
+                else:
+                    with self.assertRaises(ValueError):
+                        with github_client():
+                            self.fail("Wrong account accepted")
+                self.assertEqual(len(clients), 1)
+                self.assertTrue(clients[0].is_closed)
+
     def test_repairs_keep_transcriptions_and_reject_unknown_conflicts(self):
         rows = [
             {"file_name": "ajami_00462png", "transcript": "mai", "source": "17"},
