@@ -1,6 +1,10 @@
 import json
+import contextlib
+import io
+import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import torch
 
@@ -77,6 +81,14 @@ class ProtocolTests(unittest.TestCase):
         self.assertFalse(missing.exists())
         with self.assertRaises(FileNotFoundError):
             load_run(missing)
+
+    def test_fresh_start_refuses_checkpoint_initialization(self):
+        import train_hausa
+        for flags in (["--resume"], ["--finetune-from", "missing.pt"]):
+            with patch.object(sys, "argv", ["train_hausa.py", "--version", "v9", "--fresh-start"] + flags), contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as stopped:
+                    train_hausa.main()
+            self.assertEqual(stopped.exception.code, 2)
 
 
 if __name__ == "__main__":

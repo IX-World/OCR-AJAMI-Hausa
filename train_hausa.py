@@ -92,12 +92,15 @@ def main():
     parser.add_argument("--seed", type=int)
     parser.add_argument("--learning-rate", type=float)
     parser.add_argument("--finetune-from", type=Path)
+    parser.add_argument("--fresh-start", action="store_true", help="Initialisation aleatoire obligatoire ; interdit resume et finetune-from.")
     parser.add_argument("--device", choices=("cuda", "cpu"), default="cuda")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--test-only", action="store_true")
     parser.add_argument("--check-only", action="store_true")
     parser.add_argument("--log-every", type=int, default=25)
     args = parser.parse_args()
+    if args.fresh_start and (args.resume or args.finetune_from is not None):
+        parser.error("La campagne depuis zero interdit toute initialisation depuis un checkpoint. Retirer resume/finetune-from.")
     if sum((args.resume, args.test_only, args.finetune_from is not None)) > 1:
         parser.error("Choisir une seule action : resume, test-only ou finetune-from.")
     if args.finetune_from is not None:
@@ -108,7 +111,7 @@ def main():
         parser.error("learning-rate doit etre positif et reserve a un nouveau train ou affinage ; resume conserve l'optimiseur.")
     args.learning_rate = args.learning_rate or (1e-4 if args.finetune_from else 1e-3)
     default_name = f"{args.version}_seed{args.seed if args.seed is not None else 42}" + ("_affinage" if args.finetune_from else "")
-    output = (args.output or base / "runs_hausa_20261015" / default_name).resolve()
+    output = (args.output or base / "runs_hausa_20261016_zero" / default_name).resolve()
     previous_config = {}
     if (args.resume or args.test_only) and (output / "config.json").exists():
         previous_config = json.loads((output / "config.json").read_text(encoding="utf-8"))
@@ -173,7 +176,7 @@ def main():
         "scheduler": {"name": "ReduceLROnPlateau", "factor": 0.5, "patience": 3, "min_lr": 1e-6},
         "batch_size": args.batch_size, "bucket_size": sampler.bucket_size, "max_epochs": args.epochs,
         "min_epochs": args.min_epochs, "patience": args.patience, "min_delta": 0.0005,
-        "seed": args.seed, "from_scratch": args.finetune_from is None, "experiment_stage": "fine_tune" if args.finetune_from else "from_scratch", "precision": "float32", "strict_determinism": False,
+        "seed": args.seed, "from_scratch": args.finetune_from is None, "fresh_start_required": args.fresh_start, "experiment_stage": "fine_tune" if args.finetune_from else "from_scratch", "precision": "float32", "strict_determinism": False,
         "python": platform.python_version(), "torch": str(torch.__version__), "pillow": importlib.metadata.version("Pillow"),
         "cuda": torch.version.cuda, "gpu": torch.cuda.get_device_name(0) if device.type == "cuda" else None,
         "gpu_total_memory_mib": torch.cuda.get_device_properties(0).total_memory / 1024**2 if device.type == "cuda" else None,

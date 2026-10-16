@@ -1,4 +1,10 @@
-# Campagne Hausa du 15 octobre 2026 — IX-World
+# Campagne depuis zéro du 16 octobre 2026 — IX-World
+
+Les données sont celles de la révision figée du 15 octobre. **V9, V10, V11 et V12
+repartent de poids aléatoires : aucun checkpoint des anciennes expériences
+n’est chargé pour initialiser ces nouveaux entraînements.** Les commandes
+`lancer_v*.cmd` imposent `--fresh-start`, qui refuse `--resume` et `--finetune-from`.
+Les résultats de cette campagne sont isolés dans `runs_hausa_20261016_zero`.
 
 Ce code reprend les architectures et les augmentations V9/V10/V11/V12 du projet
 [IX-World/OCR-AJAMI-Hausa](https://github.com/IX-World/OCR-AJAMI-Hausa).
@@ -50,10 +56,10 @@ D:\ai_test\
   Hausa_repo_2026-10-15\data\test\metadata.jsonl
   protocol_hausa_20261015\split.json
   OCR-AJAMI-Hausa\train_hausa.py
-  runs_hausa_20261015\v9_seed42\
-  runs_hausa_20261015\v10_seed42\
-  runs_hausa_20261015\v11_seed42\
-  runs_hausa_20261015\v12_seed42\
+  runs_hausa_20261016_zero\v9_seed42\
+  runs_hausa_20261016_zero\v10_seed42\
+  runs_hausa_20261016_zero\v11_seed42\
+  runs_hausa_20261016_zero\v12_seed42\
 ```
 
 `python_ocr.cmd` emploie en priorité `D:\ai_test\.venv-hausa`, ou le chemin
@@ -102,16 +108,10 @@ python_ocr.cmd --version v11
 python_ocr.cmd --version v12
 ```
 
-`Ctrl+C` interrompt le modèle courant. Après au moins une époque complète :
-
-```cmd
-python_ocr.cmd --version v11 --resume
-```
-
-Une époque partielle n'est pas sauvegardée ; la reprise repart du dernier
-checkpoint d'époque complète avec les états de l'optimiseur, du scheduler et
-des générateurs pseudo-aléatoires. Un dossier contenant déjà un run ne peut
-pas être réutilisé silencieusement : employer `--resume` ou un autre `--output`.
+`Ctrl+C` interrompt le modèle courant. Le lancement initial de cette campagne
+repart toujours de zéro. Un dossier de run existant n’est jamais écrasé :
+pour un autre essai indépendant, indiquer par exemple
+`lancer_v9.cmd --output "D:\ai_test\runs_hausa_20261016_zero\v9_essai2"`.
 
 Pour refaire uniquement les tests, à partir des checkpoints déjà entraînés :
 
@@ -135,38 +135,7 @@ lancer_v12.cmd
 ```
 
 Exécuter une seule ligne `lancer_...` à la fois. Chacune effectue le train puis
-le test de sa version. Pour reprendre, par exemple : `lancer_v10.cmd --resume`.
-Pour le test seul : `tester_v9.cmd`, `tester_v10.cmd`, `tester_v11.cmd` ou `tester_v12.cmd`.
-
-### Affiner les modèles après leur entraînement sur le corpus
-
-```cmd
-cd /d D:\ai_test
-affiner_v9.cmd
-affiner_v10.cmd
-affiner_v11.cmd
-affiner_v12.cmd
-```
-
-Choisir une version à la fois, après son entraînement initial. Ces commandes
-rechargent **son meilleur checkpoint de validation**, réinitialisent l'optimiseur
-avec un LR de **0,0001**, et entraînent jusqu'à **40 époques supplémentaires**
-(minimum 10, patience 10). Elles utilisent les mêmes 4 656 segments de train,
-les mêmes 517 de validation et le même test final de 400 images. Le test n'est
-pas utilisé pour choisir les réglages ou les checkpoints.
-
-Les sorties d'affinage sont séparées :
-`D:\ai_test\runs_hausa_20261015\v9_seed42_affinage`, etc. Les résultats initiaux
-ne sont pas écrasés. Pour reprendre un affinage interrompu :
-`affiner_v9.cmd --resume`. L'affinage est refusé si le vocabulaire, la version
-ou le split du checkpoint diffèrent. Les anciens modèles historiques ne sont
-donc pas chargés silencieusement dans cette nouvelle campagne.
-L'affinage n'est pas une garantie de gain : comparer ses métriques de validation
-à celles du run initial. Chaque phase garde ses résultats et son README propres.
-
-Pour modifier le plafond d'un affinage : `affiner_v11.cmd --epochs 60`.
-Pour augmenter seulement le plafond du train initial en conservant l'optimiseur :
-`lancer_v11.cmd --resume --epochs 150`. Le critère d'arrêt anticipé reste actif.
+le test de sa version. Pour le test seul : `tester_v9.cmd`, `tester_v10.cmd`, `tester_v11.cmd` ou `tester_v12.cmd`.
 
 ### Notebooks dédiés
 
@@ -174,7 +143,7 @@ Les quatre notebooks à jour se trouvent dans `notebooks/` :
 `v9_hausa_20261015.ipynb`, `v10_hausa_20261015.ipynb`,
 `v11_hausa_20261015.ipynb` et `v12_hausa_20261015.ipynb`.
 Ils emploient les mêmes scripts, images et identifiants de split que les CMD.
-Le paramètre `ACTION` permet de choisir `check`, `train`, `finetune`, `resume` ou `test`.
+Le paramètre `ACTION` permet de choisir `check`, `train` ou `test`.
 Ils n'ont pas de sorties de résultats préremplies. Le packaging est désactivé
 par défaut ; aucune publication HF n'est lancée par leur exécution normale.
 
@@ -204,7 +173,7 @@ Par rapport aux scripts historiques, le nouveau protocole, le vocabulaire,
 le padding de V11/V12, les groupes de largeur et l'arrêt ont été adaptés
 explicitement. Les structures CNN/BiLSTM et les recettes d'augmentation sont
 conservées. Le batch peut être réduit avec `--batch-size 12` et un nouveau
-`--output` si la mémoire manque. Employer le même batch pour reprendre ce run.
+`--output` si la mémoire manque. Consigner ce batch pour comparer les expériences.
 Une GPU de 6 Go ne garantit pas une durée donnée : le temps dépend des largeurs,
 du nombre de vues, du batch et de la durée avant arrêt sur validation.
 
@@ -220,7 +189,7 @@ Après le train, préparer un package, par exemple pour V9 :
 
 ```cmd
 cd /d D:\ai_test\OCR-AJAMI-Hausa
-"C:\Users\admin\Documents\ChatGPT\AJAMI\.venv-v10\Scripts\python.exe" publish_hausa.py package --run "D:\ai_test\runs_hausa_20261015\v9_seed42" --destination "D:\ai_test\packages\hausa-v9-20261015"
+"C:\Users\admin\Documents\ChatGPT\AJAMI\.venv-v10\Scripts\python.exe" publish_hausa.py package --run "D:\ai_test\runs_hausa_20261016_zero\v9_seed42" --destination "D:\ai_test\packages\hausa-v9-20261015"
 ```
 
 Remplacer v9 par v10/v11/v12 pour chaque autre run. Le package contient le
@@ -239,10 +208,6 @@ anciens modèles avec ceux entraînés sur le nouveau split. Le token est lu par
 le client HF dans son stockage habituel ou dans `HF_TOKEN` ; ne pas l'écrire
 dans le code, le README ou Git. Aucune publication HF n'est effectuée par le train.
 
-Pour publier un affinage, utiliser son dossier `_affinage`, un autre nom de
-package et un dépôt HF explicite, par exemple
-`IntelligenceResearchLab/Hausa-OCR-AJAMI-v9-20261015-affinage`. Sa fiche indique
-le checkpoint initial, son empreinte, la phase d'affinage et son LR réel.
 
 ## Publier depuis GitHub après les entraînements
 

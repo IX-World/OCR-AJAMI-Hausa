@@ -8,6 +8,10 @@ Le split commun conserve les **400 exemples du test public** à part ; les
 5 173 exemples publics de train nettoyés donnent **4 656 train / 517 validation**.
 Les architectures et augmentations sont documentées, les résultats et README
 de chaque modèle seront générés uniquement après les entraînements locaux.
+La campagne active du 16 octobre repart de zéro pour les quatre versions,
+avec une initialisation aléatoire et les sorties dans
+`D:\ai_test\runs_hausa_20261016_zero`. Les commandes de lancement imposent
+`--fresh-start` et refusent de charger un ancien checkpoint pour initialiser le train.
 **V13 reste une proposition, sans modèle implémenté ni résultat annoncé.**
 
 Les éléments ci-dessous documentent les expériences historiques.

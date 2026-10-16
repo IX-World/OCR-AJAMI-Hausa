@@ -39,8 +39,9 @@ with temporary as directory:
     write_json(protocol / "protocol.json", {"dataset_repo": "synthetic-test-not-a-real-dataset", "dataset_revision": "synthetic-test-not-publishable", "counts": {part: 2 for part in split}, "split_sha256": sha256(protocol / "split.json"), "vocab_sha256": sha256(protocol / "vocab.json"), "corrected_train_metadata_sha256": sha256(dataset / "data/train/metadata.jsonl"), "test_metadata_sha256": sha256(dataset / "data/test/metadata.jsonl"), "vocab_policy": "training_only", "unseen_characters": {"validation": [], "test": []}, "seed": 42})
     common = ["train_hausa.py", "--version", "v9", "--dataset", str(dataset), "--protocol", str(protocol), "--output", str(run), "--batch-size", "2", "--min-epochs", "1", "--patience", "2"]
     with patch("publish_hausa.write_model_card"), contextlib.redirect_stdout(io.StringIO()):
-        with patch.object(sys, "argv", common + ["--epochs", "1"]):
+        with patch.object(sys, "argv", common + ["--fresh-start", "--epochs", "1"]):
             train_hausa.main()
+        assert json.loads((run / "config.json").read_text(encoding="utf-8"))["fresh_start_required"]
         with patch.object(sys, "argv", common + ["--resume", "--epochs", "2"]):
             train_hausa.main()
         before = json.loads((run / "test_metrics.json").read_text(encoding="utf-8"))
