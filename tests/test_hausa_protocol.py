@@ -10,6 +10,8 @@ import torch
 
 from hausa_ocr.data import WidthSampler, collate, decode, edit_distance
 from hausa_ocr.models import build_model
+from hausa_ocr.metrics import normalize_uwer
+from hausa_ocr.reporting import cer_trend, print_epoch_report
 from prepare_hausa import corrected_rows, stratified_validation
 from publish_hausa import load_run
 
@@ -89,6 +91,37 @@ class ProtocolTests(unittest.TestCase):
                 with self.assertRaises(SystemExit) as stopped:
                     train_hausa.main()
             self.assertEqual(stopped.exception.code, 2)
+
+    def test_uwer_removes_only_case_and_decomposable_diacritics(self):
+        self.assertEqual(normalize_uwer("ÁIKŌ A\u0301Iko"), "aiko aiko")
+        self.assertEqual(normalize_uwer("Ƙ Ɓ Ɗ ' [ ]"), "ƙ ɓ ɗ ' [ ]")
+        import train_hausa
+        vocab = {"<BLANK>": 0, "<UNK>": 1, "a": 2}
+        class FixedModel(torch.nn.Module):
+            def forward(self, images):
+                return torch.tensor([[[0.0, 0.0, 1.0]]])
+        batch = {"images": torch.zeros(1, 1, 96, 4), "widths": torch.tensor([4]), "rows": [{"partition": "test", "file_name": "toy.png", "source": "toy", "transcript": "Á"}]}
+        scores, predictions = train_hausa.evaluate(FixedModel(), [batch], vocab, torch.device("cpu"))
+        self.assertEqual(scores["cer"], 1.0)
+        self.assertEqual(scores["wer"], 1.0)
+        self.assertEqual(scores["uwer"], 0.0)
+        self.assertEqual(scores["normalized_reference_words"], 1)
+        self.assertEqual(predictions[0]["normalized_word_errors"], 0)
+
+    def test_epoch_report_uses_validation_history_and_five_epoch_trend(self):
+        records = [{"epoch": i, "val_cer": 0.7 - i * 0.05} for i in range(1, 7)]
+        slope, gain = cer_trend(records)
+        self.assertAlmostEqual(slope, -0.05)
+        self.assertAlmostEqual(gain, 0.2)
+        self.assertEqual(cer_trend(records[:1]), (None, None))
+        config = {"version": "v12", "max_epochs": 100, "channels": 2, "cnn_convolutions": 9, "counts": {"train": 4656}, "virtual_train_size": 37248, "patience": 15}
+        record = dict(records[-1], train_loss=0.1, val_wer=0.6, val_uwer=0.5, val_exact_rate=0.3, lr_used=0.001, lr=0.0005, seconds=10, vram_allocated_mib=3000, epoch_peak_vram_mib=4000)
+        records[-1] = record
+        text = io.StringIO()
+        with contextlib.redirect_stdout(text):
+            print_epoch_report(config, record, records, [{"file_name": "a.png", "reference": "a", "prediction": "b"}], 2)
+        for label in ("VAL UWER", "Pente CER", "Gain fenetre", "Canaux", "CNN conv", "FILE: a.png", "REF : a", "PRED: b", "Best WER", "Sans gain CER"):
+            self.assertIn(label, text.getvalue())
 
 
 if __name__ == "__main__":

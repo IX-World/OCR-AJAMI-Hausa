@@ -113,7 +113,7 @@ repart toujours de zéro. Un dossier de run existant n’est jamais écrasé :
 pour un autre essai indépendant, indiquer par exemple
 `lancer_v9.cmd --output "D:\ai_test\runs_hausa_20261016_zero\v9_essai2"`.
 
-Pour refaire uniquement les tests, à partir des checkpoints déjà entraînés :
+Pour recalculer les bilans train/validation/test, à partir des checkpoints déjà entraînés :
 
 ```cmd
 cd /d D:\ai_test
@@ -179,11 +179,49 @@ du nombre de vues, du batch et de la durée avant arrêt sur validation.
 
 ## Résultats et README Hugging Face
 
+Chaque époque affiche la loss train, les CER/WER/UWER et le taux exact de validation,
+la pente du CER (régression sur les cinq dernières époques), le gain sur cette
+fenêtre, le LR utilisé et celui prévu à l'époque suivante, le temps, la VRAM
+allouée et son pic, les canaux, le nombre de convolutions et les effectifs.
+Cinq exemples fixes de validation montrent `FILE`, `REF` et `PRED`, suivis des
+meilleurs CER/WER/UWER et de la patience. `--show-examples 0` masque les exemples.
+Le test reste évalué seulement après l'entraînement.
+
 Chaque run produit `best_cer.pt`, `last.pt`, `history.csv`, le split, le vocabulaire,
-la configuration matérielle/logicielle, le code source exact, `test_metrics.json`,
-`test_predictions.csv` et **son propre README.md détaillé, généré à partir des
+la configuration matérielle/logicielle, le code source exact, `metrics.json`,
+`metrics.csv`, les fichiers `train_metrics.json`, `validation_metrics.json`,
+`test_metrics.json`, les trois fichiers `*_predictions.csv` et
+**son propre README.md détaillé, généré à partir des
 résultats réellement calculés**. Aucun résultat V9/V10/V11/V12 nouveau n'est annoncé
 avant ces exécutions. Le CER/WER est global, et conserve casse, espaces et diacritiques.
+
+Le bilan final utilise le **même checkpoint sélectionné par CER de validation**
+pour les trois partitions. Le train est réévalué sans augmentation, sur les
+4 656 images originales, et mesure l'ajustement aux données vues. Validation :
+517 images ; test public : 400. Les scores train ne mesurent pas la généralisation.
+Les ratios JSON/CSV sont compris à partir de 0 (0,25 = 25 %) ; un taux d'erreur
+peut dépasser 1 en cas d'insertions. La console et le README affichent aussi les pourcentages.
+
+**Définition de l'UWER dans ce projet**, choisie par l'utilisateur : appliquer
+Unicode `casefold`, décomposer en NFD, retirer les marques non espaçantes (`Mn`),
+recomposer en NFC, puis calculer le WER global sur les mots séparés par les espaces.
+Ponctuation et lettres haoussa `ƙ`, `ɓ`, `ɗ` restent conservées : ce n'est pas une
+translittération en ASCII. Les références originales et les CER/WER stricts restent
+inchangés. Le numérateur et le dénominateur normalisés sont exportés séparément.
+
+Un processus déjà lancé conserve son ancien affichage. Après sa fin, recalculer
+le bilan complet sans réentraîner ni modifier les poids :
+
+```cmd
+cd /d D:\ai_test
+tester_v9.cmd
+```
+
+Remplacer `v9` par `v10`, `v11` ou `v12`. Ces commandes font désormais le bilan
+des **trois partitions** (`--test-only` est un alias de `--evaluate-only`).
+Attendre la fin de l'entraînement avant ce calcul. Les nouvelles évaluations
+archivent leur code dans `evaluation_source/` ; le dossier `source/` de l'entraînement
+reste intact, y compris pour un run lancé avant cette mise à jour.
 
 Après le train, préparer un package, par exemple pour V9 :
 

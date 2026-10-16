@@ -8,6 +8,7 @@ import zipfile
 from pathlib import Path
 
 from hausa_ocr import AUTHOR, SOURCE_REPOSITORY
+from hausa_ocr.metrics import UWER_DEFINITION
 from prepare_hausa import sha256, write_json
 
 
@@ -28,7 +29,28 @@ def load_run(run):
     for name, expected in config["source_sha256"].items():
         if sha256(run / "source" / name) != expected:
             raise ValueError(f"Code source modifie : {name}")
+    load_complete_metrics(run, config, metrics)
     return config, metrics, protocol
+
+
+def load_complete_metrics(run, config, test_metrics):
+    path = run / "metrics.json"
+    if not path.exists():
+        return None
+    summary = json.loads(path.read_text(encoding="utf-8"))
+    if summary["checkpoint_sha256"] != test_metrics["checkpoint_sha256"] or summary["split_sha256"] != config["split_sha256"]:
+        raise ValueError("Le bilan complet ne correspond pas au checkpoint ou au split evalue.")
+    if summary["uwer_definition"] != UWER_DEFINITION or set(summary["partitions"]) != {"train", "validation", "test"}:
+        raise ValueError("Definition UWER ou partitions du bilan incorrectes.")
+    for part, values in summary["partitions"].items():
+        if values["examples"] != config["counts"][part] or values["checkpoint_sha256"] != summary["checkpoint_sha256"] or values["augmented"]:
+            raise ValueError(f"Evaluation incoherente pour {part}.")
+        if json.loads((run / f"{part}_metrics.json").read_text(encoding="utf-8")) != values:
+            raise ValueError(f"Scores {part} differents du bilan complet.")
+    for name, expected in summary["evaluation_source_sha256"].items():
+        if sha256(run / "evaluation_source" / name) != expected:
+            raise ValueError(f"Code d'evaluation modifie : {name}")
+    return summary
 
 
 def write_model_card(run):
@@ -38,6 +60,16 @@ def write_model_card(run):
     counts = config["counts"]
     unknown = json.dumps(config["unseen_characters"], ensure_ascii=False)
     initialization = "Initialisation aléatoire sans préentraînement" if config["from_scratch"] else f"Affinage depuis le checkpoint {config['initial_checkpoint_sha256']} sélectionné à l'époque {config['initial_checkpoint_epoch']}, avec un nouvel optimiseur"
+    complete = load_complete_metrics(run, config, metrics)
+    if complete:
+        result_table = "| Partition | Segments | CER | WER | UWER | Segments exacts |\n|---|---:|---:|---:|---:|---:|\n"
+        for part, values in complete["partitions"].items():
+            result_table += f"| {part} | {values['examples']} | {values['cer']:.4%} | {values['wer']:.4%} | {values['uwer']:.4%} | {values['exact_rate']:.4%} |\n"
+        result_table += "\nLes trois partitions sont évaluées avec **le même checkpoint**, sélectionné\nsur le CER de validation. Le train est réévalué sur chaque image originale\nune seule fois, sans augmentation ; son score mesure l'ajustement aux données vues.\nLes scores de validation interviennent dans la sélection ; seul le test reste tenu à l'écart.\n\n"
+        result_table += "Les compteurs bruts et normalisés, les dénominateurs et les empreintes sont\ndans metrics.json et dans les trois fichiers *_metrics.json. Le tableau est\négalement exporté dans metrics.csv ; les prédictions sont dans train_predictions.csv,\nvalidation_predictions.csv et test_predictions.csv. Le code d'évaluation est\narchivé séparément dans evaluation_source/, avec ses empreintes dans metrics.json.\n"
+        result_table += f"\nDéfinition de l'UWER dans ce projet : {UWER_DEFINITION}\nL'UWER ne remplace pas le WER strict ; la ponctuation reste évaluée.\n"
+    else:
+        result_table = f"| Mesure | Test public |\n|---|---:|\n| CER | {metrics['cer']:.4%} |\n| WER | {metrics['wer']:.4%} |\n| Segments exacts | {metrics['exact_rate']:.4%} |\n\nLe bilan train/validation/test et l'UWER ne sont pas encore calculés pour ce run.\nExécuter le script actuel avec --evaluate-only une fois l'entraînement terminé.\n"
     card = f'''---
 language:
 - ha
@@ -133,11 +165,10 @@ des anciens scripts à chemins C:\\ai-test.
 
 ## Résultats mesurés, sans résultat anticipé
 
-| Mesure | Test public |
+{result_table}
+
+| Provenance et ressources | Valeur |
 |---|---:|
-| CER | {metrics['cer']*100:.4f} % |
-| WER | {metrics['wer']*100:.4f} % |
-| Segments exacts | {metrics['exact_rate']*100:.4f} % |
 | Erreurs de caractères / caractères de référence | {metrics['character_errors']} / {metrics['reference_characters']} |
 | Erreurs de mots / mots de référence | {metrics['word_errors']} / {metrics['reference_words']} |
 | Checkpoint sélectionné à l'époque | {metrics['selected_epoch']} |
@@ -152,7 +183,8 @@ SHA-256 du checkpoint : `{metrics['checkpoint_sha256']}`.
 
 ## Reproduire et utiliser
 
-Le code exact est archivé dans source/, avec ses empreintes dans config.json.
+Le code d'entraînement exact est archivé dans source/, avec ses empreintes dans config.json.
+Le cas échéant, evaluation_source/ contient la version utilisée pour le bilan complet.
 Installer PyTorch et Pillow, télécharger le dataset à la révision indiquée,
 appliquer prepare_hausa.py avec le même split, puis :
 
@@ -161,6 +193,8 @@ python source/train_hausa.py --version {config['version']} --dataset "CHEMIN_DAT
 ```
 
 Pour tester le package téléchargé, CHEMIN_RUN désigne son dossier racine.
+Pour le bilan complet produit après une mise à jour, remplacer source/ par
+evaluation_source/ dans la commande précédente.
 Le modèle reste un checkpoint PyTorch personnalisé et n'est pas un modèle
 Transformers chargé par AutoModel. La publication ne crée pas un serveur d'inférence.
 
@@ -190,12 +224,27 @@ def package_run(run, destination):
         raise ValueError("References du test modifiees.")
     if sum(int(r["character_errors"]) for r in predictions) != metrics["character_errors"] or sum(int(r["word_errors"]) for r in predictions) != metrics["word_errors"]:
         raise ValueError("Compteurs des predictions differents des scores publies.")
+    complete = load_complete_metrics(run, config, metrics)
+    if complete:
+        for part, values in complete["partitions"].items():
+            with (run / f"{part}_predictions.csv").open(encoding="utf-8-sig", newline="") as handle:
+                rows = list(csv.DictReader(handle))
+            expected_rows = {(r["partition"], r["file_name"]): r["transcript"] for r in split[part]}
+            if len(rows) != len(expected_rows) or {(r["partition"], r["file_name"]): r["reference"] for r in rows} != expected_rows:
+                raise ValueError(f"Identifiants ou references {part} incomplets.")
+            for field in ("character_errors", "word_errors", "normalized_word_errors"):
+                if sum(int(r[field]) for r in rows) != values[field]:
+                    raise ValueError(f"Compteur {field} incoherent pour {part}.")
     if destination.exists():
         raise FileExistsError(f"Le package existe deja : {destination}. Choisir un autre dossier.")
     destination.mkdir(parents=True)
     for name in ("best_cer.pt", "README.md", "config.json", "split.json", "vocab.json", "protocol.json", "quarantine.json", "history.csv", "test_metrics.json", "test_predictions.csv"):
         shutil.copy2(run / name, destination / name)
     shutil.copytree(run / "source", destination / "source")
+    if complete:
+        for name in ("metrics.json", "metrics.csv", "train_metrics.json", "validation_metrics.json", "train_predictions.csv", "validation_predictions.csv"):
+            shutil.copy2(run / name, destination / name)
+        shutil.copytree(run / "evaluation_source", destination / "evaluation_source")
     manifest = {str(path.relative_to(destination)).replace("\\", "/"): sha256(path) for path in sorted(destination.rglob("*")) if path.is_file()}
     write_json(destination / "manifest.json", {"author": AUTHOR, "version": config["version"], "files": manifest})
     archive = destination.with_suffix(".zip")

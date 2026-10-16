@@ -14,6 +14,12 @@ avec une initialisation aléatoire et les sorties dans
 `--fresh-start` et refusent de charger un ancien checkpoint pour initialiser le train.
 **V13 reste une proposition, sans modèle implémenté ni résultat annoncé.**
 
+Les nouveaux lancements affichent un bilan détaillé à chaque époque, avec cinq
+exemples de validation. Le bilan final exporte CER, WER, UWER (casse et diacritiques
+normalisés) et taux exact sur train/validation/test dans `metrics.csv` et
+`metrics.json`. Pour compléter un run déjà lancé avec l'ancien script, exécuter
+`tester_v9.cmd` (ou sa version V10/V11/V12) après sa fin, sans réentraîner.
+
 Les éléments ci-dessous documentent les expériences historiques.
 
 ## Modèle V10 entraîné et publication Hugging Face

@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 import torch
@@ -18,6 +19,8 @@ from torch.utils.data import DataLoader
 from hausa_ocr import AUTHOR, SOURCE_REPOSITORY
 from hausa_ocr.data import LineDataset, WidthSampler, collate, decode, edit_distance
 from hausa_ocr.models import build_model
+from hausa_ocr.metrics import UWER_DEFINITION, normalize_uwer
+from hausa_ocr.reporting import append_history, cer_trend, print_epoch_report
 from prepare_hausa import sha256, write_json
 
 
@@ -45,7 +48,7 @@ def load_protocol(dataset, protocol):
 def evaluate(model, loader, vocab, device):
     model.eval()
     predictions = []
-    counts = {"character_errors": 0, "reference_characters": 0, "word_errors": 0, "reference_words": 0, "exact": 0, "examples": 0}
+    counts = {"character_errors": 0, "reference_characters": 0, "word_errors": 0, "reference_words": 0, "normalized_word_errors": 0, "normalized_reference_words": 0, "exact": 0, "examples": 0}
     for batch in loader:
         logits = model(batch["images"].to(device, non_blocking=True))
         ids = logits.argmax(-1).cpu()
@@ -54,14 +57,18 @@ def evaluate(model, loader, vocab, device):
             reference = row["transcript"]
             char_errors = edit_distance(reference, prediction)
             word_errors = edit_distance(reference.split(), prediction.split())
+            normalized_reference = normalize_uwer(reference).split()
+            normalized_word_errors = edit_distance(normalized_reference, normalize_uwer(prediction).split())
             counts["character_errors"] += char_errors
             counts["reference_characters"] += len(reference)
             counts["word_errors"] += word_errors
             counts["reference_words"] += len(reference.split())
+            counts["normalized_word_errors"] += normalized_word_errors
+            counts["normalized_reference_words"] += len(normalized_reference)
             counts["exact"] += int(reference == prediction)
             counts["examples"] += 1
-            predictions.append({"partition": row["partition"], "file_name": row["file_name"], "source": row["source"], "reference": reference, "prediction": prediction, "character_errors": char_errors, "word_errors": word_errors})
-    counts.update(cer=counts["character_errors"] / max(1, counts["reference_characters"]), wer=counts["word_errors"] / max(1, counts["reference_words"]), exact_rate=counts["exact"] / max(1, counts["examples"]))
+            predictions.append({"partition": row["partition"], "file_name": row["file_name"], "source": row["source"], "reference": reference, "prediction": prediction, "character_errors": char_errors, "word_errors": word_errors, "normalized_word_errors": normalized_word_errors})
+    counts.update(cer=counts["character_errors"] / max(1, counts["reference_characters"]), wer=counts["word_errors"] / max(1, counts["reference_words"]), uwer=counts["normalized_word_errors"] / max(1, counts["normalized_reference_words"]), exact_rate=counts["exact"] / max(1, counts["examples"]))
     return counts, predictions
 
 
@@ -76,6 +83,47 @@ def loader(dataset, batch_size, device, sampler=None):
     if sampler is not None:
         return DataLoader(batch_sampler=sampler, **common)
     return DataLoader(batch_size=batch_size, shuffle=False, **common)
+
+
+def final_evaluation(model, checkpoint, splits, vocab, report, args, output, device, elapsed, peak):
+    checkpoint_hash = sha256(output / "best_cer.pt")
+    common = dict(version=args.version, selected_epoch=checkpoint["epoch"], selection="minimum_validation_CER", checkpoint_sha256=checkpoint_hash, split_sha256=report["split_sha256"], dataset_revision=report["dataset_revision"], elapsed_training_seconds=elapsed, peak_vram_mib=peak, uwer_definition=UWER_DEFINITION)
+    snapshot = output / "evaluation_source"
+    if Path(__file__).resolve().parent != snapshot.resolve():
+        shutil.copytree(Path(__file__).resolve().parent / "hausa_ocr", snapshot / "hausa_ocr", dirs_exist_ok=True, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+        for name in ("train_hausa.py", "prepare_hausa.py", "publish_hausa.py", "download_hausa_latest.py", "requirements-hausa.txt"):
+            shutil.copy2(Path(__file__).resolve().with_name(name), snapshot / name)
+    evaluation_hashes = {str(p.relative_to(snapshot)).replace("\\", "/"): sha256(p) for p in sorted(snapshot.rglob("*.py"))}
+    summary = dict(common, evaluated_at_utc=datetime.now(timezone.utc).isoformat(), evaluation_source_sha256=evaluation_hashes, train_evaluation="one_original_view_per_training_segment_no_augmentation", partitions={})
+    for part in ("train", "validation", "test"):
+        clean = LineDataset(args.dataset, splits[part], vocab, args.version, training=False, seed=args.seed)
+        print(f"Evaluation finale {part.upper()} : {len(clean)} segments, sans augmentation...", flush=True)
+        results, predictions = evaluate(model, loader(clean, args.batch_size, device), vocab, device)
+        results.update(common, evaluated_partition=part, augmented=False)
+        if part == "test":
+            results["validation_at_selected_epoch"] = checkpoint["validation"]
+        summary["partitions"][part] = results
+        write_json(output / f"{part}_metrics.json", results)
+        with (output / f"{part}_predictions.csv").open("w", encoding="utf-8-sig", newline="") as handle:
+            writer = csv.DictWriter(handle, fieldnames=list(predictions[0]))
+            writer.writeheader()
+            writer.writerows(predictions)
+    write_json(output / "metrics.json", summary)
+    with (output / "metrics.csv").open("w", encoding="utf-8-sig", newline="") as handle:
+        fields = ["partition", "examples", "cer", "wer", "uwer", "exact_rate", "character_errors", "reference_characters", "word_errors", "reference_words", "normalized_word_errors", "normalized_reference_words", "selected_epoch", "checkpoint_sha256"]
+        writer = csv.DictWriter(handle, fieldnames=fields, extrasaction="ignore")
+        writer.writeheader()
+        for part, values in summary["partitions"].items():
+            writer.writerow(dict(values, partition=part))
+    print(f"\nBILAN FINAL {args.version.upper()} | meilleur CER validation @ {checkpoint['epoch']}")
+    print(f"{'Partition':12s} {'Segments':>8s} {'CER':>10s} {'WER':>10s} {'UWER':>10s} {'Exact':>10s}")
+    for part, values in summary["partitions"].items():
+        print(f"{part:12s} {values['examples']:8d} {values['cer']:10.2%} {values['wer']:10.2%} {values['uwer']:10.2%} {values['exact_rate']:10.2%}")
+    print("Train mesure l'ajustement aux donnees vues ; le test est tenu a l'ecart.", flush=True)
+    from publish_hausa import write_model_card
+    write_model_card(output)
+    print(f"Resultats : {output / 'metrics.csv'}", flush=True)
+    return summary
 
 
 def main():
@@ -95,9 +143,10 @@ def main():
     parser.add_argument("--fresh-start", action="store_true", help="Initialisation aleatoire obligatoire ; interdit resume et finetune-from.")
     parser.add_argument("--device", choices=("cuda", "cpu"), default="cuda")
     parser.add_argument("--resume", action="store_true")
-    parser.add_argument("--test-only", action="store_true")
+    parser.add_argument("--test-only", "--evaluate-only", dest="test_only", action="store_true", help="Reevaluer le meilleur checkpoint du run sur train/validation/test, sans entrainement.")
     parser.add_argument("--check-only", action="store_true")
     parser.add_argument("--log-every", type=int, default=25)
+    parser.add_argument("--show-examples", type=int, default=5)
     args = parser.parse_args()
     if args.fresh_start and (args.resume or args.finetune_from is not None):
         parser.error("La campagne depuis zero interdit toute initialisation depuis un checkpoint. Retirer resume/finetune-from.")
@@ -123,6 +172,8 @@ def main():
         parser.error("Epoques, patience et frequence doivent etre positives ; min-epochs <= epochs.")
     if args.batch_size < 1:
         parser.error("batch-size doit etre positif")
+    if args.show_examples < 0:
+        parser.error("show-examples doit etre positif ou nul")
     args.dataset, args.protocol = args.dataset.resolve(), args.protocol.resolve()
     if args.device == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA indisponible. Verifier PyTorch/CUDA ou preciser --device cpu.")
@@ -150,7 +201,8 @@ def main():
         print(f"Verification terminee : logits {tuple(result.shape)}, aucun poids entraine sauvegarde.", flush=True)
         return
     if output.exists() and (output / "config.json").exists() and not (args.resume or args.test_only):
-        raise FileExistsError(f"Un run existe deja : {output}. Utiliser --resume ou un autre --output.")
+        hint = "Choisir un autre --output pour repartir de zero." if args.fresh_start else "Utiliser --resume ou un autre --output."
+        raise FileExistsError(f"Un run existe deja : {output}. {hint}")
     if args.resume and not (output / "last.pt").is_file():
         raise FileNotFoundError("--resume exige last.pt dans le dossier de sortie.")
     if args.test_only and not (output / "best_cer.pt").is_file():
@@ -181,6 +233,7 @@ def main():
         "cuda": torch.version.cuda, "gpu": torch.cuda.get_device_name(0) if device.type == "cuda" else None,
         "gpu_total_memory_mib": torch.cuda.get_device_properties(0).total_memory / 1024**2 if device.type == "cuda" else None,
         "historical_recipe_changes": ["new_public_test_400", "train_only_vocabulary_with_UNK", "common_white_gray_padding", "common_patience_schedule", "bucket_size_8_batches"],
+        "uwer_definition": UWER_DEFINITION, "final_evaluation": "train_validation_test_on_originals_using_minimum_validation_CER_checkpoint",
     }
     start_epoch, best_cer, patience_best, without_gain, elapsed_total, peak_total = 1, float("inf"), float("inf"), 0, 0.0, 0.0
     if args.resume or args.test_only:
@@ -225,6 +278,11 @@ def main():
             shutil.copy2(Path(__file__).resolve().with_name(name), snapshot / name)
         config["source_sha256"] = {str(p.relative_to(snapshot)).replace("\\", "/"): sha256(p) for p in sorted(snapshot.rglob("*.py"))}
     write_json(output / "config.json", config)
+    history = output / "history.csv"
+    records = []
+    if history.exists():
+        with history.open(encoding="utf-8", newline="") as handle:
+            records = list(csv.DictReader(handle))
     interrupted = False
     try:
         if not args.test_only:
@@ -234,6 +292,8 @@ def main():
                 if device.type == "cuda":
                     torch.cuda.reset_peak_memory_stats()
                 beginning, running = time.monotonic(), 0.0
+                lr_used = optimizer.param_groups[0]["lr"]
+                print(f"\nDEBUT EPOCH {epoch}/{args.epochs} - {len(loaders['train'])} batches", flush=True)
                 for index, batch in enumerate(loaders["train"], 1):
                     images = batch["images"].to(device, non_blocking=True)
                     optimizer.zero_grad(set_to_none=True)
@@ -249,29 +309,28 @@ def main():
                         seconds = time.monotonic() - beginning
                         remaining = seconds / index * (len(loaders["train"]) - index) / 60
                         print(f"{args.version} | epoch {epoch}/{args.epochs} | batch {index}/{len(loaders['train'])} | loss {running/index:.4f} | reste epoch ~{remaining:.1f} min", flush=True)
-                val, _ = evaluate(model, loaders["validation"], vocab, device)
+                val, val_predictions = evaluate(model, loaders["validation"], vocab, device)
                 scheduler.step(val["cer"])
                 seconds = time.monotonic() - beginning
                 elapsed_total += seconds
-                peak_total = max(peak_total, torch.cuda.max_memory_allocated() / 1024**2 if device.type == "cuda" else 0)
+                epoch_peak = torch.cuda.max_memory_allocated() / 1024**2 if device.type == "cuda" else 0
+                allocated = torch.cuda.memory_allocated() / 1024**2 if device.type == "cuda" else 0
+                peak_total = max(peak_total, epoch_peak)
                 improved = val["cer"] < best_cer
                 best_cer = min(best_cer, val["cer"])
                 if val["cer"] < patience_best - 0.0005:
                     patience_best, without_gain = val["cer"], 0
                 else:
                     without_gain += 1
-                record = {"epoch": epoch, "train_loss": running / len(loaders["train"]), "val_cer": val["cer"], "val_wer": val["wer"], "val_exact_rate": val["exact_rate"], "lr": optimizer.param_groups[0]["lr"], "seconds": seconds, "peak_vram_mib": peak_total}
-                history = output / "history.csv"
-                with history.open("a", encoding="utf-8", newline="") as handle:
-                    writer = csv.DictWriter(handle, fieldnames=list(record))
-                    if handle.tell() == 0:
-                        writer.writeheader()
-                    writer.writerow(record)
+                record = {"epoch": epoch, "train_loss": running / len(loaders["train"]), "val_cer": val["cer"], "val_wer": val["wer"], "val_uwer": val["uwer"], "val_exact_rate": val["exact_rate"], "lr_used": lr_used, "lr": optimizer.param_groups[0]["lr"], "seconds": seconds, "vram_allocated_mib": allocated, "epoch_peak_vram_mib": epoch_peak, "peak_vram_mib": peak_total}
+                slope, gain = cer_trend(records + [record])
+                record.update(val_cer_slope=slope, val_cer_window_gain=gain)
+                append_history(history, records, record)
                 saved = {"model_state_dict": model.state_dict(), "optimizer_state_dict": optimizer.state_dict(), "scheduler_state_dict": scheduler.state_dict(), "vocab": vocab, "config": config, "epoch": epoch, "validation": val, "best_cer": best_cer, "patience_best": patience_best, "without_gain": without_gain, "elapsed_seconds": elapsed_total, "peak_vram_mib": peak_total, "python_rng": random.getstate(), "torch_rng": torch.get_rng_state(), "cuda_rng": torch.cuda.get_rng_state_all() if device.type == "cuda" else []}
                 if improved:
                     save_checkpoint(output / "best_cer.pt", saved)
                 save_checkpoint(output / "last.pt", saved)
-                print(f"VAL CER {val['cer']:.4%} | WER {val['wer']:.4%} | best CER {best_cer:.4%} | patience {without_gain}/{args.patience} | VRAM {peak_total:.0f} MiB", flush=True)
+                print_epoch_report(config, record, records, val_predictions, without_gain, args.show_examples)
                 if epoch >= args.min_epochs and without_gain >= args.patience:
                     print("Arret anticipe sur la validation.", flush=True)
                     break
@@ -284,16 +343,11 @@ def main():
         raise SystemExit(130)
     checkpoint = torch.load(output / "best_cer.pt", map_location="cpu", weights_only=False)
     model.load_state_dict(checkpoint["model_state_dict"])
-    results, predictions = evaluate(model, loaders["test"], vocab, device)
-    results.update(version=args.version, selected_epoch=checkpoint["epoch"], selection="minimum_validation_CER", validation_at_selected_epoch=checkpoint["validation"], checkpoint_sha256=sha256(output / "best_cer.pt"), split_sha256=report["split_sha256"], dataset_revision=report["dataset_revision"], elapsed_training_seconds=elapsed_total if not args.test_only else json.loads((output / "test_metrics.json").read_text(encoding="utf-8")).get("elapsed_training_seconds") if (output / "test_metrics.json").exists() else checkpoint["elapsed_seconds"], peak_vram_mib=peak_total or checkpoint["peak_vram_mib"])
-    write_json(output / "test_metrics.json", results)
-    with (output / "test_predictions.csv").open("w", encoding="utf-8-sig", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(predictions[0]))
-        writer.writeheader()
-        writer.writerows(predictions)
-    from publish_hausa import write_model_card
-    write_model_card(output)
-    print(f"TEST PUBLIC 400 | CER {results['cer']:.4%} | WER {results['wer']:.4%} | exact {results['exact_rate']:.4%}\nResultats : {output}", flush=True)
+    elapsed = elapsed_total
+    if args.test_only:
+        previous = output / "test_metrics.json"
+        elapsed = json.loads(previous.read_text(encoding="utf-8")).get("elapsed_training_seconds") if previous.exists() else checkpoint["elapsed_seconds"]
+    final_evaluation(model, checkpoint, splits, vocab, report, args, output, device, elapsed, peak_total or checkpoint["peak_vram_mib"])
 
 
 if __name__ == "__main__":
