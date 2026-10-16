@@ -171,6 +171,15 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(len(val),2)
         self.assertFalse({r['group_id'] for r in train}&{r['group_id'] for r in val})
 
+    def test_manifest_bytes_are_stable_across_windows_git_checkout(self):
+        from prepare_hausa import write_json
+        with tempfile.TemporaryDirectory(prefix="json-fixture-",dir=Path(__file__).parent) as folder:
+            path=Path(folder)/"manifest.json"
+            write_json(path,{"transcript":"ɗā","counts":{"train":2609}})
+            data=path.read_bytes()
+            self.assertNotIn(b"\r\n",data)
+            self.assertEqual(hashlib.sha256(data).hexdigest(),hashlib.sha256(data.replace(b"\r\n",b"\n")).hexdigest())
+
     def test_corrupt_release_archive_is_rejected_before_github_access(self):
         import publish_github_release
         with tempfile.TemporaryDirectory(prefix="archive-fixture-", dir=Path(__file__).parent) as folder:
