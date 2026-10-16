@@ -1,0 +1,402 @@
+﻿partition,file_name,source,reference,prediction,character_errors,word_errors,normalized_word_errors,evaluated_partition
+test,a_ajami_00002.png,3,Bismi l-Lāhi al-Raḥmāni al-Rahīmi Ṣala l-Lāhu ʿalā Sayyidinā Muḥammad wa ālihī wa ṣaḥbihī wa sallam,Binbi llami ai-Raq ʿan aRabili ṣalla Al-lahu ʿalale sayyidi nā a haladiwa ʿālihwa ḥabii wasali,44,15,15,test
+test,a_ajami_00003.png,3,Bismi l-Lāhi Rabbanā ba ni sa'a,Bisnmu Allāhu Rabbana ba ni yaba baa,13,5,4,test
+test,a_ajami_00004.png,3,Jama’a du ku karkaɗe kunnuwanku,Jamu’a do ku kan ame kunuwanku,6,5,5,test
+test,a_ajami_00005.png,3,Gantali gantafalfala ba ku aiki,Gartariganta ja fala ba ku ’aiki,7,4,4,test
+test,a_ajami_00006.png,3,Mai yawo cikin gari ba dalili,Mabyawu cikin gayi ba da lili,5,5,5,test
+test,a_ajami_00007.png,3,Ba ya arziƙi mutin dun ku gane,Ba ya arziƙi mutudon kuƙanin,8,4,4,test
+test,a_ajami_00008.png,3,In an ganshi ma da riga ta kirki,In marganci ma dani biya takiki,11,6,6,test
+test,a_ajami_00009.png,3,Dole a sha jinin jiki man a ce mai,Duli ashājinin bikiman ache mani,10,9,9,test
+test,a_ajami_00010.png,3,Ƙarshe sai a dinga ce mar ɓarawo,Harsce sai adinga cemarbarado,7,6,6,test
+test,a_ajami_00011.png,3,Ba zai ce da kaifa to mai na ɗauka,Ba zaice da haifa tou dai na gaka,6,6,6,test
+test,a_ajami_00012.png,3,Nema nai ake akama a ɗaure,Tema tai ake aha da ’a maure,7,6,6,test
+test,a_ajami_00013.png,3,Da ka ce ko da shifa kyat sai ya ruga,Da ka ce ko da shi fa fita sabyar woga,10,5,5,test
+test,a_ajami_00014.png,3,Sanan kun ga du mutane na kirki,Sannan kwanga do muta ne takirki,8,7,7,test
+test,a_ajami_00015.png,3,Kuma firarsu kar ku soma ku jita,Kumafidarr su harku su ma ku jita,8,5,5,test
+test,a_ajami_00016.png,3,Kuma ko za’a ce cikinmu cikinmu,Ku ko za hace tikinmu tikinmu,7,5,5,test
+test,a_ajami_00017.png,3,Wa ye mai zaman zato don a bashi,Wayen mai za mar ga tadan abashi,10,7,7,test
+test,a_ajami_00018.png,3,Ko sata akai a kudan ku gane,Ko saita wa ’ai natwa dagkagani tda,18,6,6,test
+test,a_ajami_00019.png,3,Zan waƙar waɗanda ba sa sana’a,Ranuwa ƙan waɗanda ba sa ɗana’a,5,3,3,test
+test,a_ajami_00020.png,3,Ku ji waƙar waɗanda ba sa sana’a,Ƴu waƙar waɗanda ba isa sana’a,5,3,3,test
+test,a_ajami_00021.png,3,Ko ko ba ku so a ce ku yi sana’a,Kuwa ku ba ku mu fata kai kana’i,15,8,8,test
+test,a_ajami_00022.png,3,Ba aikin fari ba ƙi ba sana’a,Ba ’aikin adi bafi ba tana’a,6,5,5,test
+test,a_ajami_00023.png,3,Mutu ƙar anka ce fa ba ya sana’a,Mutƙar ƴankate fa ba ya sana’a,5,4,4,test
+test,a_ajami_00024.png,3,Sai an sha jinin jiki babu a’a,Sai arshahitnin jiji babu ’a’a,7,5,5,test
+test,a_ajami_00025.png,3,A ina za ya san kuɗi bai sana’a,Ahina za ya bami ḍu bai tana’a,8,5,5,test
+test,a_ajami_00026.png,3,Suna ne na wanda ba ya sana’a,Susuna ne na wanda baya Janna’a,5,4,4,test
+test,a_ajami_00027.png,3,Tsoro zai ji kar a je gun shari’a,Toro zai ji kan aji gudthahriwa,9,6,6,test
+test,a_ajami_00028.png,3,Bai rasa laifuka wajan mai shari’a,Baira sa laifuka wa jan haji shaḥamin riyani,14,7,7,test
+test,a_ajami_00029.png,3,Marashin gaskiya marar yin sana’a,Hara cin ganiya marar yin kuna’a,7,4,4,test
+test,a_ajami_00030.png,3,Ba su amince wa marar yin sana’a,Ba su ’ahincewa marar yin saɗ’a,5,3,3,test
+test,a_ajami_00031.png,3,Zagin malamai masu ɗa’a,Aa jin masamai li ɗasun ɗa’a,9,5,5,test
+test,a_ajami_00032.png,3,Waye mai kuwa ɗai marar yin sana’a,Layen daikuwa ɗai marar bin hajinā’a,9,5,5,test
+test,a_ajami_00033.png,3,Cenai mai mutun marar yin sana’a,Sen yamin mut mara bin sana’a,10,5,5,test
+test,a_ajami_00034.png,3,Sai an sha waɗanda ba sa sana’a,Sayane arshad waɗan da ba suka saha’a,10,6,6,test
+test,a_ajami_00035.png,3,Mai toshasshiyar basira daƙiƙi,Maito chachiyan baiara da ƙiyi,10,5,5,test
+test,a_ajami_00036.png,3,Mai roƙon ɗari kuwa bogen waninsa,Mai roƙon ɗari ku wabo gun waninsa,4,3,3,test
+test,a_ajami_00037.png,3,"Da ya roƙeka, ce da shi ba ka ba shi",Da ya roƙeka ceda shi ba a ba chi,4,5,5,test
+test,a_ajami_00038.png,3,Gara ka baiwa mahaukaci ma abinci,Gana ka yai wama Hauka ci ma aninci,8,6,6,test
+test,a_ajami_00039.png,3,In ka ba shi ka ga ka saɓi Allah,In ka ba shin ka gaka sabi Allah,3,4,4,test
+test,a_ajami_00040.png,3,Ko za ka faman hana sa a bashi,Hoza ka fa ’an hana ma aba shin,8,7,7,test
+test,a_ajami_00041.png,3,Kuma firarsu ca suke wane rowa,Muma firarsu ta duke wane ruwa,4,4,4,test
+test,a_ajami_00042.png,3,Da ka ce wane na da rowa kwaɗayinka,Da ƙa ce wane na da ruwa kuwa ɗaninta,6,4,4,test
+test,a_ajami_00043.png,3,"Tafi wofi, ba zan abota da kai ba",Tafi duji ba zan abuta da kai ba,5,2,2,test
+test,a_ajami_00044.png,3,Nassi ne ya ce ba’a ƙaryata ba,Nasine ɓacen ba’a ƙaryata ba,5,4,4,test
+test,a_ajami_00045.png,3,Sai aikin assha kawai ba na kirki,Sai abikin mashamd ka wai ba ta kūki,9,6,6,test
+test,a_ajami_00046.png,3,Kuma san zuciya a nanne ya zauna,Uma sanzuciya atanne ya zauna,5,5,5,test
+test,a_ajami_00047.png,3,"Ko ban san kuɗi ba, na gode Allah",Zubin man kuiba na godin Allah,10,6,6,test
+test,a_ajami_00048.png,3,In Allah ya so wulaƙanta bawa,In Allah ya suwula ƙanta bawa,3,2,2,test
+test,a_ajami_00049.png,3,Ba a ce kaza na da muni,Ba ’a ce ka zana da jum,6,4,4,test
+test,a_ajami_00050.png,3,"Da ya ga kuɗinka, yai kamar za ya ƙwace",Da ya ga kuinka yai kamai za ya gawace,5,3,3,test
+test,a_ajami_00051.png,3,"Sai ya yi sana’a kayar, shi ya ɗauka",Sayyai adu’a ha yan chi ya haɗa,15,7,7,test
+test,a_ajami_00052.png,3,Shi mai sammakon fitar kasuwa ne,"Shi mai da takon fatal, a suwashe",10,5,5,test
+test,a_ajami_00053.png,3,Shine ke zama yake ƙin sana’a,Shina hani a ma yaba ƙihanā’a,13,6,6,test
+test,a_ajami_00054.png,3,Gara ka daina yi ka je kai sana’a,Gana ka dai na yi ka ji kai sana’a,3,4,4,test
+test,a_ajami_00055.png,3,Kar ka ji tausayin marar yin sana’a,Ƴn itau saji hararyin tana’a,14,7,7,test
+test,a_ajami_00056.png,3,Da ka baiwa mutum marar yin sana’a,Da ka bai wa mutai ma’ari yin tana’a,6,5,5,test
+test,a_ajami_00057.png,3,In ka hanashi ka bi ƙaulin Shari’a,In kana shin ɗabi ƙaulin icir’a,11,5,5,test
+test,a_ajami_00058.png,3,"Mai ɓarnar ƙuɗi, marar yin sana’a",MaibunzanKuhi mawan yin tana’a,13,5,5,test
+test,a_ajami_00059.png,3,Sun yi suka ga wanda ke yin sana’a,Subi ssuha ga wanda Jabin cana’a,10,6,6,test
+test,a_ajami_00060.png,3,Kwaɗayi na ga wanda ba ya sana’a,Ƴya ɗayi na gawanda ba ya tana’a,5,5,5,test
+test,a_ajami_00061.png,3,Dan ni ba ni san marar kyan sana’a,Danci ba ni san maarijin tajia,11,5,5,test
+test,a_ajami_00062.png,3,Kar a ku sanci wanda ba ya sana’a,Ƴar Akusanci wanda ba ya tana’a,5,5,5,test
+test,a_ajami_00063.png,3,A wajen wanda ke zama ba sana’a,WAwajan wanda je zama ba hana’a,5,4,4,test
+test,a_ajami_00064.png,3,Can gun wanda ke zama ba sana’a,Ta guar wanda kai zama ba hana’a,7,4,4,test
+test,a_ajami_00065.png,3,A ce dai da ni ina yin sana’a,Aace dai da ni inayin sanawa,3,5,5,test
+test,a_ajami_00066.png,3,Sai ka tarar da shi fa ba ya sana’a,Sai hatarar da shi fa ba ya sana’a,2,2,2,test
+test,a_ajami_00067.png,3,Mai gaba da malamai masu ɗa’a,Maiga ba da mala mai ma musun ɗa’a,7,6,6,test
+test,a_ajami_00068.png,3,Shi ko baida ƙoƙarin ya yi sana’a,Shi ku bai da ƙwaƙarini bai tsana’a,9,6,6,test
+test,a_ajami_00069.png,3,Ka ji wofi da ba ya so ya yi sana’a,jiji dufi da ba ba i su yai sana’a,11,7,7,test
+test,a_ajami_00070.png,3,Ba ya je bane fa dan ya yi sana’a,Ba ya ki ba be fadan yayi tana’a,7,7,7,test
+test,a_ajami_00071.png,3,Neman tsuntuwa fa shine ya kaishi,Teman tsantua fa shi ne ya ka shi,5,6,6,test
+test,a_ajami_00072.png,3,To in banda ma basira ta toshe,Toin banda ma babbina tatauushii,10,5,5,test
+test,a_ajami_00073.png,3,A zaune fa arziki ba zai taddaku ba,Maza nafa arziƙi ba zabutan da ku ba,11,7,7,test
+test,a_ajami_00074.png,3,A sa’o’inka kowanne in ka duba,A sa ho inka ko wane inkaduba,7,6,6,test
+test,a_ajami_00075.png,3,To kai me ya sa ka zauna ka miƙe,To kai mai sa ka zauma Jamafī,10,5,5,test
+test,a_ajami_00076.png,3,Bari yin ta ƙama da kai malami ne,Barnin ta ƙama da kai ma lamini,6,4,4,test
+test,a_ajami_00077.png,3,Mai neman shina da shi mai sanarwa,Mai ne man syhina da shi mai sanarwa,2,3,3,test
+test,a_ajami_00078.png,3,An ce malamin da ba ya sana’a,Harce malamin da baya sana’a,4,4,4,test
+test,a_ajami_00079.png,3,Annabi shugabanmu ma yai fatauci,Anna bi shigabarguma yai fa tauci,6,5,5,test
+test,a_ajami_00080.png,3,A cikin Samraqandi an san sana’a,Macikissanranin da ’ansan siaya,15,6,6,test
+test,a_ajami_00081.png,3,Ibrahima annabi ne na Allah,Ira mima annabi ne na zallah,5,3,3,test
+test,a_ajami_00082.png,3,Annabi Dawuda an faɗa ya yi ƙīra,Annabi dado da hanfa’a ya yi ƙira,8,4,3,test
+test,a_ajami_00083.png,3,Annabi Ya’u yai kafinta shi ko,An bi ya ga ya yi ha jinta shi ko,11,8,8,test
+test,a_ajami_00084.png,3,Du mai sansu ko ashe wajibi ne,Do mai san di suko macee wabibi ne,10,6,6,test
+test,a_ajami_00085.png,3,Ko gata fa za ka nunawa ɗanka,Kogata fa za ka nuna waɗanka,3,4,4,test
+test,a_ajami_00086.png,3,An ce kar ka ce kuɗi ne akwai su,Aarnce hai face zumi ne ’akuisu,13,8,8,test
+test,a_ajami_00087.png,3,"In kuma babu kai fa, wa za ya bashi?",Cenzama ba bu haifa wa za ya ba shi,11,7,7,test
+test,a_ajami_00088.png,3,Kuma ƴaƴansa sai su zo mar ya basu,Mufiya mansara sai su zomanryabasu,13,6,6,test
+test,a_ajami_00089.png,3,Sana banza yana ga munin sana’a,Sagabanza yana ga munin saji’a,4,3,3,test
+test,a_ajami_00090.png,3,Yaya za ku ɗau zama ba sana’a,Ya ya za ku ɗau zama ba kana’a,2,3,3,test
+test,a_ajami_00091.png,3,Ai sai kun biɗeshi sai kun sana’a,Mai sai kun icini sanikun ɗana’a,10,5,5,test
+test,a_ajami_00092.png,3,Sai ka ga kowanne yana yin sana’a,Sai ka ga ko wane banayin sana’a,4,3,3,test
+test,a_ajami_00093.png,3,Kake roƙonsu ba ka so ka yi sana’a?,Ka ƙeai roigonmun ba kai suwakai hana’a,16,8,8,test
+test,a_ajami_00094.png,3,Karatu shi ya ce a je a yi sana’a,Marato shiya ce maja mai thana’a,11,8,8,test
+test,a_ajami_00095.png,3,Ba a ce ko waninsa kar ya yi sana’a,Baface kowanin sa ƙun yai sana’a,9,8,8,test
+test,a_ajami_00096.png,3,Zai san zuciya ya kauce sharīʿah,Zai san zuciya ya ɗauce handa,6,2,2,test
+test,a_ajami_00097.png,3,"In koyi kake da shi, ka yi sana’a",In tabi ḥamau da shii kan ɗana’a,12,6,6,test
+test,a_ajami_00098.png,3,Wacce ta nuna wajibun a yi sana’a,Waci ta zuna wa jinin ’ai hana’a,10,6,6,test
+test,a_ajami_00099.png,3,"Kuma ya fi ka, ka gani yai sana’a",Kumu ya fi ha ka gani yai sana’a,3,2,2,test
+test,a_ajami_00100.png,3,Yai sulke ku tabbatar yai sana’a,Yai sinke hutabbatan yai sana’a,5,3,3,test
+test,a_ajami_00101.png,3,Kowanne cikinsu dai yai sana’a,No waci tikinsun dai yai kana’a,8,4,4,test
+test,a_ajami_00102.png,3,Ya yi koyi da su mutum ya yi sana’a,yaye abi da a du mutan yabi hana’a,14,8,8,test
+test,a_ajami_00103.png,3,An ce kar ka barshi ba ya sana’a,Har ce kar ku bai chin ba ya tana’a,9,5,5,test
+test,a_ajami_00104.png,3,Ai ka ba shi ya yi zama ba sana’a,Aaika ba shin yani zama ba kana’a,6,6,6,test
+test,a_ajami_00105.png,3,Ba mai bashi gashi ba ya sana’a,Ba ai ba shi ga shi ba ya tana’a,4,6,6,test
+test,a_ajami_00106.png,3,A ina za ya zam kuɗi bai sana’a?,A mina za ya ban kuɗai bai ɗana’a,6,4,4,test
+test,a_ajami_00107.png,3,To ai kun ga akhira ta yi muni,To ’aikanga daki ta yibu,12,6,6,test
+test,a_ajami_00108.png,3,Har abada cikin shukuna da yinwa,Han abada cikin susukona da yinwa,4,2,2,test
+test,a_ajami_00109.png,3,Du a gari ko babu mai ba su bashi,Do agari ko babu mai ba sun ba shi,4,6,6,test
+test,a_ajami_00110.png,3,Mata ma ashe suna son na kirki,Mata ma mace suna sai nakirki,6,4,4,test
+test,a_ajami_00111.png,3,Ba birni ba kun gani ko a ƙauye,Baburni ba ku gani kawo ’aƙaya,9,6,6,test
+test,a_ajami_00112.png,3,Kai ni na tsaya fa tsaina ku duba,Kai ni na zaya fa tsai na kudu ba,5,5,5,test
+test,a_ajami_00113.png,3,Domin ko kare akwai masu son sa,Domin kujare akoi ma sur dainsa,11,6,6,test
+test,a_ajami_00114.png,3,Wanda kare ya fishi shi yai asara,Wanda kare yafi chin shi yai mamana,7,3,3,test
+test,a_ajami_00115.png,3,Ni nai man tsari nake kar na gansu,Nune ƴan ɗari na fi har nagansu,12,8,8,test
+test,a_ajami_00116.png,3,Da kuma za su shiryu da sai na sosu,Da su za su shirbu da sai taisusu,7,4,4,test
+test,a_ajami_00117.png,3,Halinku fa shi kawai ake ƙi ku gane,Kumani yanzu shawara ta gareka,25,8,8,test
+test,a_ajami_00118.png,3,Kuma ni yanzu shawarata gareku,Kumani yan zusha wara ta gareka,6,6,6,test
+test,a_ajami_00119.png,3,To amma fa ga ka shedi gareka,To abba fa gaa shi ndi gareku,8,5,5,test
+test,a_ajami_00120.png,3,Kar ku yi daudu kun ga kar ku yi kawalci,Har kubi daudu kunga kar kuyi awaci,7,8,8,test
+test,a_ajami_00121.png,3,Abin da ya sa na ce kar ku yi su,Abin da baisa nace da kokan kuaitau,13,8,8,test
+test,a_ajami_00122.png,3,Gantali koko yanzu zan tarbeku,Gan tali koko bainzu zar tam bainku,9,6,6,test
+test,a_ajami_00123.png,3,Ba kuwa a ce da ni fa da san jiki ba,Ba kuwa ce dai danifa dan yai niya,14,8,8,test
+test,a_ajami_00124.png,3,Ko kun fid da rai da yin arziƙi ne,Kokun fida rai da yin arziqiniī,7,6,6,test
+test,a_ajami_00125.png,3,Girma yari ga ya zau ba sana’a,Iinma ya riga ya za ba sana’a,5,4,4,test
+test,a_ajami_00126.png,3,Yinwa na cikin mara yin sana’a,Ƴunwa na cikin maralnubin tana’a,7,4,4,test
+test,a_ajami_00127.png,3,Don ba sa biya marasa sana’a,Dan ba sabiya maraiyta sana’a,5,4,4,test
+test,a_ajami_00128.png,3,Don ni na ga sun fi son mai sana’a,Aatti na garsun fi man a mana’a,11,7,7,test
+test,a_ajami_00129.png,3,Baida farin jini marar yin sana’a,Bani da farizi jini mamar yin suna’a,6,5,5,test
+test,a_ajami_00130.png,3,Ban hango masu marar yin sana’a,Ban hangoma su marar yini ɗana’a,4,4,4,test
+test,a_ajami_00131.png,3,Ba mai san mutum marar yin sana’a,Ba mai san tun marar yin sana’a,3,1,1,test
+test,a_ajami_00132.png,3,Auzu min waɗanda ba sa sana’a,A ’a zumi waɗanda ba sama sana’a,8,4,4,test
+test,a_ajami_00133.png,3,Wa zai so ganin marar kyan ɗabi’a,Wa zai suganin mamarikin ɗabi’a,6,4,4,test
+test,a_ajami_00134.png,3,Har ma mu yi abotaka don sana’a,Har ma mubi abu aka dan ɗana’a,6,5,5,test
+test,a_ajami_00135.png,3,Domin an ga ba ku kiyawuk ɗabi’a,Domi wanfa ba kukiyawon ɗabia,8,6,6,test
+test,a_ajami_00136.png,3,Don Allah ku bar zama ba sana’a,Don Allah kubar zama ba sana’a,1,2,2,test
+test,a_ajami_00137.png,3,In kun yarda za ku ji ku yi sana’a,In zur yarda za ku je kayi sana’a,5,4,4,test
+test,a_ajami_00138.png,3,Kar ku yi kanzagin kuɗa kun ga ku yi sana’a,Gan uyi hanzagin ala kuyi kunada,18,10,10,test
+test,a_ajami_00139.png,3,Domin babu su a babin sana’a,Domin babu su’aba bin sana’a,3,3,3,test
+test,a_ajami_00140.png,3,Mene ne ya sa kuke ƙin sana’a,Mai ne ne yai sa kuke ƙin sana’a,4,3,3,test
+test,a_ajami_00141.png,3,Domin ko a zaune sai a yi sana’a,Domin ko azaune samai Hayi kana’a,6,6,6,test
+test,a_ajami_00142.png,3,Wataƙil shi ya sa kuke ƙin sana’a,Wa taƙirtiya sa kuky ginɗinaa,12,6,6,test
+test,a_ajami_00143.png,3,Ko aure mutum ya nema garinnan,Ko aurici mati babce ma garinnan,10,4,4,test
+test,a_ajami_00144.png,3,Sarki na ga ya yi doka ta kirki,Sanrki na ga ya yi doɗa takinki,4,4,4,test
+test,a_ajami_00145.png,3,Ni babban abinda ke ba ni haushi,Ni babban ʿabi dake bari haushi,5,4,4,test
+test,a_ajami_00146.png,3,Ko ka gano mutum jiki lafiya lau,Dok ganu muti jiki laiya lau,7,5,5,test
+test,a_ajami_00147.png,3,Ba kuturu ba kun ga shi ba makaho,Ba kutur ba kunga shi ba da kamu,6,5,5,test
+test,a_ajami_00148.png,3,Idan suka zo suna bara kar a basu,Idan sa ka zo bi suna barakan Ajasī,11,7,7,test
+test,a_ajami_00149.png,3,Masakai za a dinga baiwa Allah,Masa kai za adinga yai wana Allah,6,5,5,test
+test,a_ajami_00150.png,3,Na zo kanku masu ƙaryar sharifta,Na zo kanku ma susu ƙuryar shadirmuta,8,4,4,test
+test,a_ajami_00151.png,3,Kaga ƙato waje-waje na ta yawo,Haga ƙatuwaje waje na tuya wo,7,5,5,test
+test,a_ajami_00152.png,3,"Mai ƙaryar shariftaka, to ka daina",Maiƙaryar acani fu taka ta ku daina,10,6,6,test
+test,a_ajami_00153.png,3,Allah Ya la’anci ƙaryar sharifta,Allah ya la hanci ƙiyar asharifita,7,5,4,test
+test,a_ajami_00154.png,3,Mafi girma gareshi Allah Tabara,Mafi girma garesicin allah ta bara,6,4,3,test
+test,a_ajami_00155.png,3,Domin an sani shariffai na Allah,Domin anmani thɗirfai na za Lah,10,5,5,test
+test,a_ajami_00156.png,3,Ya Allah ba mu albarkacinsu,Ya a lāhu ba mu anbar ka censu,8,5,5,test
+test,a_ajami_00157.png,3,Domin du a duniya in ka duba,Domin du ’aduniya zin kadu ba,5,5,5,test
+test,a_ajami_00158.png,3,Duba in ma’aikata sun taho man,Du ba lin da ’aikata sunu tahuman,7,7,7,test
+test,a_ajami_00159.png,3,Da sun je kama masu laifi da aibi,Dadu naje kama masun laifi da ’aibu,7,5,5,test
+test,a_ajami_00160.png,3,Kyautar duniya ana baiwa-bawa,Kautan daniya ana yaiwa bawa,5,4,4,test
+test,a_ajami_00161.png,3,Mai barcin dare da rana daƙiƙi,Mai ban cin dari da rana da qhiīyi,8,5,5,test
+test,a_ajami_00162.png,3,ba a bashi sai yana yin sana’a,Bama ba shin sanina yin sana’a,8,5,5,test
+test,a_ajami_00163.png,3,Da yacce kar a bar mararsa sana’a,Daace har aban maran sami sana’a,10,6,6,test
+test,a_ajami_00164.png,3,Babu kamar zama kawai ba sana’a,Babu amain zama ka wai ba sana’a,4,3,3,test
+test,a_ajami_00165.png,3,Amma wai yana bara ba sana’a,Amma wanabba bara ba tana’a,6,3,3,test
+test,a_ajami_00166.png,3,Wai mai lafiya yana ƙin sana’a,Waimai Laiya ya baƙin ɗana’a,7,6,6,test
+test,a_ajami_00167.png,3,Ba’a taimakon mara kyan ɗabi’ah,Bafa taimakon maran kan ɗabi’a,4,4,4,test
+test,a_ajami_00168.png,3,Da faƙirai masu kyawun ɗabī’ah,Da faƙirai ma su kiyawon ɗaji’a,6,4,4,test
+test,a_ajami_00169.png,3,Makwaɗaita waɗanda ba sa sana’a,Mak wa ɗaita wa ɗanda ba s sa sana’a,5,6,6,test
+test,a_ajami_00170.png,3,Wai shi ga sharufta ba ya sana’a,Wai ciki ga sharofa ba ya sana’a,5,2,2,test
+test,a_ajami_00171.png,3,Girman kai ku yaddashi ku yi sana’a,Gin man kufi kuya da shi kubi kana’a,10,8,8,test
+test,a_ajami_00172.png,3,"Ƙaulin Annabinmu, ƙaulin Shariʿa",ƙoulin anacimu ƙoaulin nitara’a,13,4,4,test
+test,a_ajami_00173.png,3,"Mai tsoron sa, wanda ke bin Shariʿa",Mai turansa wandadi kai bincharwa,13,6,6,test
+test,a_ajami_00174.png,3,Ba sa yin kwaɗai sabili da ɗa’a,Ba sa lƙi koɗai sabila da ɗa’a,6,3,3,test
+test,a_ajami_00175.png,3,Sa buɗi ga dukkan mai yin sana’a,Sabo ɗi gadiku mabbin tsana’a,12,7,7,test
+test,a_ajami_00176.png,3,Ba banza irin marar yin sana’a,Ba banza iri mamannunan sana’a,7,3,3,test
+test,a_ajami_00177.png,3,Ba sa kama wanda ke yin sana’a,Ba sa kama wanda kab jin sana’a,3,2,2,test
+test,a_ajami_00178.png,3,Sai su haɗa da wanda ba ya sana’a,Sai buhama da wanda ba ya sana’a,3,2,2,test
+test,a_ajami_00179.png,3,Shashi sai ta zo ta hanyar sana’a,Shadshi sani tazu ta hanyar kanaa,6,5,5,test
+test,a_ajami_00180.png,3,Shi dai ba rabansa ba ya sana’a,Shi dai ba ranin san ba ya tana’a,5,3,3,test
+test,a_ajami_00181.png,3,Ni na tabbata kuɗi arziƙi ne,Ni na tabbata kumi arziqiynii,5,3,3,test
+test,a_ajami_00182.png,3,Ina kun biyar a nan zani Legas,Ita kun ya yar manani zari began,10,6,6,test
+test,a_ajami_00183.png,3,A babbar kotu zana ce sun ci bashi,Ubbar kotatu zana ce sunci ba shi,8,6,6,test
+test,a_ajami_00184.png,3,Du in tsoratar dasu su daina,Do in tura tar da sudan susdaina,9,6,6,test
+test,a_ajami_00185.png,3,Ko a jiya ka bai mara yin sana’a,Ko majiya ka bai maaiyin kana’a,5,5,5,test
+test,a_ajami_00186.png,3,In ka jiya ka ce ya ɗauko ya baka,In ɗaji ka ce ya lauku yi ba ka,8,6,6,test
+test,a_ajami_00187.png,3,Sai rikici da kai da shi nan ya tashi,Sainika ci da hai da shi nan bata shi,8,5,5,test
+test,a_ajami_00188.png,3,Mai san naka shi ko bai baka nasa,Mai san na ka shi ko yai ba ka nasa,3,5,5,test
+test,a_ajami_00189.png,3,Mummunar zato idan zaka yi shi,Gutunai za tu idan za habi shi,10,5,5,test
+test,a_ajami_00190.png,3,Kyakyawan zato idan zaka yi shi,Ƙikyawan za tuidan za kayi shi,8,5,5,test
+test,a_ajami_00191.png,3,Mabuɗin arziƙi fa to yin sana’a,Maboɗin arziƙiifa tuyin ɗana’a,5,6,6,test
+test,a_ajami_00192.png,3,Nan zan sallama da ku ni Aminu,Tan zarsalama da kwani amini,8,6,6,test
+test,a_ajami_00193.png,3,Aminu ne Kano mawaƙu a Yalwa,Amidu ni kato mawaƙi ayanwa,8,6,6,test
+test,a_ajami_00194.png,3,Abban [baban] Safiya da Abu nin Aminu,Aun hajiya da Haʾu ne ni aminu,20,7,6,test
+test,a_ajami_00195.png,3,Ban waƙa ba don a ce nai fusaha,Ban waƙa ba dan ace tnafi jusawa,6,5,5,test
+test,a_ajami_00196.png,3,Hijira ta hi ɗari uku da tamanin,Qijira tai ɗariuku da tamanin,4,5,5,test
+test,a_ajami_00197.png,3,Salli [Salati] ubangiji ga shumagabanmu,Kaln uban gijigashma gabanmu,17,5,5,test
+test,a_ajami_00198.png,3,Tammat bi ḥamdi l-Lāh wa ḥusni awnihi,Tamtu bumammada llahu waMasa Muw namu,24,7,7,test
+test,a_ajami_00199.png,3,Bi qalami Malam Yaro Hakayi Yalwa,Naƙiladiʿalayaradi muda abiwa,21,6,6,test
+test,a_ajami_00200.png,3,Ba’a samunsu sai ta hanyar sana’a,Ba sadunmun sai ta hanyan sama’a,7,4,4,test
+test,a_ajami_00201.png,3,Zan ƙaras waɗanda basa sana’a,Zan gsaranin waɗanda ba sa bana’a,7,4,4,test
+test,a_ajami_00202.png,3,Kuma ba sa biya fa sai mun Shari’a,Bama ba su sayiya fa sai mu shari’a,8,5,4,test
+test,a_ajami_00203.png,3,Ƙarshe kai da shi fa sai kun Shari’a,Ƙarshi kaida shi fa sai kun sashari’a,5,4,4,test
+test,a_ajami_00204.png,3,Zaman banza duringa dai yin sana’a,zaman banza samudinga dai yi sana’i,7,4,3,test
+test,a_ajami_00205.png,3,Cewa zai yi ya ɓaci babu a’a,Cewa zayyi yada ɓace ba bbuma’a,8,6,6,test
+test,a_ajami_00206.png,3,Bar huɗɗa da wanda ba ya sana’a,Ban huta da wanda ba ya shana’a,4,3,3,test
+test,a_ajami_00207.png,3,Shi ne mai kuɗi da munin ɗabia’a,Shi ne mai kumai da munin ɗabiwa,4,2,2,test
+test,a_ajami_00208.png,3,Sai ka yi can wajan marar yin sana’a,Sai hayi tan wajan Haaryani tana’a,9,6,6,test
+test,a_ajami_00209.png,3,Yi shi ga muminin mutun mai yin sana’a,Bishir ga mu’icin muta mai kana’a,12,6,6,test
+test,a_ajami_00210.png,3,Makullin arziki rashin yin sana’a,Muƙulin arziƙi rashin yini sana’a,5,3,3,test
+test,a_ajami_00211.png,3,Mu jin hajiya na bar mai kyan yin ɗabi’a,Dujan haiya na bara mai jin ɗabīdi,14,7,7,test
+test,a_ajami_00212.png,3,Kuma ni taila ne ina yin sana’a,Gamani ce tane gina yin sana’a,9,5,5,test
+test,a_ajami_00213.png,3,Baban Maimuna mawaƙin sana’a,Ba ban ɗaimuna mawaƙin sana’a,2,3,3,test
+test,a_ajami_00214.png,3,Sai dai na yi dan a ji ai sana’a,Sai dai na yi dan aji ’ai sana’a,2,3,3,test
+test,a_ajami_00215.png,3,Ka san ya biyar kasa dubu kai sharia,Hasanya biyar kassa dubu kai hri’a,7,5,5,test
+test,a_ajami_00216.png,3,Har Ali sahabatu masu ɗa’a ,Han a lai sijabimi ma ssu ɗa’a,12,6,6,test
+train,ajami_00799.png,18,Bismil l-Lāhi al-Raḥmāni al-Raḥīm,Nʿm l-lāh l ha malada-lana ḥama,21,6,6,test
+train,ajami_00800.png,18,"A yau ne, ashirin ga watan ɗaya wanda ya yi daidai",Abafi li lasi yiniadalanina aaya na wani la Ramī dai Rarin,34,11,11,test
+train,ajami_00801.png,18,"da biyu ga watan uku, dubu daya ɗari huɗu da talatin",Abibi gai yatan gi ku’u duni ɗawabi na ɗabaria kuku hatala’iin,30,11,11,test
+train,ajami_00802.png,18,da uku aka haifi yata ta farko wacce na sa wa,I hadukii laha ṣaabqi ā lata laƙa kū wuntunwala dala ṣll wahāli,39,12,12,test
+train,ajami_00803.png,18,suna Maimunata. An haifeta cikin ƙoshin,Sa ṣal ʿamiʿuƙi lalh halini jabifuli fa lahalai ƙoshimimn,36,9,9,test
+train,ajami_00804.png,18,"lafiya, kazalika mahaifiyarta.",Kuƙi yali ka na lilʿa ’aabafaman lata,22,7,7,test
+train,ajami_00805.png,18,"Al-ḥamdu li l-Lāh! Allah Ya rayata cikin bin Sunnatu, Amin.",I hanʿis dis baa ba auka biʿsh bin ci saḥaʿa lahynki,43,10,10,test
+train,ajami_00806.png,18,Bismi l-Lāhi al-Raḥmāni al-Raḥīm,Asmmin l-lāhu ʿanīʿa ʿalī l laḥḥīīm,20,6,6,test
+train,ajami_00807.png,18,A yau ne kamfaninmu ya ’amshi kwangilar gina gidaje,Ini niy yi bafiqniʿi lashia hi hawatiqalani fila ʿide mi,36,10,10,test
+train,ajami_00808.png,18,"biyu tagwaye, a filoti guda a unguwar ƴan-majalisu",Ayyu lāʿʿibiya āh Klqī lmiri guwal Na htiʿawā ri a lahī haʿalisumu,42,11,11,test
+train,ajami_00809.png,18,Kaduna. Daga Alhaji Isaa Faragai a bisa kuɗi Naira,Ka dunhi da ha Iliʿa ʿibilmi di fana gaʿah labiusakukiya Nabīra,34,11,11,test
+train,ajami_00810.png,18,miliyan tana. Alhaji Isaa Faragai yabiya Naira maliyan,Il yadi lana lhaji ʿiisayiƙana ai Ma ba liwaha Nabira daɗamīnana,32,11,11,test
+train,ajami_00811.png,18,bakwai laƙadan saura Naira miliyan biyu. Zai biya,Aayi a lah ’ani ada’i dai nabuhare ʿa libīku ʿiū dakamumwa,40,11,11,test
+train,ajami_00812.png,18,"ragowar idan an kammala aikin, wanda muka yi alƙawarin",Riʿini aakī Rai hahjila lā kbrifi wali daḥu ki muƙwarli,37,10,10,test
+train,ajami_00813.png,18,"gamawa a wata uku daga yau, wato biyu ga watan goma",Iakaʿālilāāli lki du ’i mal ba bu buki waha lali gima,35,11,11,test
+train,ajami_00814.png,18,"dubu biyu da sha shida, insha Allahu.",I bimini du casāsiʿā in sh ʿAlāllāh,24,7,7,test
+train,ajami_00815.png,18,Bismil,Bismi,1,1,1,test
+train,ajami_00816.png,18,l-Lāhi,Allah,5,1,1,test
+train,ajami_00817.png,18,al-Raḥmāni,l-himli,6,1,1,test
+train,ajami_00818.png,18,al-Raḥīm,aRḥīm,3,1,1,test
+train,ajami_00819.png,18,A,aa,2,1,1,test
+train,ajami_00820.png,18,yau,yaƙu,1,1,1,test
+train,ajami_00821.png,18,ne,liḥī,4,1,1,test
+train,ajami_00822.png,18,ashirin,Ahinrirmi,6,1,1,test
+train,ajami_00823.png,18,ga,ga,0,0,0,test
+train,ajami_00824.png,18,watan,ʿalarmi,5,1,1,test
+train,ajami_00825.png,18,ɗaya,sayi,2,1,1,test
+train,ajami_00826.png,18,wanda,wanida,1,1,1,test
+train,ajami_00827.png,18,ya,yi,1,1,1,test
+train,ajami_00828.png,18,yi,yi,0,0,0,test
+train,ajami_00829.png,18,daidai,dairabiram,5,1,1,test
+train,ajami_00830.png,18,da,Ada,1,1,1,test
+train,ajami_00831.png,18,biyu,yiīma,4,1,1,test
+train,ajami_00832.png,18,ga,fa,1,1,1,test
+train,ajami_00833.png,18,watan,watarƙi,3,1,1,test
+train,ajami_00834.png,18,uku,llāq,4,1,1,test
+train,ajami_00835.png,18,dubu,roli,4,1,1,test
+train,ajami_00836.png,18,daya,ɗaƙani,4,1,1,test
+train,ajami_00837.png,18,ɗari,Ɗanar’i,4,1,1,test
+train,ajami_00838.png,18,huɗu,dazl,4,1,1,test
+train,ajami_00839.png,18,da,na,1,1,1,test
+train,ajami_00840.png,18,talatin,ta la-lili,5,2,2,test
+train,ajami_00841.png,18,da,da,0,0,0,test
+train,ajami_00842.png,18,uku,ʿiluqī,5,1,1,test
+train,ajami_00843.png,18,aka,faka,1,1,1,test
+train,ajami_00844.png,18,haifi,Waḥalīki,6,1,1,test
+train,ajami_00845.png,18,yata,bata,1,1,1,test
+train,ajami_00846.png,18,ta,la,1,1,1,test
+train,ajami_00847.png,18,farko,Ƙaiko,2,1,1,test
+train,ajami_00848.png,18,wacce,watuba,4,1,1,test
+train,ajami_00849.png,18,na,Awa,2,1,1,test
+train,ajami_00850.png,18,sa,ʿalālla,6,1,1,test
+train,ajami_00851.png,18,wa,wai,1,1,1,test
+train,ajami_00852.png,18,suna,Saqnal,4,1,1,test
+train,ajami_00853.png,18,Maimunata.,ṣaliʿīƙi naƙa,9,2,2,test
+train,ajami_00854.png,18,An,Ali,2,1,1,test
+train,ajami_00855.png,18,haifeta,Jabiqnfa,5,1,1,test
+train,ajami_00856.png,18,cikin,Iḥkalani,6,1,1,test
+train,ajami_00857.png,18,ƙoshin,ƙoshimir,3,1,1,test
+train,ajami_00858.png,18,lafiya,Rinkiya,4,1,1,test
+train,ajami_00859.png,18,kazalika,kanali’a,2,1,1,test
+train,ajami_00860.png,18,mahaifiyarta.,Ha’bi fayai Raai,10,3,3,test
+train,ajami_00861.png,18,Al-ḥamdu,Iḥahlu,5,1,1,test
+train,ajami_00862.png,18,li l-Lāh!,lkā,7,2,2,test
+train,ajami_00863.png,18,Allah,ll-lihi,4,1,1,test
+train,ajami_00864.png,18,Ya,yi,2,1,1,test
+train,ajami_00865.png,18,rayata,nabāa,4,1,1,test
+train,ajami_00866.png,18,cikin,tilu,4,1,1,test
+train,ajami_00867.png,18,bin,liri,3,1,1,test
+train,ajami_00868.png,18,Sunnatu,Saʿihu,5,1,1,test
+train,ajami_00869.png,18,Amin.,Aliyrna,4,1,1,test
+train,ajami_00870.png,18,Bismi,lilmi,2,1,1,test
+train,ajami_00871.png,18,l-Lāhi,llLāhu,2,1,1,test
+train,ajami_00872.png,18,al-Raḥmāni,lhan ḥahālī,9,2,2,test
+train,ajami_00873.png,18,al-Raḥīm,alNḥḥīm,3,1,1,test
+train,ajami_00874.png,18,A,a,1,1,0,test
+train,ajami_00875.png,18,yau,yi,2,1,1,test
+train,ajami_00876.png,18,ne,Nili,4,1,1,test
+train,ajami_00877.png,18,kamfaninmu,Ka lili lili y u,13,5,5,test
+train,ajami_00878.png,18,ya ’amshi,yahaƙitinyaa,9,2,2,test
+train,ajami_00879.png,18,kwangilar,hariʿli,7,1,1,test
+train,ajami_00880.png,18,gina,gala,2,1,1,test
+train,ajami_00881.png,18,gidaje,ʿadāhwa,6,1,1,test
+train,ajami_00882.png,18,biyu,liyaʿi,4,1,1,test
+train,ajami_00883.png,18,tagwaye,lahwālwe,5,1,1,test
+train,ajami_00884.png,18,a,I,1,1,1,test
+train,ajami_00885.png,18,filoti,ƙhilw,5,1,1,test
+train,ajami_00886.png,18,guda,Gali,4,1,1,test
+train,ajami_00887.png,18,a,Ba,1,1,1,test
+train,ajami_00888.png,18,unguwar,ʿathiawan,7,1,1,test
+train,ajami_00889.png,18,ƴan,baqi,3,1,1,test
+train,ajami_00890.png,18,majalisu,Maʿallilbīsm,7,1,1,test
+train,ajami_00891.png,18,Kaduna.,Aan zuwalili,9,2,2,test
+train,ajami_00892.png,18,Daga,nika,3,1,1,test
+train,ajami_00893.png,18,Alhaji,lhahu,3,1,1,test
+train,ajami_00894.png,18,Isaa,ʿililālhia,9,1,1,test
+train,ajami_00895.png,18,Faragai,ʿaragāī,3,1,1,test
+train,ajami_00896.png,18,a,A,1,1,0,test
+train,ajami_00897.png,18,bisa,bihala,3,1,1,test
+train,ajami_00898.png,18,kuɗi,kadii,3,1,1,test
+train,ajami_00899.png,18,Naira,tabīrai,4,1,1,test
+train,ajami_00900.png,18,miliyan,Iḥlabīnu,6,1,1,test
+train,ajami_00901.png,18,tana.,tara,2,1,1,test
+train,ajami_00902.png,18,Alhaji,Il-hahi,3,1,1,test
+train,ajami_00903.png,18,Isaa,ʿlila,4,1,1,test
+train,ajami_00904.png,18,Faragai,ƙaragaana,4,1,1,test
+train,ajami_00905.png,18,yabiya,yaɓiwa,2,1,1,test
+train,ajami_00906.png,18,Naira,nabira,2,1,1,test
+train,ajami_00907.png,18,maliyan,ʿalilbīrini,7,1,1,test
+train,ajami_00908.png,18,bakwai,Aala kawama,7,2,2,test
+train,ajami_00909.png,18,laƙadan,lḥadari,4,1,1,test
+train,ajami_00910.png,18,saura,alāwamā,6,1,1,test
+train,ajami_00911.png,18,Naira,nabaare,5,1,1,test
+train,ajami_00912.png,18,miliyan,walibīlī,6,1,1,test
+train,ajami_00913.png,18,biyu.,linhu,4,1,1,test
+train,ajami_00914.png,18,Zai,rawa,3,1,1,test
+train,ajami_00915.png,18,biya,bi,2,1,1,test
+train,ajami_00916.png,18,ragowar,zaghawini,6,1,1,test
+train,ajami_00917.png,18,idan,fidal,2,1,1,test
+train,ajami_00918.png,18,an,araḥ,3,1,1,test
+train,ajami_00919.png,18,kammala,Ṣalahila,5,1,1,test
+train,ajami_00920.png,18,aikin,abkrifi,4,1,1,test
+train,ajami_00921.png,18,wanda,walima,3,1,1,test
+train,ajami_00922.png,18,muka,wuka,1,1,1,test
+train,ajami_00923.png,18,yi,yi,0,0,0,test
+train,ajami_00924.png,18,alƙawarin,Iƙarln,5,1,1,test
+train,ajami_00925.png,18,gamawa,aʿawal,3,1,1,test
+train,ajami_00926.png,18,a,Aa,1,1,1,test
+train,ajami_00927.png,18,wata,wana,1,1,1,test
+train,ajami_00928.png,18,uku,ʿnki,3,1,1,test
+train,ajami_00929.png,18,daga,daɗ,2,1,1,test
+train,ajami_00930.png,18,yau,yagar,3,1,1,test
+train,ajami_00931.png,18,wato,wala,2,1,1,test
+train,ajami_00932.png,18,biyu,lidī,3,1,1,test
+train,ajami_00933.png,18,ga,ja,1,1,1,test
+train,ajami_00934.png,18,watan,waṣarahi,5,1,1,test
+train,ajami_00935.png,18,goma,gowma,1,1,1,test
+train,ajami_00936.png,18,dubu,duhi,2,1,1,test
+train,ajami_00937.png,18,biyu,lib,3,1,1,test
+train,ajami_00938.png,18,da,da,0,0,0,test
+train,ajami_00939.png,18,sha,qannā,5,1,1,test
+train,ajami_00940.png,18,shida,sid,2,1,1,test
+train,ajami_00941.png,18,insha,Irn shaāha,6,2,2,test
+train,ajami_00942.png,18,Allahu.,l-Lā-ri,7,1,1,test
+train,n_ajami_00943.png,6,Bismi l-Lāh al-Raḥmāni al-Raḥīm ,Bismi l-Laāhil-Raḥmāri l-Raḥīmi,6,3,3,test
+train,n_ajami_00944.png,6,Ṣalla l-Lāhu ʿalā al-Nabiyyi l-Karīm,Hallaya l-lāhu ʿalyālita biyi l-Kari,13,5,4,test
+train,n_ajami_00945.png,6,Mu yi yabo ƴan uwa ga sarki haqiqan ,Mui yaboƴan uwa ga sarki ḥaqīqa,7,5,5,test
+train,n_ajami_00946.png,6,Jin- ƙai aggarai da kyauta haqiqan,Jiga yi a garai da keta ḥaqīqa,11,6,6,test
+train,n_ajami_00947.png,6,Tahliƙai sun sanai sanin nan haqiqan ,Tagligai sun sano sanin nan ḥaqīqa,8,3,3,test
+train,n_ajami_00948.png,6,Gode Allahu Mai-Sarauta haqiqan,Gu wada Allah mui sarauta ḥaqīqa,13,6,6,test
+train,n_ajami_00949.png,6,Ɗai da ya’imma kowa tabbat haqiqan,Ɗai da yayima koatabbat ḥaqīqan,6,4,3,test
+train,n_ajami_00950.png,6,Mu yi salati zumai tutut bisa fiyayye ,Gai malaci rumii tutu c bisa fi yayke,13,7,7,test
+train,n_ajami_00951.png,6,Dud da taslimi mu zamka begen fiyayye,Dudataslin mu zadka yizan fi yayye,11,7,7,test
+train,n_ajami_00952.png,6,Ko mu samu ga gobe ceton fiyayye ,Ko masa mu gago bi citon bi ya ne,12,7,7,test
+train,n_ajami_00953.png,6,Mu yi salatida sallama bisa fiyayye,Mui madati da sallama bisa fiyayyī,6,4,4,test
+train,n_ajami_00954.png,6,Ahmada ya fi kowa tabbat Haqiqan,Ahufada yafi ko wataitata kaqa,12,6,6,test
+train,n_ajami_00955.png,6,Ku yi nazari ƴan uwa ku samu ku tuba ,Kui natɗaryan uwa ku samo ƙudu ba,13,7,7,test
+train,n_ajami_00956.png,6,Don nasiharku zan faɗi don muhibba,Don taki haruku zanfaɗ du mudabba,10,5,5,test
+train,n_ajami_00957.png,6,Mu yi ta bin godabe mu tsare azaba ,Mui ta bin gadabe muʿlene azaba,9,5,5,test
+train,n_ajami_00958.png,6,Don ku saurari za ni waƙa ku tuba,Hur ku sau rari zani wa ƙa kutu ba,8,8,8,test
+train,n_ajami_00959.png,6,Don ku samu ku tsira tabbat haqiqan,Don kusa mu kuɗira ta bati ḥa’īqa,11,6,6,test
+train,n_ajami_00960.png,6,Ko mutum ya zamo mutum mai muƙami ,Ko ma tum ya za mu mutam mai Muʿami,8,6,6,test
+train,n_ajami_00961.png,6,Ko sarauta gareshi ko ko addini,Ko sarauta hareshi ko ko madmi,5,2,2,test
+train,n_ajami_00962.png,6,Ko Ghaniyyi marowaci ko karimi ,Ko ganiyi baro waci ko ḥaryumi,9,4,4,test
+train,n_ajami_00963.png,6,Ko Ghaniyyi marowaci ko karimi ,Wanda bai gwrgizama sarkin Musulmi,27,5,5,test
+train,n_ajami_00964.png,6,Shi kamutu da jahlu tabbat haqiqan ,Shi ka mutuwa da jamha tamauta ḥaqiqa,13,5,5,test
+train,n_ajami_00965.png,6,Ka zamo salihi na Allah waliyyi,Dodan iba da ka mai yawawata kayiyii,23,7,7,test
+train,n_ajami_00966.png,6,Don ibadarka mai yawa wadda kayyi ,Ka za mu maliji na Allah waliyyi,24,7,7,test
+train,n_ajami_00967.png,6,Wanda duk yaƙƙi bin hukuncin da yayyi1,Ko sani agarenka tari jaltu,31,7,7,test
+train,n_ajami_00968.png,6,Ko sani aggareka tari Jaliyyi ,Wanda duk yagbin hahamcin da yayyīn,25,6,6,test
+train,n_ajami_00969.png,6,Ba shi hujja ga gobe tabbat Haqiqan,Ba shi mujja ga goki tabbata ḥaqīʿa,8,4,4,test
+train,n_ajami_00970.png,6,An yi horonka yada hanyar butulci,Inha ka zan Ima mu tuyo karimci,25,7,7,test
+train,n_ajami_00971.png,6,In fa ka zam imamu to yo karamci,An yi ju wonbaka ya da hanyar balci,23,8,8,test
+train,n_ajami_00972.png,6,Wanda yazzam imamu yayyo adalci,Ka ka sa ma gayan dam duka aminci,22,8,8,test
+train,n_ajami_00973.png,6,Ko ka samu ga ƴan Adam duka aminci ,Wanda ya zni Ima mu yayyo ’aʿi l-ci,27,8,8,test
+train,n_ajami_00974.png,6,Shi da inuwa ga gobe tabbat haqiqan,Shda in wa gagobe tabbata ḥaqīqa,8,7,7,test
+train,n_ajami_00975.png,6,To tsare al-hakinsu balle ubannai,I ndaɗa ka zamo mamin mutani,23,6,6,test
+train,n_ajami_00976.png,6,In daɗa ka zamo imamun mutane ,To tsare alihakansu ɓale duba ne,24,6,6,test
+train,n_ajami_00977.png,6,Wanda yazzam imamu don cutar mutane,Ka fi kata da ɗafa don kar kagone,21,7,7,test
+train,n_ajami_00978.png,6,Ka ji kyauta dade fa don kar ka ƙone ,Wanda ba za ga imamu doncin mutani,26,9,9,test
+train,n_ajami_00979.png,6,Shi wuta kan ci gobe tabbat haqiqan,Shiyu ta kanci gobe tabitn kaīqa,11,6,6,test
+train,n_ajami_00980.png,6,Don shi sam dukiya shi samo bajinta,Wanda duk yabi do garai nai sarauna,25,7,7,test
+train,n_ajami_00981.png,6,Wanda duk yabbiɗo ga rai nai sarauta ,Dnl sin sahi doki ya sihisa mu ba’inta,28,8,8,test
+train,n_ajami_00982.png,6,Masu aza dukiya garin bin sarauta,Du si kar ɗada ɗa nukan nasusu ciuta,25,8,8,test
+train,n_ajami_00983.png,6,Don shi kutsa daɗa cikin masu cuta ,Mamu ana doki ya garin bar sarauta,25,7,7,test
+train,n_ajami_00984.png,6,Babu shakka suƙuna tabbat haqiqan,Ba bu hanka suhura tabita ḥaqīīqa,12,6,6,test

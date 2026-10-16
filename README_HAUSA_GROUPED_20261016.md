@@ -131,7 +131,17 @@ Les poids sont publiés sur
 et dans une [release GitHub](https://github.com/IX-World/OCR-AJAMI-Hausa/releases/tag/v9-hausa-all-grouped-20261016).
 Le nom du dépôt HF conserve la date initialement prévue, tandis que la fiche
 documente l'entraînement réel du 16 octobre et le split de 5 573 images valides.
-Les autres modèles seront publiés après leurs entraînements et évaluations réels.
+La **V10 est également entraînée** : 54 époques, checkpoint CER retenu à l'époque 39.
+Test : CER **34,8801 %**, WER **79,7758 %**, UWER **79,2398 %**.
+Le [README V10](models/v10_all_grouped_20261016/README.md),
+les [valeurs des 54 époques](models/v10_all_grouped_20261016/EPOCHS.md)
+et le [diagnostic du WER](models/v10_all_grouped_20261016/WER_ANALYSIS.md)
+documentent aussi le fort écart train/test. Les poids sont disponibles sur
+[HF V10](https://huggingface.co/IntelligenceResearchLab/Hausa-OCR-AJAMI-v10-20261015)
+et dans la [release V10](https://github.com/IX-World/OCR-AJAMI-Hausa/releases/tag/v10-hausa-all-grouped-20261016).
+V11 reprend la configuration V10 et ajoute un canal d'encre locale ; aucune
+amélioration n'est annoncée avant son évaluation. Les autres modèles seront
+publiés après leurs entraînements et évaluations réels.
 Les scripts HF/GitHub refusent un protocole partageant les manuscrits ou écartant
 une partie du corpus valide. Le code et les commits GitHub sont attribués à
 **IX-World**. V13 reste une proposition.

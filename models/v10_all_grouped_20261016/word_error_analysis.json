@@ -1,0 +1,55 @@
+{
+  "method": "Levenshtein word alignment; deterministic tie-break correct, substitution, deletion, insertion. Counts for S/D/I are one optimal alignment, not a linguistic annotation.",
+  "partitions": {
+    "train": {
+      "strict": {
+        "correct": 10656,
+        "reference_words": 10657,
+        "substitutions": 1
+      },
+      "normalized": {
+        "correct": 10656,
+        "reference_words": 10657,
+        "substitutions": 1
+      },
+      "wer": 9.38350380031904e-05,
+      "uwer": 9.38350380031904e-05
+    },
+    "validation": {
+      "strict": {
+        "substitutions": 347,
+        "reference_words": 447,
+        "correct": 74,
+        "deletions": 26,
+        "insertions": 21
+      },
+      "normalized": {
+        "substitutions": 341,
+        "reference_words": 447,
+        "correct": 80,
+        "deletions": 26,
+        "insertions": 21
+      },
+      "wer": 0.8814317673378076,
+      "uwer": 0.8680089485458613
+    },
+    "test": {
+      "strict": {
+        "substitutions": 1302,
+        "reference_words": 2052,
+        "insertions": 140,
+        "correct": 555,
+        "deletions": 195
+      },
+      "normalized": {
+        "substitutions": 1291,
+        "reference_words": 2052,
+        "insertions": 140,
+        "correct": 566,
+        "deletions": 195
+      },
+      "wer": 0.7977582846003899,
+      "uwer": 0.7923976608187134
+    }
+  }
+}

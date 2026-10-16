@@ -1,0 +1,80 @@
+{
+  "partition": "validation",
+  "samples": 6,
+  "selection": "Six width quantiles of the first 24 validation segments; no test inference; no model changes. CPU comparison, one image at a time with either its own width or the original evaluation batch maximum width.",
+  "checkpoint_sha256": "617cd6c6a6b12503d4fd9d5541a6ec02943f1310fd70c43b447b3aaf44863357",
+  "records": [
+    {
+      "file_name": "ajami_00155.png",
+      "reference": "ce",
+      "width": 55,
+      "padded_width": 184,
+      "published_prediction": "ce",
+      "prediction_padded": "ce",
+      "prediction_single": "ce",
+      "padding_changes_prediction": false,
+      "word_errors_padded": 0,
+      "word_errors_single": 0
+    },
+    {
+      "file_name": "ajami_00163.png",
+      "reference": "duk",
+      "width": 72,
+      "padded_width": 184,
+      "published_prediction": "duk",
+      "prediction_padded": "duk",
+      "prediction_single": "Duk",
+      "padding_changes_prediction": true,
+      "word_errors_padded": 0,
+      "word_errors_single": 1
+    },
+    {
+      "file_name": "ajami_00156.png",
+      "reference": "da",
+      "width": 79,
+      "padded_width": 184,
+      "published_prediction": "mu",
+      "prediction_padded": "mu",
+      "prediction_single": "mu",
+      "padding_changes_prediction": false,
+      "word_errors_padded": 1,
+      "word_errors_single": 1
+    },
+    {
+      "file_name": "ajami_00166.png",
+      "reference": "ka",
+      "width": 96,
+      "padded_width": 184,
+      "published_prediction": "ka",
+      "prediction_padded": "ka",
+      "prediction_single": "ka",
+      "padding_changes_prediction": false,
+      "word_errors_padded": 0,
+      "word_errors_single": 0
+    },
+    {
+      "file_name": "ajami_00152.png",
+      "reference": "kallonka",
+      "width": 108,
+      "padded_width": 184,
+      "published_prediction": "I’inka",
+      "prediction_padded": "I’inka",
+      "prediction_single": "I’inka",
+      "padding_changes_prediction": false,
+      "word_errors_padded": 1,
+      "word_errors_single": 1
+    },
+    {
+      "file_name": "ajami_00162.png",
+      "reference": "makhlūqāti",
+      "width": 184,
+      "padded_width": 184,
+      "published_prediction": "duklūƙāt",
+      "prediction_padded": "duklūƙāt",
+      "prediction_single": "duklūƙāt",
+      "padding_changes_prediction": false,
+      "word_errors_padded": 1,
+      "word_errors_single": 1
+    }
+  ]
+}
