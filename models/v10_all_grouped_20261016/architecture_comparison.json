@@ -1,0 +1,41 @@
+{
+  "classes": 80,
+  "versions": {
+    "v10": {
+      "input_channels": 1,
+      "cnn_convolutions": 6,
+      "parameters": 6108112,
+      "cnn_dropout": [],
+      "lstm_layers": 2,
+      "lstm_hidden_per_direction": 256,
+      "lstm_dropout": 0.2,
+      "batch_size": 24,
+      "training_views": 39776
+    },
+    "v11": {
+      "input_channels": 2,
+      "cnn_convolutions": 6,
+      "parameters": 6108688,
+      "cnn_dropout": [],
+      "lstm_layers": 2,
+      "lstm_hidden_per_direction": 256,
+      "lstm_dropout": 0.2,
+      "batch_size": 24,
+      "training_views": 39776
+    },
+    "v12": {
+      "input_channels": 2,
+      "cnn_convolutions": 9,
+      "parameters": 7621840,
+      "cnn_dropout": [
+        0.05
+      ],
+      "lstm_layers": 2,
+      "lstm_hidden_per_direction": 256,
+      "lstm_dropout": 0.2,
+      "batch_size": 20,
+      "training_views": 39776
+    }
+  },
+  "note": "Structural comparison of current code; not an experimental result or proof of improved accuracy."
+}
