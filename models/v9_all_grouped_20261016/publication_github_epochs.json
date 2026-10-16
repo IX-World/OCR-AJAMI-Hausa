@@ -1,0 +1,37 @@
+{
+  "author": "IX-World",
+  "repository": "IX-World/OCR-AJAMI-Hausa",
+  "release_url": "https://github.com/IX-World/OCR-AJAMI-Hausa/releases/tag/v9-hausa-all-grouped-20261016",
+  "tag": "v9-hausa-all-grouped-20261016",
+  "target_commit": "8029efc570117bd9c9823a3a70ad4151de76d2de",
+  "asset_url": "https://github.com/IX-World/OCR-AJAMI-Hausa/releases/download/v9-hausa-all-grouped-20261016/hausa-v9-all-grouped-20261016-epochs.zip",
+  "asset_sha256": "b6eb4b2d37aa8131d5b8c411313024e84d55533093593841f95af5e93ee72de4",
+  "asset_bytes": 68877839,
+  "additional_assets": [
+    {
+      "asset_url": "https://github.com/IX-World/OCR-AJAMI-Hausa/releases/download/v9-hausa-all-grouped-20261016/history.csv",
+      "asset_sha256": "e1a84013c633a8117cd2791838f03e6becc955782d56480d16337321b78e06b3",
+      "asset_bytes": 9940
+    },
+    {
+      "asset_url": "https://github.com/IX-World/OCR-AJAMI-Hausa/releases/download/v9-hausa-all-grouped-20261016/epochs.json",
+      "asset_sha256": "795f5469ccdfda82e9252ba7d6a7fda56e3331c289038a162f1343f823ab8437",
+      "asset_bytes": 26375
+    },
+    {
+      "asset_url": "https://github.com/IX-World/OCR-AJAMI-Hausa/releases/download/v9-hausa-all-grouped-20261016/EPOCHS.md",
+      "asset_sha256": "e2ae56062d2c8a4eea2b49a37009f8a4342983208f0f1bfa849b5ccc36bef1bc",
+      "asset_bytes": 9877
+    },
+    {
+      "asset_url": "https://github.com/IX-World/OCR-AJAMI-Hausa/releases/download/v9-hausa-all-grouped-20261016/training_curves.png",
+      "asset_sha256": "1830026f76e22e0316b9440682220b71cfff0da4f74f8080adf597f087f398d3",
+      "asset_bytes": 307456
+    },
+    {
+      "asset_url": "https://github.com/IX-World/OCR-AJAMI-Hausa/releases/download/v9-hausa-all-grouped-20261016/training_curves.svg",
+      "asset_sha256": "ac4560c20d7655ad8e877d13bc91cf3f208d94bf55969741f16b1a68aeb4696d",
+      "asset_bytes": 85185
+    }
+  ]
+}
