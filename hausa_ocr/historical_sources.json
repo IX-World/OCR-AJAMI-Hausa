@@ -1,0 +1,14 @@
+{
+  "v9": {
+    "file": "train_hausa_ctc_v9_dynamic_aug.py",
+    "sha256": "f81af7d3d08bbaf68e79216ca14a5a81cc2428b2a4a3d822e857774ef3790610"
+  },
+  "v10": {
+    "file": "train_hausa_ctc_v10_nouveau_92_3_5.py",
+    "sha256": "b88a7b904f9311825b4607fb459e1bf927034d3c60fdfd98bf5b2cd45318993a"
+  },
+  "v12": {
+    "file": "train_hausa_ctc_v12_deepcnn_92_3_5.py",
+    "sha256": "9f967043565020f906b52481de5f82717dcfc9beea9ad794f6f0ab080ebc98ce"
+  }
+}

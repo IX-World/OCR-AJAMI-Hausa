@@ -1,4 +1,16 @@
-# OCR AJAMI Hausa — V7
+# OCR AJAMI Hausa — IX-World
+
+## Nouvelle campagne V9 / V10 / V11 / V12 — 15 octobre 2026
+
+Les commandes locales, corrections du dataset, configurations et procédures
+de publication sont détaillées dans [README_HAUSA_20261015.md](README_HAUSA_20261015.md).
+Le split commun conserve les **400 exemples du test public** à part ; les
+5 173 exemples publics de train nettoyés donnent **4 656 train / 517 validation**.
+Les architectures et augmentations sont documentées, les résultats et README
+de chaque modèle seront générés uniquement après les entraînements locaux.
+**V13 reste une proposition, sans modèle implémenté ni résultat annoncé.**
+
+Les éléments ci-dessous documentent les expériences historiques.
 
 ## Modèle V10 entraîné et publication Hugging Face
 

@@ -1,0 +1,49 @@
+name: IX-World - Publier un modele Hausa evalue
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: GitHub Release contenant le package ZIP issu du train local
+        required: true
+        type: string
+      asset_name:
+        description: Nom exact de l'archive, par exemple hausa-v9-20261015.zip
+        required: true
+        type: string
+      hf_repo:
+        description: Depot cible HF, par exemple IntelligenceResearchLab/Hausa-OCR-AJAMI-v9-20261015
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: publish-hausa-${{ inputs.hf_repo }}
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            hausa_ocr
+            .github
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Installer les outils de publication
+        run: python -m pip install huggingface_hub==1.31.0 Pillow==12.3.0
+      - name: Recuperer le package de la release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          ASSET_NAME: ${{ inputs.asset_name }}
+        run: |
+          gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern "$ASSET_NAME" --dir artifact
+          python .github/scripts/unpack_hausa.py artifact package
+      - name: Verifier puis publier sur Hugging Face
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          TARGET_REPO: ${{ inputs.hf_repo }}
+        run: python publish_hausa.py publish --package package --repo "$TARGET_REPO"

@@ -1,0 +1,18 @@
+[
+  {
+    "row": {
+      "file_name": "a_ajami_03400.png",
+      "transcript": "da",
+      "source": "8"
+    },
+    "reason": "identical_pixels_with_conflicting_labels_user_requested_exclusion"
+  },
+  {
+    "row": {
+      "file_name": "a_ajami_03401.png",
+      "transcript": "mutane",
+      "source": "8"
+    },
+    "reason": "identical_pixels_with_conflicting_labels_user_requested_exclusion"
+  }
+]
