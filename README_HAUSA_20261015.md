@@ -232,6 +232,14 @@ fondée sur la validation ; le test final ne doit pas devenir un ensemble de ré
 
 ## Réappliquer les corrections de manière vérifiable
 
+Le dossier téléchargé et corrigé est déjà présent sur la machine préparée.
+Pour reconstituer la campagne sur une autre machine, télécharger d'abord la
+révision figée avec le script fourni, qui produit aussi le reçu de téléchargement :
+
+```cmd
+python download_hausa_latest.py --destination "D:\ai_test\Hausa_repo_2026-10-15" --revision 1fb85fa070b6cf6432f1d45d21f78851d57f8944
+```
+
 ```cmd
 "C:\Users\admin\Documents\ChatGPT\AJAMI\.venv-v10\Scripts\python.exe" prepare_hausa.py --dataset "D:\ai_test\Hausa_repo_2026-10-15" --output "D:\ai_test\protocol_hausa_20261015"
 ```

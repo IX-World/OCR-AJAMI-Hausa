@@ -196,7 +196,7 @@ def main():
             shutil.copy2(args.protocol / name, output / name)
         snapshot = output / "source"
         shutil.copytree(Path(__file__).resolve().parent / "hausa_ocr", snapshot / "hausa_ocr", ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
-        for name in ("train_hausa.py", "prepare_hausa.py", "publish_hausa.py"):
+        for name in ("train_hausa.py", "prepare_hausa.py", "publish_hausa.py", "download_hausa_latest.py", "requirements-hausa.txt"):
             shutil.copy2(Path(__file__).resolve().with_name(name), snapshot / name)
         config["source_sha256"] = {str(p.relative_to(snapshot)).replace("\\", "/"): sha256(p) for p in sorted(snapshot.rglob("*.py"))}
     write_json(output / "config.json", config)

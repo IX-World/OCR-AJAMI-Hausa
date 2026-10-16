@@ -1,0 +1,14 @@
+protocols/hausa_20261015/*.json text eol=lf
+notebooks/*.ipynb text eol=lf
+hausa_ocr/*.py text eol=lf
+hausa_ocr/*.json text eol=lf
+prepare_hausa.py text eol=lf
+download_hausa_latest.py text eol=lf
+train_hausa.py text eol=lf
+publish_hausa.py text eol=lf
+install_local.py text eol=lf
+tests/*.py text eol=lf
+README_HAUSA_20261015.md text eol=lf
+*.cmd text eol=crlf
+.github/workflows/publish-hausa-model.yml text eol=lf
+.github/scripts/unpack_hausa.py text eol=lf

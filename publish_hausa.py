@@ -211,6 +211,9 @@ def publish_package(folder, repo):
     manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
     if manifest["author"] != AUTHOR or manifest["version"] not in ("v9", "v10", "v11", "v12"):
         raise ValueError("Attribution ou version incorrecte.")
+    actual_files = {str(path.relative_to(folder)).replace("\\", "/") for path in folder.rglob("*") if path.is_file()}
+    if actual_files != set(manifest["files"]) | {"manifest.json"}:
+        raise ValueError("Le package contient des fichiers absents du manifeste ou des fichiers supplementaires.")
     for name, expected in manifest["files"].items():
         candidate = (folder / name).resolve()
         if not candidate.is_relative_to(folder.resolve()) or sha256(candidate) != expected:

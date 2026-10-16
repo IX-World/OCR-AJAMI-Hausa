@@ -1,5 +1,6 @@
 /*
 !/.gitignore
+!/.gitattributes
 !/README.md
 !/v7_nouveau.py
 !/Hausa_repo_nouveau/
@@ -9,6 +10,7 @@
 !/tests/
 !/train_hausa.py
 !/prepare_hausa.py
+!/download_hausa_latest.py
 !/publish_hausa.py
 !/python_ocr.cmd
 !/run_v9_v12.cmd
