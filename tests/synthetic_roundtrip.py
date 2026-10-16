@@ -49,10 +49,25 @@ with temporary as directory:
     after = json.loads((run / "test_metrics.json").read_text(encoding="utf-8"))
     assert before["cer"] == after["cer"] and before["wer"] == after["wer"]
     assert len((run / "history.csv").read_text(encoding="utf-8").splitlines()) == 3
+    initial_sha = sha256(run / "best_cer.pt")
+    fine = base / "finetuned"
+    with patch("publish_hausa.write_model_card"), contextlib.redirect_stdout(io.StringIO()):
+        with patch.object(sys, "argv", common + ["--output", str(fine), "--finetune-from", str(run / "best_cer.pt"), "--learning-rate", "0.0001", "--epochs", "1"]):
+            train_hausa.main()
+        try:
+            with patch.object(sys, "argv", common + ["--version", "v10", "--output", str(base / "wrong-version"), "--finetune-from", str(run / "best_cer.pt"), "--epochs", "1"]):
+                train_hausa.main()
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("A different model version cannot initialize fine tuning")
+    fine_config = json.loads((fine / "config.json").read_text(encoding="utf-8"))
+    assert not fine_config["from_scratch"] and fine_config["learning_rate"] == 0.0001
+    assert fine_config["initial_checkpoint_sha256"] == initial_sha == sha256(run / "best_cer.pt")
     try:
         package_run(run, base / "must-not-publish")
     except ValueError:
         pass
     else:
         raise AssertionError("Synthetic results must not be publishable as test400 results")
-print("Synthetic train(1 epoch), resume(1 epoch), test-only and publication rejection: OK")
+print("Synthetic train, resume, test-only, fine tuning, version guard and publication rejection: OK")

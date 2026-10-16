@@ -138,13 +138,43 @@ Exécuter une seule ligne `lancer_...` à la fois. Chacune effectue le train pui
 le test de sa version. Pour reprendre, par exemple : `lancer_v10.cmd --resume`.
 Pour le test seul : `tester_v9.cmd`, `tester_v10.cmd`, `tester_v11.cmd` ou `tester_v12.cmd`.
 
+### Affiner les modèles après leur entraînement sur le corpus
+
+```cmd
+cd /d D:\ai_test
+affiner_v9.cmd
+affiner_v10.cmd
+affiner_v11.cmd
+affiner_v12.cmd
+```
+
+Choisir une version à la fois, après son entraînement initial. Ces commandes
+rechargent **son meilleur checkpoint de validation**, réinitialisent l'optimiseur
+avec un LR de **0,0001**, et entraînent jusqu'à **40 époques supplémentaires**
+(minimum 10, patience 10). Elles utilisent les mêmes 4 656 segments de train,
+les mêmes 517 de validation et le même test final de 400 images. Le test n'est
+pas utilisé pour choisir les réglages ou les checkpoints.
+
+Les sorties d'affinage sont séparées :
+`D:\ai_test\runs_hausa_20261015\v9_seed42_affinage`, etc. Les résultats initiaux
+ne sont pas écrasés. Pour reprendre un affinage interrompu :
+`affiner_v9.cmd --resume`. L'affinage est refusé si le vocabulaire, la version
+ou le split du checkpoint diffèrent. Les anciens modèles historiques ne sont
+donc pas chargés silencieusement dans cette nouvelle campagne.
+L'affinage n'est pas une garantie de gain : comparer ses métriques de validation
+à celles du run initial. Chaque phase garde ses résultats et son README propres.
+
+Pour modifier le plafond d'un affinage : `affiner_v11.cmd --epochs 60`.
+Pour augmenter seulement le plafond du train initial en conservant l'optimiseur :
+`lancer_v11.cmd --resume --epochs 150`. Le critère d'arrêt anticipé reste actif.
+
 ### Notebooks dédiés
 
 Les quatre notebooks à jour se trouvent dans `notebooks/` :
 `v9_hausa_20261015.ipynb`, `v10_hausa_20261015.ipynb`,
 `v11_hausa_20261015.ipynb` et `v12_hausa_20261015.ipynb`.
 Ils emploient les mêmes scripts, images et identifiants de split que les CMD.
-Le paramètre `ACTION` permet de choisir `check`, `train`, `resume` ou `test`.
+Le paramètre `ACTION` permet de choisir `check`, `train`, `finetune`, `resume` ou `test`.
 Ils n'ont pas de sorties de résultats préremplies. Le packaging est désactivé
 par défaut ; aucune publication HF n'est lancée par leur exécution normale.
 
@@ -208,6 +238,11 @@ Utiliser des dépôts dédiés à cette nouvelle campagne, pour ne pas confondre
 anciens modèles avec ceux entraînés sur le nouveau split. Le token est lu par
 le client HF dans son stockage habituel ou dans `HF_TOKEN` ; ne pas l'écrire
 dans le code, le README ou Git. Aucune publication HF n'est effectuée par le train.
+
+Pour publier un affinage, utiliser son dossier `_affinage`, un autre nom de
+package et un dépôt HF explicite, par exemple
+`IntelligenceResearchLab/Hausa-OCR-AJAMI-v9-20261015-affinage`. Sa fiche indique
+le checkpoint initial, son empreinte, la phase d'affinage et son LR réel.
 
 ## Publier depuis GitHub après les entraînements
 

@@ -12,7 +12,7 @@ def main():
     repo = Path(__file__).resolve().parent
     if repo.parent != base or repo.name != "OCR-AJAMI-Hausa":
         raise ValueError("Ce script doit etre execute dans BASE/OCR-AJAMI-Hausa.")
-    for name in ["run_v9_v12.cmd", "test_v9_v12.cmd"] + [f"{action}_{version}.cmd" for action in ("lancer", "tester") for version in ("v9", "v10", "v11", "v12")]:
+    for name in ["run_v9_v12.cmd", "test_v9_v12.cmd"] + [f"{action}_{version}.cmd" for action in ("lancer", "tester", "affiner") for version in ("v9", "v10", "v11", "v12")]:
         text = f'@echo off\r\ncall "%~dp0OCR-AJAMI-Hausa\\{name}" %*\r\nexit /b %errorlevel%\r\n'
         target = base / name
         if target.exists() and target.read_bytes() != text.encode("ascii"):

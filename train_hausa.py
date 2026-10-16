@@ -90,17 +90,29 @@ def main():
     parser.add_argument("--patience", type=int)
     parser.add_argument("--batch-size", type=int)
     parser.add_argument("--seed", type=int)
+    parser.add_argument("--learning-rate", type=float)
+    parser.add_argument("--finetune-from", type=Path)
     parser.add_argument("--device", choices=("cuda", "cpu"), default="cuda")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--test-only", action="store_true")
     parser.add_argument("--check-only", action="store_true")
     parser.add_argument("--log-every", type=int, default=25)
     args = parser.parse_args()
-    output = (args.output or base / "runs_hausa_20261015" / f"{args.version}_seed{args.seed if args.seed is not None else 42}").resolve()
+    if sum((args.resume, args.test_only, args.finetune_from is not None)) > 1:
+        parser.error("Choisir une seule action : resume, test-only ou finetune-from.")
+    if args.finetune_from is not None:
+        args.finetune_from = args.finetune_from.resolve()
+        if not args.finetune_from.is_file():
+            raise FileNotFoundError(f"Entrainement initial requis : checkpoint absent {args.finetune_from}")
+    if args.learning_rate is not None and (args.learning_rate <= 0 or args.resume or args.test_only):
+        parser.error("learning-rate doit etre positif et reserve a un nouveau train ou affinage ; resume conserve l'optimiseur.")
+    args.learning_rate = args.learning_rate or (1e-4 if args.finetune_from else 1e-3)
+    default_name = f"{args.version}_seed{args.seed if args.seed is not None else 42}" + ("_affinage" if args.finetune_from else "")
+    output = (args.output or base / "runs_hausa_20261015" / default_name).resolve()
     previous_config = {}
     if (args.resume or args.test_only) and (output / "config.json").exists():
         previous_config = json.loads((output / "config.json").read_text(encoding="utf-8"))
-    for name, default in {"epochs": 100, "min_epochs": 30, "patience": 15, "seed": 42, "batch_size": 20 if args.version == "v12" else 24}.items():
+    for name, default in {"epochs": 40 if args.finetune_from else 100, "min_epochs": 10 if args.finetune_from else 30, "patience": 10 if args.finetune_from else 15, "seed": 42, "batch_size": 20 if args.version == "v12" else 24}.items():
         if getattr(args, name) is None:
             field = "max_epochs" if name == "epochs" else name
             setattr(args, name, previous_config.get(field, default))
@@ -141,7 +153,7 @@ def main():
     if args.test_only and not (output / "best_cer.pt").is_file():
         raise FileNotFoundError("--test-only exige best_cer.pt, issu d'un entrainement termine.")
     output.mkdir(parents=True, exist_ok=True)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate, weight_decay=1e-4)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="min", factor=0.5, patience=3, min_lr=1e-6)
     criterion = torch.nn.CTCLoss(blank=0, reduction="mean", zero_infinity=False)
     git = subprocess.run(["git", "-C", str(Path(__file__).resolve().parent), "rev-parse", "HEAD"], capture_output=True, text=True)
@@ -157,11 +169,11 @@ def main():
         "parameter_count": sum(p.numel() for p in model.parameters()), "classes": len(vocab),
         "augmentation": "dynamic_probability_0.30" if args.version == "v9" else "fixed_8_views",
         "views_per_image": datasets["train"].views, "virtual_train_size": len(datasets["train"]),
-        "optimizer": "AdamW", "learning_rate": 1e-3, "weight_decay": 1e-4, "gradient_clip": 5.0,
+        "optimizer": "AdamW", "learning_rate": args.learning_rate, "weight_decay": 1e-4, "gradient_clip": 5.0,
         "scheduler": {"name": "ReduceLROnPlateau", "factor": 0.5, "patience": 3, "min_lr": 1e-6},
         "batch_size": args.batch_size, "bucket_size": sampler.bucket_size, "max_epochs": args.epochs,
         "min_epochs": args.min_epochs, "patience": args.patience, "min_delta": 0.0005,
-        "seed": args.seed, "from_scratch": True, "precision": "float32", "strict_determinism": False,
+        "seed": args.seed, "from_scratch": args.finetune_from is None, "experiment_stage": "fine_tune" if args.finetune_from else "from_scratch", "precision": "float32", "strict_determinism": False,
         "python": platform.python_version(), "torch": str(torch.__version__), "pillow": importlib.metadata.version("Pillow"),
         "cuda": torch.version.cuda, "gpu": torch.cuda.get_device_name(0) if device.type == "cuda" else None,
         "gpu_total_memory_mib": torch.cuda.get_device_properties(0).total_memory / 1024**2 if device.type == "cuda" else None,
@@ -192,6 +204,16 @@ def main():
             if device.type == "cuda":
                 torch.cuda.set_rng_state_all(checkpoint["cuda_rng"])
     else:
+        if args.finetune_from is not None:
+            initial = torch.load(args.finetune_from, map_location="cpu", weights_only=False)
+            for field in ("version", "split_sha256", "vocab_sha256", "height", "padding"):
+                if initial["config"][field] != config[field]:
+                    raise ValueError(f"Affinage refuse : protocole ou architecture differents ({field}). Reentrainer sur le nouveau corpus.")
+            if initial["vocab"] != vocab:
+                raise ValueError("Affinage refuse : vocabulaire different.")
+            model.load_state_dict(initial["model_state_dict"])
+            config.update(initial_checkpoint=str(args.finetune_from), initial_checkpoint_sha256=sha256(args.finetune_from), initial_checkpoint_epoch=initial["epoch"])
+            print(f"AFFINAGE depuis {args.finetune_from} | LR {args.learning_rate:g} | nouvel optimiseur | memes partitions", flush=True)
         for name in ("split.json", "vocab.json", "protocol.json", "quarantine.json"):
             shutil.copy2(args.protocol / name, output / name)
         snapshot = output / "source"

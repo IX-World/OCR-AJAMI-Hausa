@@ -37,6 +37,7 @@ def write_model_card(run):
     version = config["version"].upper()
     counts = config["counts"]
     unknown = json.dumps(config["unseen_characters"], ensure_ascii=False)
+    initialization = "Initialisation aléatoire sans préentraînement" if config["from_scratch"] else f"Affinage depuis le checkpoint {config['initial_checkpoint_sha256']} sélectionné à l'époque {config['initial_checkpoint_epoch']}, avec un nouvel optimiseur"
     card = f'''---
 language:
 - ha
@@ -57,6 +58,7 @@ datasets:
 ## Attribution et portée
 
 Code, adaptation expérimentale et entraînement : **IX-World**.
+Phase : `{config.get('experiment_stage', 'from_scratch')}`.
 Dépôt du projet : {SOURCE_REPOSITORY}
 Commit de code enregistré : `{config.get('source_commit')}`.
 Le corpus provient d'IntelligenceResearchLab/Hausa ; sa provenance, ses crédits
@@ -111,11 +113,11 @@ n'est réécrite pour faciliter le calcul du CER/WER.
 
 ## Entraînement réellement configuré
 
-- Initialisation aléatoire sans préentraînement ; graine {config['seed']}.
+- {initialization} ; graine {config['seed']}.
 - Augmentation : `{config['augmentation']}` ; {config['virtual_train_size']} vues par époque.
 - Les vues V10/V11/V12 sont fixes ; V9 applique l'augmentation dynamique à 30 % des segments.
 - Batch {config['batch_size']}, groupes de largeur {config['bucket_size']}, workers 0.
-- AdamW, LR initial 0,001, weight decay 0,0001, clipping de norme 5.
+- AdamW, LR initial {config['learning_rate']:g}, weight decay 0,0001, clipping de norme 5.
 - ReduceLROnPlateau : CER validation, facteur 0,5, patience 3, minimum 0,000001.
 - Maximum {config['max_epochs']} époques ; minimum {config['min_epochs']} avant arrêt ;
   patience {config['patience']}, amélioration minimale 0,0005 pour la patience.
