@@ -21,6 +21,7 @@ from hausa_ocr.data import LineDataset, WidthSampler, collate, decode, edit_dist
 from hausa_ocr.models import build_model
 from hausa_ocr.metrics import UWER_DEFINITION, normalize_uwer
 from hausa_ocr.reporting import append_history, cer_trend, print_epoch_report
+from hausa_ocr.protocol import validate_partitions
 from prepare_hausa import sha256, write_json
 
 
@@ -34,6 +35,13 @@ def load_protocol(dataset, protocol):
             raise ValueError(f"Metadonnees {part} modifiees depuis la preparation.")
     splits = json.loads((protocol / "split.json").read_text(encoding="utf-8"))
     vocab = json.loads((protocol / "vocab.json").read_text(encoding="utf-8"))
+    validate_partitions(splits, report)
+    if report.get("separation_unit") == "source_and_known_scribe":
+        for name,field in (("source_groups.json","source_groups_sha256"),("excluded_public_train.json","excluded_public_train_sha256")):
+            if sha256(protocol/name) != report[field]:
+                raise ValueError(f"Manifeste de separation modifie : {name}")
+        if json.loads((protocol/"source_groups.json").read_text(encoding="utf-8"))["source_to_group"] != report["source_to_group"]:
+            raise ValueError("Carte de provenance incoherente.")
     for part, rows in splits.items():
         if len(rows) != report["counts"][part]:
             raise ValueError("Effectif du split modifie.")
@@ -91,8 +99,9 @@ def final_evaluation(model, checkpoint, splits, vocab, report, args, output, dev
     snapshot = output / "evaluation_source"
     if Path(__file__).resolve().parent != snapshot.resolve():
         shutil.copytree(Path(__file__).resolve().parent / "hausa_ocr", snapshot / "hausa_ocr", dirs_exist_ok=True, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
-        for name in ("train_hausa.py", "prepare_hausa.py", "publish_hausa.py", "download_hausa_latest.py", "requirements-hausa.txt"):
-            shutil.copy2(Path(__file__).resolve().with_name(name), snapshot / name)
+        for name in ("train_hausa.py", "prepare_hausa.py", "prepare_hausa_grouped.py", "publish_hausa.py", "download_hausa_latest.py", "requirements-hausa.txt"):
+            if Path(__file__).resolve().with_name(name).exists():
+                shutil.copy2(Path(__file__).resolve().with_name(name), snapshot / name)
     evaluation_hashes = {str(p.relative_to(snapshot)).replace("\\", "/"): sha256(p) for p in sorted(snapshot.rglob("*.py"))}
     summary = dict(common, evaluated_at_utc=datetime.now(timezone.utc).isoformat(), evaluation_source_sha256=evaluation_hashes, train_evaluation="one_original_view_per_training_segment_no_augmentation", partitions={})
     for part in ("train", "validation", "test"):
@@ -131,7 +140,8 @@ def main():
     base = Path(__file__).resolve().parent.parent
     parser.add_argument("--version", choices=("v9", "v10", "v11", "v12"), required=True)
     parser.add_argument("--dataset", type=Path, default=base / "Hausa_repo_2026-10-15")
-    parser.add_argument("--protocol", type=Path, default=base / "protocol_hausa_20261015")
+    parser.add_argument("--protocol", type=Path, default=base / "protocol_hausa_grouped_20261016")
+    parser.add_argument("--require-group-disjoint", action="store_true")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--epochs", type=int)
     parser.add_argument("--min-epochs", type=int)
@@ -160,7 +170,7 @@ def main():
         parser.error("learning-rate doit etre positif et reserve a un nouveau train ou affinage ; resume conserve l'optimiseur.")
     args.learning_rate = args.learning_rate or (1e-4 if args.finetune_from else 1e-3)
     default_name = f"{args.version}_seed{args.seed if args.seed is not None else 42}" + ("_affinage" if args.finetune_from else "")
-    output = (args.output or base / "runs_hausa_20261016_zero" / default_name).resolve()
+    output = (args.output or base / "runs_hausa_grouped_20261016" / default_name).resolve()
     previous_config = {}
     if (args.resume or args.test_only) and (output / "config.json").exists():
         previous_config = json.loads((output / "config.json").read_text(encoding="utf-8"))
@@ -185,6 +195,7 @@ def main():
         torch.backends.cudnn.benchmark = True
     print("Verification du protocole et des images...", flush=True)
     splits, vocab, report = load_protocol(args.dataset, args.protocol)
+    validate_partitions(splits, report, require_groups=args.require_group_disjoint)
     model = build_model(args.version, len(vocab)).to(device)
     datasets = {part: LineDataset(args.dataset, rows, vocab, args.version, part == "train", args.seed) for part, rows in splits.items()}
     sampler = WidthSampler(datasets["train"], args.batch_size, args.seed)
@@ -216,6 +227,7 @@ def main():
         "author": AUTHOR, "source_repository": SOURCE_REPOSITORY, "source_commit": git.stdout.strip() if git.returncode == 0 else None,
         "version": args.version, "dataset": str(args.dataset), "dataset_repo": report["dataset_repo"], "dataset_revision": report["dataset_revision"],
         "split_sha256": report["split_sha256"], "vocab_sha256": report["vocab_sha256"], "counts": report["counts"],
+        "protocol_id": report.get("protocol_id", "legacy_line_split"), "separation_unit": report.get("separation_unit", "image"), "protocol_sha256": sha256(args.protocol / "protocol.json"),
         "vocab_policy": report["vocab_policy"], "unseen_characters": report["unseen_characters"],
         "height": 96, "rtl_mirror": True, "channels": 2 if args.version in ("v11", "v12") else 1,
         "ink_blur_radius": 5.0, "ink_gain": 1.6, "padding": {"grayscale": 1.0, "ink": -1.0},
@@ -270,12 +282,14 @@ def main():
             model.load_state_dict(initial["model_state_dict"])
             config.update(initial_checkpoint=str(args.finetune_from), initial_checkpoint_sha256=sha256(args.finetune_from), initial_checkpoint_epoch=initial["epoch"])
             print(f"AFFINAGE depuis {args.finetune_from} | LR {args.learning_rate:g} | nouvel optimiseur | memes partitions", flush=True)
-        for name in ("split.json", "vocab.json", "protocol.json", "quarantine.json"):
-            shutil.copy2(args.protocol / name, output / name)
+        for name in ("split.json", "vocab.json", "protocol.json", "quarantine.json", "source_groups.json", "excluded_public_train.json"):
+            if (args.protocol/name).exists():
+                shutil.copy2(args.protocol / name, output / name)
         snapshot = output / "source"
         shutil.copytree(Path(__file__).resolve().parent / "hausa_ocr", snapshot / "hausa_ocr", ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
-        for name in ("train_hausa.py", "prepare_hausa.py", "publish_hausa.py", "download_hausa_latest.py", "requirements-hausa.txt"):
-            shutil.copy2(Path(__file__).resolve().with_name(name), snapshot / name)
+        for name in ("train_hausa.py", "prepare_hausa.py", "prepare_hausa_grouped.py", "publish_hausa.py", "download_hausa_latest.py", "requirements-hausa.txt"):
+            if Path(__file__).resolve().with_name(name).exists():
+                shutil.copy2(Path(__file__).resolve().with_name(name), snapshot / name)
         config["source_sha256"] = {str(p.relative_to(snapshot)).replace("\\", "/"): sha256(p) for p in sorted(snapshot.rglob("*.py"))}
     write_json(output / "config.json", config)
     history = output / "history.csv"

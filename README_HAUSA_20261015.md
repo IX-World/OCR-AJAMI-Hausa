@@ -1,3 +1,10 @@
+# Protocole initial archivé
+
+La campagne active utilise désormais la séparation par manuscrit et copiste
+identifié décrite dans [README_HAUSA_GROUPED_20261016.md](README_HAUSA_GROUPED_20261016.md).
+Les nombres et chemins ci-dessous décrivent le protocole initial ; les commandes
+courantes du dépôt pointent sur le nouveau protocole 2 609/229/400.
+
 # Campagne depuis zéro du 16 octobre 2026 — IX-World
 
 Les données sont celles de la révision figée du 15 octobre. **V9, V10, V11 et V12

@@ -1,3 +1,3 @@
 @echo off
-call "%~dp0python_ocr.cmd" --version v10 --test-only %*
+call "%~dp0python_ocr.cmd" --version v10 --require-group-disjoint --test-only %*
 exit /b %errorlevel%

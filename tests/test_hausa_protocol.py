@@ -3,6 +3,10 @@ import contextlib
 import io
 import sys
 import unittest
+import hashlib
+import tempfile
+import zipfile
+from types import SimpleNamespace
 from pathlib import Path
 from unittest.mock import patch
 
@@ -12,6 +16,8 @@ from hausa_ocr.data import WidthSampler, collate, decode, edit_distance
 from hausa_ocr.models import build_model
 from hausa_ocr.metrics import normalize_uwer
 from hausa_ocr.reporting import cer_trend, print_epoch_report
+from hausa_ocr.protocol import validate_partitions
+from prepare_hausa_grouped import group_validation
 from prepare_hausa import corrected_rows, stratified_validation
 from publish_hausa import load_run
 
@@ -122,6 +128,62 @@ class ProtocolTests(unittest.TestCase):
             print_epoch_report(config, record, records, [{"file_name": "a.png", "reference": "a", "prediction": "b"}], 2)
         for label in ("VAL UWER", "Pente CER", "Gain fenetre", "Canaux", "CNN conv", "FILE: a.png", "REF : a", "PRED: b", "Best WER", "Sans gain CER"):
             self.assertIn(label, text.getvalue())
+
+    def test_hub_publication_verifies_remote_hashes(self):
+        from publish_hausa import publish_package
+        with tempfile.TemporaryDirectory(prefix="hub-fixture-", dir=Path(__file__).parent) as folder:
+            root = Path(folder)
+            self.assertEqual(root.resolve().parent, Path(__file__).resolve().parent)
+            (root / "best_cer.pt").write_bytes(b"synthetic fixture, not model weights")
+            weight_hash = hashlib.sha256((root / "best_cer.pt").read_bytes()).hexdigest()
+            manifest = {"author": "IX-World", "version": "v9", "files": {"best_cer.pt": weight_hash}}
+            (root / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+            blob = (root / "manifest.json").read_bytes()
+            siblings = [SimpleNamespace(rfilename="best_cer.pt", lfs=SimpleNamespace(sha256=weight_hash)), SimpleNamespace(rfilename="manifest.json", lfs=None, blob_id=hashlib.sha1(b"blob " + str(len(blob)).encode() + b"\0" + blob).hexdigest())]
+            with patch("publish_hausa.load_run"), patch("huggingface_hub.HfApi") as factory, contextlib.redirect_stdout(io.StringIO()):
+                api = factory.return_value
+                api.upload_folder.return_value = SimpleNamespace(oid="synthetic", commit_url="https://example.invalid/synthetic")
+                api.model_info.return_value = SimpleNamespace(private=False, siblings=siblings)
+                receipt = publish_package(root, "IX-World/synthetic-do-not-publish")
+                self.assertEqual(receipt["verified_files"], 2)
+                siblings[0].lfs.sha256 = "corrupt"
+                with self.assertRaises(ValueError):
+                    publish_package(root, "IX-World/synthetic-do-not-publish")
+
+    def test_group_split_rejects_shared_sources_and_writer_links(self):
+        rows = {part:[{"partition":"test" if part=="test" else "train", "file_name":f"{part}.png", "pixel_sha256":part, "source":source, "group_id":group}] for part,source,group in (("train","8","g8"),("validation","9","g9"),("test","1","g12"))}
+        report = {"separation_unit":"source_and_known_scribe", "source_to_group":{"8":"g8","9":"g9","1":"g12","2":"g12"}}
+        self.assertTrue(validate_partitions(rows,report,require_groups=True))
+        bad = {part:[dict(row) for row in values] for part,values in rows.items()}
+        bad["train"][0].update(source="2",group_id="g12")
+        with self.assertRaises(ValueError):
+            validate_partitions(bad,report,require_groups=True)
+        with self.assertRaises(ValueError):
+            validate_partitions(rows,{},require_groups=True)
+        bad["train"][0].update(source="1",group_id="g12")
+        with self.assertRaises(ValueError):
+            validate_partitions(bad,report,require_groups=True)
+
+    def test_validation_keeps_whole_groups_and_matches_target_without_scores(self):
+        rows=[{"group_id":group,"file_name":f"{group}-{i}"} for group,n in (("a",15),("b",6),("c",4),("d",2)) for i in range(n)]
+        train,val=group_validation(rows,0.1)
+        self.assertEqual(len(train)+len(val),len(rows))
+        self.assertEqual(len(val),2)
+        self.assertFalse({r['group_id'] for r in train}&{r['group_id'] for r in val})
+
+    def test_corrupt_release_archive_is_rejected_before_github_access(self):
+        import publish_github_release
+        with tempfile.TemporaryDirectory(prefix="archive-fixture-", dir=Path(__file__).parent) as folder:
+            root = Path(folder)
+            self.assertEqual(root.resolve().parent, Path(__file__).resolve().parent)
+            archive = root / "corrupt.zip"
+            with zipfile.ZipFile(archive, "w") as handle:
+                handle.writestr("manifest.json", json.dumps({"author": "IX-World", "version": "v9", "files": {"best_cer.pt": "incorrect"}}))
+                handle.writestr("best_cer.pt", b"corrupted fixture")
+            with patch("publish_github_release.github_client") as connect:
+                with self.assertRaises(ValueError):
+                    publish_github_release.publish(SimpleNamespace(repo="IX-World/OCR-AJAMI-Hausa", asset=archive))
+                connect.assert_not_called()
 
 
 if __name__ == "__main__":

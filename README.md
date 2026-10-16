@@ -1,6 +1,18 @@
 # OCR AJAMI Hausa — IX-World
 
-## Nouvelle campagne V9 / V10 / V11 / V12 — 15 octobre 2026
+## Campagne active — manuscrits séparés — 16 octobre 2026
+
+Voir [le guide actuel](README_HAUSA_GROUPED_20261016.md) : **2 609 train /
+229 validation / 400 tests publics**, sans manuscrit partagé. Les groupes de
+copistes documentés sont également séparés. Les 2 335 exemples du train public
+liés aux groupes du test sont exclus ; les deux annotations contradictoires
+restent en quarantaine. Les dernières données HF sont bien présentes : 5 575 PNG.
+Les quatre commandes `lancer_v9.cmd` à `lancer_v12.cmd` et les notebooks pointent
+sur ce nouveau protocole. Nouveaux entraînements depuis zéro, sans anciens poids.
+Publication des nouveaux modèles après mesure des résultats ; les poids initiaux
+ne sont pas promus en production sous cette nouvelle définition du split.
+
+## Protocole initial archivé — 15 octobre 2026
 
 Les commandes locales, corrections du dataset, configurations et procédures
 de publication sont détaillées dans [README_HAUSA_20261015.md](README_HAUSA_20261015.md).

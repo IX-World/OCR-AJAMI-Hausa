@@ -6,6 +6,7 @@ import sys
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
+import shutil
 
 from PIL import Image
 import torch
@@ -13,8 +14,9 @@ import torch
 root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(root))
 import train_hausa
-from prepare_hausa import sha256, write_json
-from publish_hausa import load_complete_metrics, package_run, write_model_card
+from prepare_hausa import pixel_hash, sha256, write_json
+from publish_hausa import load_complete_metrics, load_split_audit, package_run, write_model_card
+import audit_hausa_run
 
 torch.set_num_threads(2)
 
@@ -33,9 +35,10 @@ with temporary as directory:
             image = Image.new("L", (32, 96), 220 - i * 15)
             image.putpixel((i, 0), len(part))
             image.save(folder / name)
-            split[part].append({"partition": folder.name, "file_name": name, "source": "synthetic", "transcript": "a", "width": 32, "height": 96, "file_sha256": sha256(folder / name)})
+            split[part].append({"partition": folder.name, "file_name": name, "source": "synthetic", "transcript": "a", "width": 32, "height": 96, "file_sha256": sha256(folder / name), "pixel_sha256": pixel_hash(folder / name)})
     for part in ("train", "test"):
-        (dataset / "data" / part / "metadata.jsonl").write_text("synthetic fixture only\n", encoding="utf-8")
+        rows = split["test"] if part == "test" else split["train"] + split["validation"]
+        (dataset / "data" / part / "metadata.jsonl").write_text("".join(json.dumps({k:r[k] for k in ("file_name", "source", "transcript")}) + "\n" for r in rows), encoding="utf-8")
     write_json(protocol / "split.json", split)
     write_json(protocol / "vocab.json", {"<BLANK>": 0, "<UNK>": 1, "a": 2})
     write_json(protocol / "quarantine.json", [])
@@ -67,11 +70,25 @@ with temporary as directory:
     assert load_complete_metrics(run, config, after) == summary
     for name, expected in config["source_sha256"].items():
         assert sha256(run / "source" / name) == expected
+    with contextlib.redirect_stdout(io.StringIO()):
+        audit_result = audit_hausa_run.audit(run, dataset, run)
+    shutil.copyfile(audit_hausa_run.__file__, run / "audit_hausa_run.py")
+    assert load_split_audit(run, config, after) == audit_result
+    assert all(not any(counts.values()) for counts in audit_result["cross_partition_overlap"].values())
     with patch("publish_hausa.load_run", return_value=(config, after, json.loads((protocol / "protocol.json").read_text(encoding="utf-8")))):
         write_model_card(run)
     card = (run / "README.md").read_text(encoding="utf-8")
     assert "| train | 2 |" in card and "| validation | 2 |" in card and "| test | 2 |" in card
     assert "UWER" in card and "casefold" in card
+    audit_markdown = (run / "split_audit.md").read_bytes()
+    (run / "split_audit.md").write_bytes(b"altered audit")
+    try:
+        load_split_audit(run, config, after)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("An altered audit must be rejected")
+    (run / "split_audit.md").write_bytes(audit_markdown)
     assert len((run / "history.csv").read_text(encoding="utf-8").splitlines()) == 3
     initial_sha = sha256(run / "best_cer.pt")
     fine = base / "finetuned"

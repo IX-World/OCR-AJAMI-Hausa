@@ -14,7 +14,7 @@ from hausa_ocr.models import build_model
 root = Path(__file__).resolve().parents[1]
 base = Path(r"D:\ai_test")
 for version in ("v9", "v10", "v11", "v12"):
-    with patch.object(sys, "argv", ["train_hausa.py", "--version", version, "--dataset", str(base / "Hausa_repo_2026-10-15"), "--protocol", str(base / "protocol_hausa_20261015"), "--check-only"]):
+    with patch.object(sys, "argv", ["train_hausa.py", "--version", version, "--dataset", str(base / "Hausa_repo_2026-10-15"), "--protocol", str(base / "protocol_hausa_grouped_20261016"), "--require-group-disjoint", "--check-only"]):
         train_hausa.main()
 
 for version in ("v9", "v12"):

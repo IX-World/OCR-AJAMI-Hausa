@@ -9,13 +9,22 @@ from pathlib import Path
 
 from hausa_ocr import AUTHOR, SOURCE_REPOSITORY
 from hausa_ocr.metrics import UWER_DEFINITION
+from hausa_ocr.protocol import validate_partitions
 from prepare_hausa import sha256, write_json
 
 
-def load_run(run):
+def load_run(run, require_group_disjoint=False):
     config = json.loads((run / "config.json").read_text(encoding="utf-8"))
     metrics = json.loads((run / "test_metrics.json").read_text(encoding="utf-8"))
     protocol = json.loads((run / "protocol.json").read_text(encoding="utf-8"))
+    if config.get("protocol_sha256") and sha256(run/"protocol.json") != config["protocol_sha256"]:
+        raise ValueError("Le protocole archive a ete modifie depuis l'entrainement.")
+    splits = json.loads((run / "split.json").read_text(encoding="utf-8"))
+    validate_partitions(splits, protocol, require_groups=require_group_disjoint)
+    if protocol.get("separation_unit") == "source_and_known_scribe":
+        for name,field in (("source_groups.json","source_groups_sha256"),("excluded_public_train.json","excluded_public_train_sha256")):
+            if sha256(run/name) != protocol[field]:
+                raise ValueError("Manifeste de separation modifie dans le run.")
     if config["author"] != AUTHOR or config["version"] not in ("v9", "v10", "v11", "v12"):
         raise ValueError("Version ou attribution non reconnue.")
     if metrics["examples"] != 400 or metrics["selection"] != "minimum_validation_CER":
@@ -30,6 +39,7 @@ def load_run(run):
         if sha256(run / "source" / name) != expected:
             raise ValueError(f"Code source modifie : {name}")
     load_complete_metrics(run, config, metrics)
+    load_split_audit(run, config, metrics)
     return config, metrics, protocol
 
 
@@ -53,6 +63,24 @@ def load_complete_metrics(run, config, test_metrics):
     return summary
 
 
+def load_split_audit(run, config, metrics):
+    names = ("split_audit.json", "split_audit.md", "audit_hausa_run.py")
+    if not any((run / name).exists() for name in names):
+        return None
+    if not all((run / name).is_file() for name in names):
+        raise ValueError("Audit de split incomplet.")
+    audit = json.loads((run / "split_audit.json").read_text(encoding="utf-8"))
+    if audit["checkpoint_sha256"] != metrics["checkpoint_sha256"] or audit["split_sha256"] != config["split_sha256"]:
+        raise ValueError("Audit d'un autre checkpoint ou split.")
+    if audit["audit_code_sha256"] != sha256(run / "audit_hausa_run.py") or audit["markdown_sha256"] != sha256(run / "split_audit.md"):
+        raise ValueError("Code ou compte rendu de l'audit modifie.")
+    if audit["counts"] != config["counts"] or not audit["public_test_preserved"] or not audit["public_train_coverage_complete"]:
+        raise ValueError("Couverture du corpus incoherente dans l'audit.")
+    if any(any(values.values()) for values in audit["cross_partition_overlap"].values()):
+        raise ValueError("Chevauchement dans l'audit de split.")
+    return audit
+
+
 def write_model_card(run):
     run = Path(run)
     config, metrics, protocol = load_run(run)
@@ -60,7 +88,12 @@ def write_model_card(run):
     counts = config["counts"]
     unknown = json.dumps(config["unseen_characters"], ensure_ascii=False)
     initialization = "Initialisation aléatoire sans préentraînement" if config["from_scratch"] else f"Affinage depuis le checkpoint {config['initial_checkpoint_sha256']} sélectionné à l'époque {config['initial_checkpoint_epoch']}, avec un nouvel optimiseur"
+    strict = protocol.get("separation_unit") == "source_and_known_scribe"
+    separation = f"Séparation par manuscrit et copiste identifié. {protocol['excluded_public_train_count']} images du train public liées aux groupes du test sont exclues. Les sources 1 et 2 sont regroupées. Les identités de copistes non documentées restent une limite. Voir source_groups.json et excluded_public_train.json." if strict else "Protocole initial séparé par images : des manuscrits sont partagés. Ces résultats sont historiques et ne satisfont pas la nouvelle campagne séparée par provenance."
+    validation_rule = "groupes de provenance entiers, avec effectif le plus proche de la cible 10 %" if strict else "stratification des images par source"
+    preparation = "Appliquer prepare_hausa.py pour les corrections initiales, puis prepare_hausa_grouped.py pour la séparation par provenance. Les fichiers source_groups.json et excluded_public_train.json décrivent le nouveau protocole." if strict else "Appliquer prepare_hausa.py avec le split initial archivé."
     complete = load_complete_metrics(run, config, metrics)
+    audit_section = (run / "split_audit.md").read_text(encoding="utf-8") if load_split_audit(run, config, metrics) else ""
     if complete:
         result_table = "| Partition | Segments | CER | WER | UWER | Segments exacts |\n|---|---:|---:|---:|---:|---:|\n"
         for part, values in complete["partitions"].items():
@@ -108,7 +141,7 @@ transcription intermédiaire en caractères Ajami.
 - Validation : **{counts['validation']} segments**, tirés uniquement du train public.
 - Test : les **400 exemples publics**, conservés dans leur partition d'origine.
 - SHA-256 du split : `{config['split_sha256']}`.
-- Graine du split : {protocol['seed']} ; stratification par identifiant de source.
+- Construction de la validation : {validation_rule} ; graine de référence {protocol['seed']}.
 - Les trois chemins invalides ont été corrigés ; la référence de « ranar »
   a été rétablie vers ajami_01289.png ; le doublon d'annotation identique a été supprimé.
 - Les deux images identiques a_ajami_03400/03401, annotées « da »/« mutane »,
@@ -119,6 +152,8 @@ transcription intermédiaire en caractères Ajami.
 Ce protocole diffère du split historique 2 942/96/160 : les scores de cette
 campagne ne constituent pas une comparaison directe avec les anciens scores.
 Tous les nouveaux V9 à V12 utilisent exactement le même split et vocabulaire.
+
+{separation}
 
 ## Architecture et prétraitement
 
@@ -181,12 +216,15 @@ répétitions et suppression de BLANK ; aucun lexique ni correcteur.
 Les prédictions individuelles et les compteurs sont dans test_predictions.csv.
 SHA-256 du checkpoint : `{metrics['checkpoint_sha256']}`.
 
+{audit_section}
+
 ## Reproduire et utiliser
 
 Le code d'entraînement exact est archivé dans source/, avec ses empreintes dans config.json.
 Le cas échéant, evaluation_source/ contient la version utilisée pour le bilan complet.
-Installer PyTorch et Pillow, télécharger le dataset à la révision indiquée,
-appliquer prepare_hausa.py avec le même split, puis :
+Installer PyTorch et Pillow, télécharger le dataset à la révision indiquée.
+{preparation}
+Puis :
 
 ```powershell
 python source/train_hausa.py --version {config['version']} --dataset "CHEMIN_DATASET" --protocol "CHEMIN_PROTOCOLE" --output "CHEMIN_RUN" --test-only
@@ -213,7 +251,7 @@ V13 reste une proposition : aucune amélioration ni aucun résultat V13 n'est re
 
 def package_run(run, destination):
     run, destination = Path(run).resolve(), Path(destination).resolve()
-    config, metrics, _ = load_run(run)
+    config, metrics, _ = load_run(run, require_group_disjoint=True)
     write_model_card(run)
     predictions = list(csv.DictReader((run / "test_predictions.csv").open(encoding="utf-8-sig", newline="")))
     split = json.loads((run / "split.json").read_text(encoding="utf-8"))
@@ -245,6 +283,12 @@ def package_run(run, destination):
         for name in ("metrics.json", "metrics.csv", "train_metrics.json", "validation_metrics.json", "train_predictions.csv", "validation_predictions.csv"):
             shutil.copy2(run / name, destination / name)
         shutil.copytree(run / "evaluation_source", destination / "evaluation_source")
+    if load_split_audit(run, config, metrics):
+        for name in ("split_audit.json", "split_audit.md", "audit_hausa_run.py"):
+            shutil.copy2(run / name, destination / name)
+    for name in ("source_groups.json", "excluded_public_train.json"):
+        if (run/name).exists():
+            shutil.copy2(run/name,destination/name)
     manifest = {str(path.relative_to(destination)).replace("\\", "/"): sha256(path) for path in sorted(destination.rglob("*")) if path.is_file()}
     write_json(destination / "manifest.json", {"author": AUTHOR, "version": config["version"], "files": manifest})
     archive = destination.with_suffix(".zip")
@@ -257,7 +301,7 @@ def package_run(run, destination):
     print(f"Package verifie : {destination}\nArchive GitHub Release : {archive}", flush=True)
 
 
-def publish_package(folder, repo):
+def publish_package(folder, repo, receipt_path=None):
     folder = Path(folder)
     manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
     if manifest["author"] != AUTHOR or manifest["version"] not in ("v9", "v10", "v11", "v12"):
@@ -269,12 +313,31 @@ def publish_package(folder, repo):
         candidate = (folder / name).resolve()
         if not candidate.is_relative_to(folder.resolve()) or sha256(candidate) != expected:
             raise ValueError(f"Empreinte ou chemin incorrect : {name}")
-    load_run(folder)
+    load_run(folder, require_group_disjoint=True)
     from huggingface_hub import HfApi
     api = HfApi()
-    api.create_repo(repo, repo_type="model", exist_ok=True)
+    api.create_repo(repo, repo_type="model", private=False, exist_ok=True)
     commit = api.upload_folder(repo_id=repo, repo_type="model", folder_path=str(folder), commit_message=f"IX-World: publish verified {manifest['version']} on Hausa public test 400")
+    remote = api.model_info(repo, revision=commit.oid, files_metadata=True)
+    if remote.private:
+        raise ValueError("Le depot Hugging Face est prive ; publication publique non confirmee.")
+    siblings = {item.rfilename: item for item in remote.siblings}
+    for name in actual_files:
+        if name not in siblings:
+            raise ValueError(f"Fichier absent du depot distant : {name}")
+        data = (folder / name).read_bytes()
+        item = siblings[name]
+        if item.lfs is not None:
+            matches = item.lfs.sha256 == hashlib.sha256(data).hexdigest()
+        else:
+            matches = item.blob_id == hashlib.sha1(b"blob " + str(len(data)).encode("ascii") + b"\0" + data).hexdigest()
+        if not matches:
+            raise ValueError(f"Empreinte distante incorrecte : {name}")
+    receipt = {"author": AUTHOR, "repository": repo, "url": f"https://huggingface.co/{repo}", "commit": commit.oid, "commit_url": commit.commit_url, "checkpoint_sha256": manifest["files"]["best_cer.pt"], "verified_files": len(actual_files)}
+    if receipt_path is not None:
+        write_json(receipt_path, receipt)
     print(commit.commit_url, flush=True)
+    return receipt
 
 
 if __name__ == "__main__":
@@ -286,8 +349,9 @@ if __name__ == "__main__":
     publish = sub.add_parser("publish")
     publish.add_argument("--package", type=Path, required=True)
     publish.add_argument("--repo", required=True)
+    publish.add_argument("--receipt", type=Path)
     args = parser.parse_args()
     if args.command == "package":
         package_run(args.run, args.destination)
     else:
-        publish_package(args.package, args.repo)
+        publish_package(args.package, args.repo, args.receipt)
