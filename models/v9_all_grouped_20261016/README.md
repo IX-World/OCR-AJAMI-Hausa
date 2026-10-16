@@ -117,6 +117,21 @@ Définition de l'UWER dans ce projet : Unicode casefold, NFD, suppression des ma
 L'UWER ne remplace pas le WER strict ; la ponctuation reste évaluée.
 
 
+## Historique de toutes les époques
+
+Les **48 époques enregistrées** sont disponibles dans
+[le tableau complet avec les unités](EPOCHS.md), le [CSV brut](history.csv)
+et le [JSON numérique](epochs.json). Le tableau indique les meilleurs scores
+de validation, le checkpoint retenu, la loss train, les CER/WER/UWER et le taux
+exact de validation, le LR utilisé et suivant, le temps, la VRAM, la pente
+et le gain du CER. Les courbes sont incluses lorsqu'elles ont été générées.
+Les CER/WER/UWER train et test ne sont pas mesurés à chaque époque : leur bilan
+final utilise le checkpoint retenu sur la validation.
+
+![Courbes des mesures enregistrées pendant les époques](training_curves.png)
+
+[Version vectorielle SVG](training_curves.svg).
+
 | Provenance et ressources | Valeur |
 |---|---:|
 | Erreurs de caractères / caractères de référence | 3955 / 9719 |

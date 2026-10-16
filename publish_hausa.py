@@ -10,6 +10,7 @@ from pathlib import Path
 from hausa_ocr import AUTHOR, SOURCE_REPOSITORY
 from hausa_ocr.metrics import UWER_DEFINITION
 from hausa_ocr.protocol import validate_partitions
+from hausa_ocr.training_history import write_epoch_report
 from prepare_hausa import sha256, write_json
 
 
@@ -109,6 +110,8 @@ def write_model_card(run):
         measured_limit = f"Le WER du train ({train_scores['wer']:.2%}) et celui du test ({metrics['wer']:.2%}) montrent un écart de généralisation. Le WER de test est un taux d'erreur, pas un taux de réussite. Ce checkpoint est publié comme résultat expérimental reproductible ; ces scores ne démontrent pas une transcription autonome fiable."
     with (run / "history.csv").open(encoding="utf-8-sig", newline="") as handle:
         completed_epochs = len(list(csv.DictReader(handle)))
+    write_epoch_report(run)
+    epoch_curves = "![Courbes des mesures enregistrées pendant les époques](training_curves.png)\n\n[Version vectorielle SVG](training_curves.svg)." if (run / "training_curves.png").is_file() else ""
     audit_section = (run / "split_audit.md").read_text(encoding="utf-8") if load_split_audit(run, config, metrics) else ""
     if complete:
         result_table = "| Partition | Segments | CER | WER | UWER | Segments exacts |\n|---|---:|---:|---:|---:|---:|\n"
@@ -219,6 +222,19 @@ des anciens scripts à chemins C:\\ai-test.
 
 {result_table}
 
+## Historique de toutes les époques
+
+Les **{completed_epochs} époques enregistrées** sont disponibles dans
+[le tableau complet avec les unités](EPOCHS.md), le [CSV brut](history.csv)
+et le [JSON numérique](epochs.json). Le tableau indique les meilleurs scores
+de validation, le checkpoint retenu, la loss train, les CER/WER/UWER et le taux
+exact de validation, le LR utilisé et suivant, le temps, la VRAM, la pente
+et le gain du CER. Les courbes sont incluses lorsqu'elles ont été générées.
+Les CER/WER/UWER train et test ne sont pas mesurés à chaque époque : leur bilan
+final utilise le checkpoint retenu sur la validation.
+
+{epoch_curves}
+
 | Provenance et ressources | Valeur |
 |---|---:|
 | Erreurs de caractères / caractères de référence | {metrics['character_errors']} / {metrics['reference_characters']} |
@@ -309,6 +325,10 @@ def package_run(run, destination):
     for name in ("source_groups.json", "excluded_public_train.json"):
         if (run/name).exists():
             shutil.copy2(run/name,destination/name)
+    for name in ("EPOCHS.md", "epochs.json", "training_curves.png", "training_curves.svg"):
+        if (run / name).exists():
+            shutil.copy2(run / name, destination / name)
+    shutil.copy2(Path(__file__).resolve().parent / "hausa_ocr" / "training_history.py", destination / "training_history.py")
     manifest = {str(path.relative_to(destination)).replace("\\", "/"): sha256(path) for path in sorted(destination.rglob("*")) if path.is_file()}
     write_json(destination / "manifest.json", {"author": AUTHOR, "version": config["version"], "files": manifest})
     archive = destination.with_suffix(".zip")

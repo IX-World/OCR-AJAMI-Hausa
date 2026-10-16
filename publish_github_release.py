@@ -47,8 +47,12 @@ def publish(args):
         validate_partitions(json.loads(archive.read("split.json")),protocol,require_groups=True)
         if not protocol.get("all_usable_images_used",False):
             raise ValueError("Le protocole actuel utilise tout le corpus valide.")
-    digest = "sha256:" + hashlib.sha256(args.asset.read_bytes()).hexdigest()
-    size = args.asset.stat().st_size
+    asset_paths = [args.asset] + list(getattr(args, "extra_asset", ()))
+    if len({path.name for path in asset_paths}) != len(asset_paths):
+        raise ValueError("Les noms des assets doivent etre distincts.")
+    for path in asset_paths[1:]:
+        if not path.is_file() or manifest["files"].get(path.name) != hashlib.sha256(path.read_bytes()).hexdigest():
+            raise ValueError(f"Asset complementaire absent du package ou modifie : {path.name}")
     api = f"https://api.github.com/repos/{args.repo}"
     with github_client() as client:
         found = client.get(f"{api}/releases/tags/{quote(args.tag, safe='')}")
@@ -61,20 +65,31 @@ def publish(args):
             release = found.json()
             if release["draft"] or release["prerelease"]:
                 raise ValueError("Une release differente existe deja pour ce tag.")
-        existing = next((asset for asset in release.get("assets", []) if asset["name"] == args.asset.name), None)
-        if existing:
-            if existing.get("digest") != digest or existing["size"] != size:
-                raise ValueError("Un asset de contenu different existe deja ; aucun remplacement automatique.")
-            asset = existing
-        else:
-            upload_url = release["upload_url"].split("{", 1)[0]
-            with args.asset.open("rb") as handle:
-                response = client.post(upload_url, params={"name": args.asset.name, "label": digest}, headers={"Content-Type": "application/zip", "Content-Length": str(size)}, content=handle)
+        uploaded = []
+        for path in asset_paths:
+            digest = "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+            size = path.stat().st_size
+            existing = next((asset for asset in release.get("assets", []) if asset["name"] == path.name), None)
+            if existing:
+                if existing.get("digest") != digest or existing["size"] != size:
+                    raise ValueError("Un asset de contenu different existe deja ; aucun remplacement automatique.")
+                asset = existing
+            else:
+                upload_url = release["upload_url"].split("{", 1)[0]
+                with path.open("rb") as handle:
+                    response = client.post(upload_url, params={"name": path.name, "label": digest}, headers={"Content-Type": "application/octet-stream", "Content-Length": str(size)}, content=handle)
+                response.raise_for_status()
+                asset = response.json()
+            if asset["size"] != size or asset.get("digest") != digest or asset["state"] != "uploaded":
+                raise ValueError("Empreinte ou taille de l'asset distant incorrecte.")
+            uploaded.append({"asset_url": asset["browser_download_url"], "asset_sha256": digest.removeprefix("sha256:"), "asset_bytes": size})
+        if getattr(args, "update_notes", False):
+            response = client.patch(f"{api}/releases/{release['id']}", json={"body": args.body_file.read_text(encoding="utf-8")})
             response.raise_for_status()
-            asset = response.json()
-        if asset["size"] != size or asset.get("digest") != digest or asset["state"] != "uploaded":
-            raise ValueError("Empreinte ou taille de l'asset distant incorrecte.")
-        receipt = {"author": "IX-World", "repository": args.repo, "release_url": release["html_url"], "tag": args.tag, "target_commit": args.commit, "asset_url": asset["browser_download_url"], "asset_sha256": digest.removeprefix("sha256:"), "asset_bytes": size}
+            release = response.json()
+        receipt = {"author": "IX-World", "repository": args.repo, "release_url": release["html_url"], "tag": args.tag, "target_commit": args.commit, **uploaded[0]}
+        if uploaded[1:]:
+            receipt["additional_assets"] = uploaded[1:]
         args.receipt.parent.mkdir(parents=True, exist_ok=True)
         args.receipt.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8", newline="\n")
         print(json.dumps(receipt, indent=2), flush=True)
@@ -89,4 +104,6 @@ if __name__ == "__main__":
     parser.add_argument("--asset", type=Path, required=True)
     parser.add_argument("--body-file", type=Path, required=True)
     parser.add_argument("--receipt", type=Path, required=True)
+    parser.add_argument("--extra-asset", type=Path, action="append", default=[], help="Fichier deja present dans le manifeste de l'archive, a exposer aussi en telechargement direct.")
+    parser.add_argument("--update-notes", action="store_true", help="Mettre a jour la description de la release apres verification de tous les assets.")
     publish(parser.parse_args())

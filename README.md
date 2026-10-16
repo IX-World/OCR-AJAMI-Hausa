@@ -20,6 +20,9 @@ et dans la [release GitHub avec les poids](https://github.com/IX-World/OCR-AJAMI
 Les [résultats et le README détaillé](models/v9_all_grouped_20261016/README.md)
 documentent le split **4 972 / 200 / 401**, l'entraînement depuis une initialisation
 aléatoire et l'audit sans chevauchement d'images exactes ni de manuscrits.
+Les [valeurs des 48 époques et leurs courbes](models/v9_all_grouped_20261016/EPOCHS.md)
+sont publiées en tableaux, [CSV brut](models/v9_all_grouped_20261016/history.csv)
+et [JSON numérique](models/v9_all_grouped_20261016/epochs.json), avec les unités.
 
 | Partition | CER | WER | UWER |
 |---|---:|---:|---:|

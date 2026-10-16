@@ -122,6 +122,10 @@ La **V9 est entraînée**, avec un checkpoint sélectionné à l'époque 33 sur
 Les résultats train/validation/test et l'audit sont documentés dans
 [son README](models/v9_all_grouped_20261016/README.md). L'écart important avec le
 train limite la généralisation ; ce n'est pas une revendication de transcription fiable.
+Les [48 époques mesurées](models/v9_all_grouped_20261016/EPOCHS.md) sont exposées
+en tableaux et courbes PNG/SVG, ainsi qu'en CSV et JSON pour comparaison.
+Le packaging génère désormais les tableaux et le JSON de chaque modèle à partir
+de son historique réel ; les courbes sont optionnelles et nécessitent Matplotlib.
 Les poids sont publiés sur
 [Hugging Face](https://huggingface.co/IntelligenceResearchLab/Hausa-OCR-AJAMI-v9-20261015)
 et dans une [release GitHub](https://github.com/IX-World/OCR-AJAMI-Hausa/releases/tag/v9-hausa-all-grouped-20261016).
