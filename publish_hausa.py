@@ -21,14 +21,16 @@ def load_run(run, require_group_disjoint=False):
         raise ValueError("Le protocole archive a ete modifie depuis l'entrainement.")
     splits = json.loads((run / "split.json").read_text(encoding="utf-8"))
     validate_partitions(splits, protocol, require_groups=require_group_disjoint)
+    if require_group_disjoint and not protocol.get("all_usable_images_used",False):
+        raise ValueError("La production actuelle exige le protocole utilisant tout le corpus valide.")
     if protocol.get("separation_unit") == "source_and_known_scribe":
         for name,field in (("source_groups.json","source_groups_sha256"),("excluded_public_train.json","excluded_public_train_sha256")):
             if sha256(run/name) != protocol[field]:
                 raise ValueError("Manifeste de separation modifie dans le run.")
     if config["author"] != AUTHOR or config["version"] not in ("v9", "v10", "v11", "v12"):
         raise ValueError("Version ou attribution non reconnue.")
-    if metrics["examples"] != 400 or metrics["selection"] != "minimum_validation_CER":
-        raise ValueError("La publication exige le resultat reel du test public de 400 exemples.")
+    if metrics["examples"] != config["counts"]["test"] or metrics["selection"] != "minimum_validation_CER":
+        raise ValueError("La publication exige le resultat reel du test fige dans le protocole.")
     if sha256(run / "best_cer.pt") != metrics["checkpoint_sha256"]:
         raise ValueError("Checkpoint different de celui evalue.")
     if not (metrics["split_sha256"] == config["split_sha256"] == protocol["split_sha256"] == sha256(run / "split.json")):
@@ -74,7 +76,8 @@ def load_split_audit(run, config, metrics):
         raise ValueError("Audit d'un autre checkpoint ou split.")
     if audit["audit_code_sha256"] != sha256(run / "audit_hausa_run.py") or audit["markdown_sha256"] != sha256(run / "split_audit.md"):
         raise ValueError("Code ou compte rendu de l'audit modifie.")
-    if audit["counts"] != config["counts"] or not audit["public_test_preserved"] or not audit["public_train_coverage_complete"]:
+    expected_public_test=json.loads((run/"protocol.json").read_text(encoding="utf-8")).get("public_test_unchanged",True)
+    if audit["counts"] != config["counts"] or audit["public_test_preserved"] != expected_public_test or not audit["public_train_coverage_complete"]:
         raise ValueError("Couverture du corpus incoherente dans l'audit.")
     if any(any(values.values()) for values in audit["cross_partition_overlap"].values()):
         raise ValueError("Chevauchement dans l'audit de split.")
@@ -89,9 +92,15 @@ def write_model_card(run):
     unknown = json.dumps(config["unseen_characters"], ensure_ascii=False)
     initialization = "Initialisation aléatoire sans préentraînement" if config["from_scratch"] else f"Affinage depuis le checkpoint {config['initial_checkpoint_sha256']} sélectionné à l'époque {config['initial_checkpoint_epoch']}, avec un nouvel optimiseur"
     strict = protocol.get("separation_unit") == "source_and_known_scribe"
+    full = protocol.get("all_usable_images_used",False)
     separation = f"Séparation par manuscrit et copiste identifié. {protocol['excluded_public_train_count']} images du train public liées aux groupes du test sont exclues. Les sources 1 et 2 sont regroupées. Les identités de copistes non documentées restent une limite. Voir source_groups.json et excluded_public_train.json." if strict else "Protocole initial séparé par images : des manuscrits sont partagés. Ces résultats sont historiques et ne satisfont pas la nouvelle campagne séparée par provenance."
     validation_rule = "groupes de provenance entiers, avec effectif le plus proche de la cible 10 %" if strict else "stratification des images par source"
     preparation = "Appliquer prepare_hausa.py pour les corrections initiales, puis prepare_hausa_grouped.py pour la séparation par provenance. Les fichiers source_groups.json et excluded_public_train.json décrivent le nouveau protocole." if strict else "Appliquer prepare_hausa.py avec le split initial archivé."
+    test_rule = f"Test : **{counts['test']} exemples**, sélectionnés par groupes sur le corpus complet ; le test public initial n'est pas conservé comme partition." if full else f"Test : les **{counts['test']} exemples publics**, conservés dans leur partition d'origine."
+    if full:
+        separation = "Tous les exemples valides du corpus HF sont répartis entre les trois ensembles, sans manuscrit partagé. Les sources 1 et 2 sont regroupées par copiste connu. Seules les deux annotations contradictoires restent en quarantaine. L'identité des autres copistes n'est pas documentée."
+        validation_rule = "groupes entiers au plus près de 200 exemples de validation, puis de 400 exemples de test ; toutes les autres images sont entraînées"
+        preparation += " Utiliser impérativement --all-images pour retrouver ce split."
     complete = load_complete_metrics(run, config, metrics)
     audit_section = (run / "split_audit.md").read_text(encoding="utf-8") if load_split_audit(run, config, metrics) else ""
     if complete:
@@ -102,7 +111,7 @@ def write_model_card(run):
         result_table += "Les compteurs bruts et normalisés, les dénominateurs et les empreintes sont\ndans metrics.json et dans les trois fichiers *_metrics.json. Le tableau est\négalement exporté dans metrics.csv ; les prédictions sont dans train_predictions.csv,\nvalidation_predictions.csv et test_predictions.csv. Le code d'évaluation est\narchivé séparément dans evaluation_source/, avec ses empreintes dans metrics.json.\n"
         result_table += f"\nDéfinition de l'UWER dans ce projet : {UWER_DEFINITION}\nL'UWER ne remplace pas le WER strict ; la ponctuation reste évaluée.\n"
     else:
-        result_table = f"| Mesure | Test public |\n|---|---:|\n| CER | {metrics['cer']:.4%} |\n| WER | {metrics['wer']:.4%} |\n| Segments exacts | {metrics['exact_rate']:.4%} |\n\nLe bilan train/validation/test et l'UWER ne sont pas encore calculés pour ce run.\nExécuter le script actuel avec --evaluate-only une fois l'entraînement terminé.\n"
+        result_table = f"| Mesure | Test du protocole |\n|---|---:|\n| CER | {metrics['cer']:.4%} |\n| WER | {metrics['wer']:.4%} |\n| Segments exacts | {metrics['exact_rate']:.4%} |\n\nLe bilan train/validation/test et l'UWER ne sont pas encore calculés pour ce run.\nExécuter le script actuel avec --evaluate-only une fois l'entraînement terminé.\n"
     card = f'''---
 language:
 - ha
@@ -138,8 +147,8 @@ transcription intermédiaire en caractères Ajami.
 
 - Révision du dataset : `{config['dataset_revision']}`.
 - Entraînement : **{counts['train']} segments réels**.
-- Validation : **{counts['validation']} segments**, tirés uniquement du train public.
-- Test : les **400 exemples publics**, conservés dans leur partition d'origine.
+- Validation : **{counts['validation']} segments**, sélectionnés selon la règle ci-dessous.
+- {test_rule}
 - SHA-256 du split : `{config['split_sha256']}`.
 - Construction de la validation : {validation_rule} ; graine de référence {protocol['seed']}.
 - Les trois chemins invalides ont été corrigés ; la référence de « ranar »
@@ -256,8 +265,8 @@ def package_run(run, destination):
     predictions = list(csv.DictReader((run / "test_predictions.csv").open(encoding="utf-8-sig", newline="")))
     split = json.loads((run / "split.json").read_text(encoding="utf-8"))
     expected = {(row["partition"], row["file_name"]): row["transcript"] for row in split["test"]}
-    if len(predictions) != 400 or len({(r["partition"], r["file_name"]) for r in predictions}) != 400:
-        raise ValueError("Les predictions doivent couvrir exactement les 400 identifiants du test.")
+    if len(predictions) != len(expected) or len({(r["partition"], r["file_name"]) for r in predictions}) != len(expected):
+        raise ValueError("Les predictions doivent couvrir exactement les identifiants du test fige.")
     if any(expected.get((r["partition"], r["file_name"])) != r["reference"] for r in predictions):
         raise ValueError("References du test modifiees.")
     if sum(int(r["character_errors"]) for r in predictions) != metrics["character_errors"] or sum(int(r["word_errors"]) for r in predictions) != metrics["word_errors"]:
@@ -317,7 +326,7 @@ def publish_package(folder, repo, receipt_path=None):
     from huggingface_hub import HfApi
     api = HfApi()
     api.create_repo(repo, repo_type="model", private=False, exist_ok=True)
-    commit = api.upload_folder(repo_id=repo, repo_type="model", folder_path=str(folder), commit_message=f"IX-World: publish verified {manifest['version']} on Hausa public test 400")
+    commit = api.upload_folder(repo_id=repo, repo_type="model", folder_path=str(folder), commit_message=f"IX-World: publish verified {manifest['version']} on frozen Hausa test")
     remote = api.model_info(repo, revision=commit.oid, files_metadata=True)
     if remote.private:
         raise ValueError("Le depot Hugging Face est prive ; publication publique non confirmee.")

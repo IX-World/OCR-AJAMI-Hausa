@@ -17,7 +17,7 @@ from hausa_ocr.models import build_model
 from hausa_ocr.metrics import normalize_uwer
 from hausa_ocr.reporting import cer_trend, print_epoch_report
 from hausa_ocr.protocol import validate_partitions
-from prepare_hausa_grouped import group_validation
+from prepare_hausa_grouped import group_validation,full_corpus_split
 from prepare_hausa import corrected_rows, stratified_validation
 from publish_hausa import load_run
 
@@ -179,6 +179,22 @@ class ProtocolTests(unittest.TestCase):
             data=path.read_bytes()
             self.assertNotIn(b"\r\n",data)
             self.assertEqual(hashlib.sha256(data).hexdigest(),hashlib.sha256(data.replace(b"\r\n",b"\n")).hexdigest())
+
+    def test_full_corpus_split_uses_all_images_and_whole_groups(self):
+        sizes={"1_2":1258,"3":215,"4":908,"6":42,"7":19,"8":1514,"9":650,"10":24,"11":1,"15":181,"16":172,"17":445,"18":144}
+        rows=[{"group_id":group,"file_name":f"{group}-{i}"} for group,count in sizes.items() for i in range(count)]
+        split=full_corpus_split(rows)
+        self.assertEqual({p:len(r) for p,r in split.items()},{"train":4972,"validation":200,"test":401})
+        self.assertEqual(sum(map(len,split.values())),5573)
+        for a,b in (("train","validation"),("train","test"),("validation","test")):
+            self.assertFalse({r['group_id'] for r in split[a]} & {r['group_id'] for r in split[b]})
+
+    def test_reconstructed_split_distinguishes_public_folder_from_actual_role(self):
+        rows={part:[{"partition":"test", "file_name":part+'.png',"pixel_sha256":part,"source":source,"group_id":source,"split":part}] for part,source in (("train","8"),("validation","15"),("test","3"))}
+        report={"separation_unit":"source_and_known_scribe","public_test_unchanged":False,"all_usable_images_used":True,"source_to_group":{"8":"8","15":"15","3":"3"}}
+        self.assertTrue(validate_partitions(rows,report,require_groups=True))
+        report['public_test_unchanged']=True
+        with self.assertRaises(ValueError):validate_partitions(rows,report,require_groups=True)
 
     def test_corrupt_release_archive_is_rejected_before_github_access(self):
         import publish_github_release

@@ -108,6 +108,8 @@ def final_evaluation(model, checkpoint, splits, vocab, report, args, output, dev
         clean = LineDataset(args.dataset, splits[part], vocab, args.version, training=False, seed=args.seed)
         print(f"Evaluation finale {part.upper()} : {len(clean)} segments, sans augmentation...", flush=True)
         results, predictions = evaluate(model, loader(clean, args.batch_size, device), vocab, device)
+        for prediction in predictions:
+            prediction["evaluated_partition"]=part
         results.update(common, evaluated_partition=part, augmented=False)
         if part == "test":
             results["validation_at_selected_epoch"] = checkpoint["validation"]
@@ -136,12 +138,13 @@ def final_evaluation(model, checkpoint, splits, vocab, report, args, output, dev
 
 
 def main():
-    parser = argparse.ArgumentParser(description="IX-World : V9--V12 sur le meme test public Hausa")
+    parser = argparse.ArgumentParser(description="IX-World : V9--V12 sur un protocole Hausa commun par provenance")
     base = Path(__file__).resolve().parent.parent
     parser.add_argument("--version", choices=("v9", "v10", "v11", "v12"), required=True)
     parser.add_argument("--dataset", type=Path, default=base / "Hausa_repo_2026-10-15")
-    parser.add_argument("--protocol", type=Path, default=base / "protocol_hausa_grouped_20261016")
+    parser.add_argument("--protocol", type=Path, default=base / "protocol_hausa_all_grouped_20261016")
     parser.add_argument("--require-group-disjoint", action="store_true")
+    parser.add_argument("--require-all-images", action="store_true")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--epochs", type=int)
     parser.add_argument("--min-epochs", type=int)
@@ -170,7 +173,7 @@ def main():
         parser.error("learning-rate doit etre positif et reserve a un nouveau train ou affinage ; resume conserve l'optimiseur.")
     args.learning_rate = args.learning_rate or (1e-4 if args.finetune_from else 1e-3)
     default_name = f"{args.version}_seed{args.seed if args.seed is not None else 42}" + ("_affinage" if args.finetune_from else "")
-    output = (args.output or base / "runs_hausa_grouped_20261016" / default_name).resolve()
+    output = (args.output or base / "runs_hausa_all_grouped_20261016" / default_name).resolve()
     previous_config = {}
     if (args.resume or args.test_only) and (output / "config.json").exists():
         previous_config = json.loads((output / "config.json").read_text(encoding="utf-8"))
@@ -196,6 +199,8 @@ def main():
     print("Verification du protocole et des images...", flush=True)
     splits, vocab, report = load_protocol(args.dataset, args.protocol)
     validate_partitions(splits, report, require_groups=args.require_group_disjoint)
+    if args.require_all_images and not report.get("all_usable_images_used",False):
+        raise ValueError("Ce lancement exige toutes les images valides du nouveau corpus.")
     model = build_model(args.version, len(vocab)).to(device)
     datasets = {part: LineDataset(args.dataset, rows, vocab, args.version, part == "train", args.seed) for part, rows in splits.items()}
     sampler = WidthSampler(datasets["train"], args.batch_size, args.seed)

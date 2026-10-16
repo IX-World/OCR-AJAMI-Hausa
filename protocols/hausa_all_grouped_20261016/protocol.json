@@ -1,0 +1,171 @@
+{
+  "author": "IX-World",
+  "dataset_repo": "IntelligenceResearchLab/Hausa",
+  "dataset_revision": "1fb85fa070b6cf6432f1d45d21f78851d57f8944",
+  "seed": 42,
+  "public_test_unchanged": false,
+  "original_train_metadata_sha256": "d031d7a4f74ab058bc468424740c3e52810d8b333e158ae1aae3a9f3fd424d1e",
+  "test_metadata_sha256": "c29dd39756eff71fb39d0cd4a5c8b42ff1a52f7ce08a06a34a15f4ae6fcdc275",
+  "counts": {
+    "train": 4972,
+    "validation": 200,
+    "test": 401
+  },
+  "corrections": [
+    {
+      "line": 3964,
+      "before": "ajami_00462png",
+      "after": "ajami_00462.png",
+      "reason": "filename_typo"
+    },
+    {
+      "line": 4682,
+      "before": "ajami_01O53.png",
+      "after": "ajami_01053.png",
+      "reason": "filename_typo"
+    },
+    {
+      "line": 4872,
+      "before": "ajami_01243png",
+      "after": "ajami_01243.png",
+      "reason": "filename_typo"
+    },
+    {
+      "line": 4918,
+      "before": "ajami_01299.png",
+      "after": "ajami_01289.png",
+      "reason": "sequence_01288_01289_01290_and_visual_check"
+    },
+    {
+      "line": 5119,
+      "file_name": "c_ajami_00147.png",
+      "reason": "identical_metadata_duplicate_removed"
+    }
+  ],
+  "excluded": [
+    {
+      "row": {
+        "file_name": "a_ajami_03400.png",
+        "transcript": "da",
+        "source": "8"
+      },
+      "reason": "identical_pixels_with_conflicting_labels_user_requested_exclusion"
+    },
+    {
+      "row": {
+        "file_name": "a_ajami_03401.png",
+        "transcript": "mutane",
+        "source": "8"
+      },
+      "reason": "identical_pixels_with_conflicting_labels_user_requested_exclusion"
+    }
+  ],
+  "vocab_policy": "training_references_only_with_UNK; evaluation_references_remain_verbatim_NFC",
+  "unseen_characters": {
+    "validation": [],
+    "test": [
+      "'",
+      "1",
+      "[",
+      "]"
+    ]
+  },
+  "source_distribution": {
+    "train": {
+      "11": 1,
+      "4": 908,
+      "1": 883,
+      "16": 172,
+      "2": 375,
+      "8": 1514,
+      "9": 650,
+      "17": 445,
+      "10": 24
+    },
+    "validation": {
+      "15": 181,
+      "7": 19
+    },
+    "test": {
+      "3": 215,
+      "18": 144,
+      "6": 42
+    }
+  },
+  "exact_pixel_overlap": 0,
+  "near_duplicates_checked": false,
+  "source_held_out_validation": true,
+  "ctc_infeasible_at_height_96": [],
+  "split_sha256": "fdb453e5f92147f31bc236998e067823b07bdce4b965811081b1d54edcaae7b5",
+  "vocab_sha256": "f92c368520aad95130f909a708fb58864e1f766f10f87d18c96690d1b20ced59",
+  "corrected_train_metadata_sha256": "4e0d52f6564e7141964eb8c7500367068d23520bca51130b08296198264ff6e6",
+  "protocol_id": "hausa_all_grouped_20261016",
+  "separation_unit": "source_and_known_scribe",
+  "source_to_group": {
+    "1": "sources_1_2",
+    "2": "sources_1_2",
+    "3": "source_3",
+    "4": "source_4",
+    "6": "source_6",
+    "7": "source_7",
+    "8": "source_8",
+    "9": "source_9",
+    "10": "source_10",
+    "11": "source_11",
+    "15": "source_15",
+    "16": "source_16",
+    "17": "source_17",
+    "18": "source_18"
+  },
+  "writer_disjointness": "known_links_only",
+  "unknown_scribe_identities": true,
+  "validation_selection": "whole groups closest to 200 validation examples; then whole remaining groups closest to 400 test examples; ties prefer more groups then lexical order; no scores used",
+  "eligible_public_train": 5173,
+  "excluded_public_train_count": 0,
+  "group_assignment": {
+    "train": [
+      "source_10",
+      "source_11",
+      "source_16",
+      "source_17",
+      "source_4",
+      "source_8",
+      "source_9",
+      "sources_1_2"
+    ],
+    "validation": [
+      "source_15",
+      "source_7"
+    ],
+    "test": [
+      "source_18",
+      "source_3",
+      "source_6"
+    ]
+  },
+  "base_split_sha256": "6548df277ff5ebbb491f208eae7f14e7802e948b96d045545f8ae0009a1d39cb",
+  "original_public_partition_retained_as_provenance": true,
+  "all_usable_images_used": true,
+  "eligible_examples": 5573,
+  "validation_target_examples": 200,
+  "test_target_examples": 400,
+  "overlap_with_initial_protocol": {
+    "train": {
+      "train": 4336,
+      "validation": 482,
+      "test": 154
+    },
+    "validation": {
+      "train": 152,
+      "validation": 17,
+      "test": 31
+    },
+    "test": {
+      "train": 168,
+      "validation": 18,
+      "test": 215
+    }
+  },
+  "source_groups_sha256": "389f6a0e5b78767b9b0e74546409ecaeaf7f83c1c1238e05c7a76b9ab4390fda",
+  "excluded_public_train_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+}

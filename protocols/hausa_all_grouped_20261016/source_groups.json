@@ -1,0 +1,44 @@
+{
+  "source_to_group": {
+    "1": "sources_1_2",
+    "2": "sources_1_2",
+    "3": "source_3",
+    "4": "source_4",
+    "6": "source_6",
+    "7": "source_7",
+    "8": "source_8",
+    "9": "source_9",
+    "10": "source_10",
+    "11": "source_11",
+    "15": "source_15",
+    "16": "source_16",
+    "17": "source_17",
+    "18": "source_18"
+  },
+  "known_shared_scribes": [
+    {
+      "sources": [
+        "1",
+        "2"
+      ],
+      "name": "Ibrahim Yaqubu Gusau",
+      "evidence": "Dataset README.md, manuscript table, sources 1 and 2"
+    }
+  ],
+  "dataset_readme_sha256": "4cacbd91622b29ca46ef90c5bd31fa0d791dc9cf23fa9cd40bd54885a62f8f01",
+  "unknown_scribe_identity_sources": [
+    "3",
+    "4",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "15",
+    "16",
+    "17",
+    "18"
+  ],
+  "scope": "Source-disjoint and known-scribe-disjoint; unknown scribes cannot be certified distinct."
+}

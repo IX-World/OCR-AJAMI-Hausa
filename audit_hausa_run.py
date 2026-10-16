@@ -57,9 +57,11 @@ def audit(run, dataset, output):
     for part, field in (("train", "corrected_train_metadata_sha256"), ("test", "test_metadata_sha256")):
         if sha256(dataset / "data" / part / "metadata.jsonl") != protocol[field]:
             raise ValueError("Metadonnees publiques modifiees.")
-        actual = split["test"] if part == "test" else split["train"] + split["validation"]
-        if part == "train":
-            actual = actual + excluded
+        if protocol.get("all_usable_images_used",False):
+            actual=[r for entries in split.values() for r in entries if r["partition"]==part]
+        else:
+            actual = split["test"] if part == "test" else split["train"] + split["validation"]
+            if part == "train":actual = actual + excluded
         public = read_rows(dataset / "data" / part / "metadata.jsonl")
         if sorted(map(text_record, actual)) != sorted(map(text_record, public)):
             raise ValueError("Le split ne couvre pas les metadonnees publiques corrigees.")
@@ -107,6 +109,7 @@ def audit(run, dataset, output):
             if abs(value - summary["partitions"][part][field]) > 1e-12:
                 raise ValueError(f"Score {field} non reproductible pour {part}.")
     result = {"author": "IX-World", "version": config["version"], "dataset_revision": config["dataset_revision"], "split_sha256": config["split_sha256"], "checkpoint_sha256": summary["checkpoint_sha256"], "audit_code_sha256": sha256(__file__), "counts": config["counts"], "public_test_preserved": True, "public_train_coverage_complete": True, "excluded_public_train_count":len(excluded), "group_disjoint":strict, "cross_partition_overlap": overlaps, "pixel_overlap_method": "stored grayscale pixel hashes from preparation; original file hashes checked by evaluator", "near_duplicates_checked": False, "composition": composition, "error_analysis": analyses}
+    result["public_test_preserved"]=protocol.get("public_test_unchanged",True)
     (output / "split_audit.md").write_text(markdown(result), encoding="utf-8", newline="\n")
     result["markdown_sha256"] = sha256(output / "split_audit.md")
     write_json(output / "split_audit.json", result)
@@ -119,7 +122,7 @@ def markdown(report):
     val, test = parts["validation"], parts["test"]
     text = "## Audit du split et interpretation de l'ecart validation/test\n\n"
     text += f"Audit du checkpoint `{report['checkpoint_sha256']}` et du split `{report['split_sha256']}`.\n\n"
-    text += "Le test public de 400 exemples est conserve. Le train, la validation et les exclusions documentees couvrent exactement le train public corrige. Aucun identifiant ni hash de pixels exact n'est partage entre partitions. La recherche de quasi-doublons n'a pas ete realisee. Les CER, WER et UWER ont ete recalcules depuis les predictions et leurs references : ils correspondent aux fichiers de scores.\n\n"
+    text += "Les exemples et leurs references couvrent exactement le corpus corrige, en tenant compte des exclusions documentees. Aucun identifiant ni hash de pixels exact n'est partage entre partitions. La recherche de quasi-doublons n'a pas ete realisee. Les CER, WER et UWER ont ete recalcules depuis les predictions et leurs references : ils correspondent aux fichiers de scores.\n\n"
     text += "| Composition | Train | Validation | Test |\n|---|---:|---:|---:|\n"
     for label, field, form in (("Segments", "examples", "d"), ("Mots", "reference_words", "d"), ("Mots moyens par segment", "mean_words_per_segment", ".2f"), ("Segments d'un seul mot", "single_word_segments", "d"), ("Mots stricts absents du train (occurrences)", "strict_oov_word_occurrences", "d"), ("References completes deja presentes dans le train", "reference_text_seen_in_train", "d"), ("Segments de sources absentes du train", "segments_from_sources_absent_from_train", "d")):
         text += "| " + label + " | " + " | ".join(format(parts[p][field], form) for p in ("train", "validation", "test")) + " |\n"
@@ -132,7 +135,7 @@ def markdown(report):
             cells.extend([f"{value['examples']} / {value['reference_words']}", f"{value['wer']:.2%}"] if value else ["0 / 0", "non mesure"])
         text += f"| {label} | " + " | ".join(cells) + " |\n"
     text += "\nCes groupes decrivent des associations, sans isoler une cause unique. La longueur ne majore pas mecaniquement le WER, qui est normalise par le nombre de mots ; elle change notamment les conditions visuelles de reconnaissance. La validation intervient aussi dans la selection du checkpoint et ne constitue pas un second test independant. Le WER des sources connues et inconnues du test doit etre examine avant d'attribuer l'ecart aux seules sources. Les conventions d'annotation et la qualite visuelle n'ont pas ete relues integralement dans cet audit.\n\n"
-    text += "Le split et le checkpoint restent figes pour comparer V9 a V12. Aucun exemple du test n'a ete deplace pour ameliorer les scores. Une validation a sources exclues pourra etre etudiee dans une experience distincte, definie avant les nouveaux entrainements.\n"
+    text += "Le split et le checkpoint documentes restent figes pour comparer V9 a V12. Les decisions de repartition reposent sur les groupes de provenance et leurs effectifs. Le fichier de protocole indique si le test public initial est conserve ou reconstruit.\n"
     return text
 
 

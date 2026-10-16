@@ -42,7 +42,10 @@ def publish(args):
         for name, expected in manifest["files"].items():
             if hashlib.sha256(archive.read(name)).hexdigest() != expected:
                 raise ValueError(f"Fichier modifie dans l'archive : {name}")
-        validate_partitions(json.loads(archive.read("split.json")),json.loads(archive.read("protocol.json")),require_groups=True)
+        protocol=json.loads(archive.read("protocol.json"))
+        validate_partitions(json.loads(archive.read("split.json")),protocol,require_groups=True)
+        if not protocol.get("all_usable_images_used",False):
+            raise ValueError("Le protocole actuel utilise tout le corpus valide.")
     digest = "sha256:" + hashlib.sha256(args.asset.read_bytes()).hexdigest()
     size = args.asset.stat().st_size
     api = f"https://api.github.com/repos/{args.repo}"

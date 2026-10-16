@@ -5,6 +5,7 @@ hausa_ocr/*.json text eol=lf
 prepare_hausa.py text eol=lf
 prepare_hausa_grouped.py text eol=lf
 protocols/hausa_grouped_20261016/* text eol=lf
+protocols/hausa_all_grouped_20261016/* text eol=lf
 README_HAUSA_GROUPED_20261016.md text eol=lf
 download_hausa_latest.py text eol=lf
 train_hausa.py text eol=lf

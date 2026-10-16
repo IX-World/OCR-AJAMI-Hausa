@@ -18,8 +18,12 @@ def validate_partitions(splits, report, require_groups=False):
         if not rows or len(ids) != len(rows) or len(pixels) != len(rows):
             raise ValueError(f"Partition {part} vide ou contenant des doublons.")
         origin = "test" if part == "test" else "train"
-        if any(r["partition"] != origin for r in rows):
+        if any(r["partition"] not in ("train", "test") for r in rows):
+            raise ValueError("Origine publique inconnue.")
+        if report.get("public_test_unchanged", True) and any(r["partition"] != origin for r in rows):
             raise ValueError("Origine publique train/test incorrecte.")
+        if report.get("all_usable_images_used",False) and any(r.get("split") != part for r in rows):
+            raise ValueError("Appartenance au nouveau split incoherente.")
         sources = {str(r["source"]) for r in rows}
         if strict and any(mapping.get(str(r["source"])) != r.get("group_id") for r in rows):
             raise ValueError("Groupe de provenance incoherent.")

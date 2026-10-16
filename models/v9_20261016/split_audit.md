@@ -2,7 +2,7 @@
 
 Audit du checkpoint `02e84bffcff1293c0b17523c1dca3f0dddb8b12d55c0ed878d6a9261f084cc1d` et du split `6548df277ff5ebbb491f208eae7f14e7802e948b96d045545f8ae0009a1d39cb`.
 
-Le test public de 400 exemples est conserve. Le train, la validation et les exclusions documentees couvrent exactement le train public corrige. Aucun identifiant ni hash de pixels exact n'est partage entre partitions. La recherche de quasi-doublons n'a pas ete realisee. Les CER, WER et UWER ont ete recalcules depuis les predictions et leurs references : ils correspondent aux fichiers de scores.
+Les exemples et leurs references couvrent exactement le corpus corrige, en tenant compte des exclusions documentees. Aucun identifiant ni hash de pixels exact n'est partage entre partitions. La recherche de quasi-doublons n'a pas ete realisee. Les CER, WER et UWER ont ete recalcules depuis les predictions et leurs references : ils correspondent aux fichiers de scores.
 
 | Composition | Train | Validation | Test |
 |---|---:|---:|---:|
@@ -28,4 +28,4 @@ La validation contient 76.79% de segments d'un seul mot, contre 20.25% au test. 
 
 Ces groupes decrivent des associations, sans isoler une cause unique. La longueur ne majore pas mecaniquement le WER, qui est normalise par le nombre de mots ; elle change notamment les conditions visuelles de reconnaissance. La validation intervient aussi dans la selection du checkpoint et ne constitue pas un second test independant. Le WER des sources connues et inconnues du test doit etre examine avant d'attribuer l'ecart aux seules sources. Les conventions d'annotation et la qualite visuelle n'ont pas ete relues integralement dans cet audit.
 
-Le split et le checkpoint restent figes pour comparer V9 a V12. Aucun exemple du test n'a ete deplace pour ameliorer les scores. Une validation a sources exclues pourra etre etudiee dans une experience distincte, definie avant les nouveaux entrainements.
+Le split et le checkpoint documentes restent figes pour comparer V9 a V12. Les decisions de repartition reposent sur les groupes de provenance et leurs effectifs. Le fichier de protocole indique si le test public initial est conserve ou reconstruit.

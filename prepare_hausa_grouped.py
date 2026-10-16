@@ -1,4 +1,4 @@
-"""IX-World: preserve the public test and keep complete provenance groups apart."""
+"""IX-World: build complete provenance groups with optional public-test preservation."""
 import argparse
 import itertools
 import json
@@ -24,7 +24,21 @@ def group_validation(rows, ratio):
     return [r for r in rows if r["group_id"] not in validation_groups], [r for r in rows if r["group_id"] in validation_groups]
 
 
-def prepare(dataset, base_protocol, output):
+def full_corpus_split(rows, validation_target=200, test_target=400):
+    groups=defaultdict(list)
+    for row in rows:
+        groups[row["group_id"]].append(row)
+    if len(groups)<3:
+        raise ValueError("Trois groupes distincts sont necessaires.")
+    def select(names,target,remaining):
+        subsets=(s for n in range(1,len(names)-remaining+1) for s in itertools.combinations(sorted(names),n))
+        return set(min(subsets,key=lambda s:(abs(sum(len(groups[g]) for g in s)-target),-len(s),s)))
+    val_groups=select(set(groups),validation_target,2)
+    test_groups=select(set(groups)-val_groups,test_target,1)
+    return {"train":[r for r in rows if r["group_id"] not in val_groups|test_groups],"validation":[r for r in rows if r["group_id"] in val_groups],"test":[r for r in rows if r["group_id"] in test_groups]}
+
+
+def prepare(dataset, base_protocol, output, all_images=False):
     base = json.loads((base_protocol / "protocol.json").read_text(encoding="utf-8"))
     for name, field in (("split.json", "split_sha256"), ("vocab.json", "vocab_sha256")):
         if sha256(base_protocol / name) != base[field]:
@@ -48,11 +62,24 @@ def prepare(dataset, base_protocol, output):
     eligible = [row for row in public_train if row["group_id"] not in test_groups]
     train, validation = group_validation(eligible, 0.1)
     splits = {"train": train, "validation": validation, "test": rows["test"]}
+    if all_images:
+        all_rows=sorted([r for part in rows.values() for r in part],key=lambda r:(r["partition"],r["file_name"]))
+        splits=full_corpus_split(all_rows)
+        for part,entries in splits.items():
+            for row in entries:row["split"]=part
+        train,validation=splits["train"],splits["validation"]
+        excluded=[]
     chars = sorted({c for row in train for c in row["transcript"]})
     vocab = {"<BLANK>": 0, "<UNK>": 1, **{c: i + 2 for i, c in enumerate(chars)}}
     provenance = {"source_to_group": mapping, "known_shared_scribes": [{"sources": ["1", "2"], "name": "Ibrahim Yaqubu Gusau", "evidence": "Dataset README.md, manuscript table, sources 1 and 2"}], "dataset_readme_sha256": sha256(dataset / "README.md"), "unknown_scribe_identity_sources": [s for s in sources if s not in ("1", "2")], "scope": "Source-disjoint and known-scribe-disjoint; unknown scribes cannot be certified distinct."}
     report = dict(base)
     report.update(protocol_id="hausa_grouped_20261016", separation_unit="source_and_known_scribe", source_to_group=mapping, counts={p:len(r) for p,r in splits.items()}, public_test_unchanged=True, source_held_out_validation=True, writer_disjointness="known_links_only", unknown_scribe_identities=True, validation_ratio_target=0.1, validation_ratio_of_eligible_train=len(validation)/len(eligible), validation_selection="whole groups; nearest target size; ties prefer more groups then lexical order; no scores used", eligible_public_train=len(eligible), excluded_public_train_count=len(excluded), source_distribution={p:dict(Counter(str(r["source"]) for r in entries)) for p,entries in splits.items()}, group_assignment={p:sorted({r["group_id"] for r in entries}) for p,entries in splits.items()}, unseen_characters={p:sorted({c for r in splits[p] for c in r["transcript"]}-set(chars)) for p in ("validation","test")}, base_split_sha256=base["split_sha256"])
+    if all_images:
+        report.update(protocol_id="hausa_all_grouped_20261016",public_test_unchanged=False,original_public_partition_retained_as_provenance=True,all_usable_images_used=True,eligible_examples=sum(len(r) for r in splits.values()),eligible_public_train=len(public_train),validation_target_examples=200,test_target_examples=400,validation_selection="whole groups closest to 200 validation examples; then whole remaining groups closest to 400 test examples; ties prefer more groups then lexical order; no scores used")
+        for field in ("validation_ratio_target","validation_ratio_of_public_train","validation_ratio_of_eligible_train"):
+            report.pop(field,None)
+        old_ids={p:{(r["partition"],r["file_name"]) for r in entries} for p,entries in old.items()}
+        report["overlap_with_initial_protocol"]={p:{previous:len({(r["partition"],r["file_name"]) for r in entries}&ids) for previous,ids in old_ids.items()} for p,entries in splits.items()}
     validate_partitions(splits, report, require_groups=True)
     infeasible = []
     for part, entries in splits.items():
@@ -62,7 +89,8 @@ def prepare(dataset, base_protocol, output):
             if max(4,round(row["width"]*96/row["height"]))//4 < required:
                 infeasible.append({"partition":part,"file_name":row["file_name"]})
     report["ctc_infeasible_at_height_96"] = infeasible
-    report["validation_ratio_of_public_train"] = len(validation)/len(public_train)
+    if not all_images:
+        report["validation_ratio_of_public_train"] = len(validation)/len(public_train)
     if any(r["partition"] == "train" for r in infeasible):
         raise ValueError("Un exemple train ne permet pas l'alignement CTC.")
     if output.exists() and (output / "split.json").exists() and json.loads((output / "split.json").read_text(encoding="utf-8")) != splits:
@@ -85,5 +113,6 @@ if __name__ == "__main__":
     parser.add_argument("--dataset",type=Path,required=True)
     parser.add_argument("--base-protocol",type=Path,required=True)
     parser.add_argument("--output",type=Path,required=True)
+    parser.add_argument("--all-images",action="store_true")
     args=parser.parse_args()
-    prepare(args.dataset.resolve(),args.base_protocol.resolve(),args.output.resolve())
+    prepare(args.dataset.resolve(),args.base_protocol.resolve(),args.output.resolve(),args.all_images)
