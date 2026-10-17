@@ -15,7 +15,14 @@ def main():
         raise ValueError("Ce script doit etre execute dans BASE/OCR-AJAMI-Hausa.")
     context = base / "v13_context.json"
     if not context.exists():
-        shutil.copy2(repo / "configs" / "v13_context.json", context)
+        template = repo / "configs" / "v13_context.json"
+        if not template.is_file():
+            sparse = subprocess.run(["git", "-C", str(repo), "config", "--bool", "core.sparseCheckout"], capture_output=True, text=True)
+            if sparse.returncode == 0 and sparse.stdout.strip() == "true":
+                subprocess.run(["git", "-C", str(repo), "sparse-checkout", "add", "configs"], check=True)
+        if not template.is_file():
+            raise FileNotFoundError("Modele de contexte absent : recuperer configs/v13_context.json depuis Git avant l'installation.")
+        shutil.copy2(template, context)
     for name in ["run_v9_v12.cmd", "test_v9_v12.cmd", "preparer_v13.cmd", "lancer_v13.cmd", "tester_v13.cmd", "reprendre_v13.cmd", "tester_beam_v10_validation.cmd"] + [f"{action}_{version}.cmd" for action in ("lancer", "tester", "affiner") for version in ("v9", "v10", "v11", "v12")]:
         text = f'@echo off\r\ncall "%~dp0OCR-AJAMI-Hausa\\{name}" %*\r\nexit /b %errorlevel%\r\n'
         target = base / name
