@@ -83,6 +83,24 @@ reste insuffisante. Cette comparaison porte sur une seule graine et ne constitue
 pas une conclusion générale sur les cartes d'encre. Les objectifs CER ≤ 20 % et
 WER ≤ 30 % ne sont pas atteints.
 
+### Beam search V10 sur validation uniquement
+
+Le [script et sa commande CMD](README_BEAM_V10_VALIDATION.md) comparent le
+glouton et le beam search sur les **200 images de validation**, sans réentraîner
+V10 ni évaluer le test expérimental. Le glouton doit reproduire exactement les
+prédictions historiques. Les émissions sont mises en cache pour les essais suivants.
+
+```cmd
+cd /d "D:\ai_test"
+call tester_beam_v10_validation.cmd
+```
+
+Le premier essai CPU du 17 octobre donne un WER de validation de 88,1432 % pour
+le glouton et 88,3669 % pour les beams 10 et 25, sans modèle de langue. Il ne
+montre donc pas d'amélioration du WER. Les hypothèses n-best sont enregistrées
+pour préparer un futur reclassement linguistique ; aucun apprentissage sémantique
+n'est effectué dans ce premier essai.
+
 ## Protocole initial archivé — 15 octobre 2026
 
 Les commandes locales, corrections du dataset, configurations et procédures

@@ -15,6 +15,9 @@
 !/download_hausa_latest.py
 !/publish_hausa.py
 !/audit_hausa_run.py
+!/eval_beam_v10_validation.py
+!/tester_beam_v10_validation.cmd
+!/README_BEAM_V10_VALIDATION.md
 !/publish_github_release.py
 !/python_ocr.cmd
 !/run_v9_v12.cmd
