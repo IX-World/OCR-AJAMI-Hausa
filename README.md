@@ -60,7 +60,28 @@ V10 et V11 partagent le même CNN à six convolutions, BiLSTM–CTC, huit vues,
 batch 24 et split 4 972/200/401. V11 ajoute un canal d'encre locale à l'image
 en niveaux de gris : fond gaussien de rayon 5 pixels, différence positive fond–gris,
 gain 1,6, puis normalisation. Les deux apprentissages partent d'une initialisation
-aléatoire ; l'intérêt de ce canal doit être mesuré. V13 reste une proposition.
+aléatoire ; les résultats V11 sont rapportés ci-dessous. V13 reste une proposition.
+
+### V11 entraînée — publication du 17 octobre 2026
+
+Le checkpoint de l'époque **39**, sélectionné après **54 époques**, est publié sur
+[Hugging Face](https://huggingface.co/IntelligenceResearchLab/Hausa-OCR-AJAMI-v11-20261015)
+et dans la [release GitHub](https://github.com/IX-World/OCR-AJAMI-Hausa/releases/tag/v11-hausa-all-grouped-20261017).
+Voir le [README V11](models/v11_all_grouped_20261017/README.md),
+les [54 époques et les courbes](models/v11_all_grouped_20261017/EPOCHS.md)
+et la [comparaison détaillée](models/v11_all_grouped_20261017/RELEASE_NOTES.md).
+
+| Partition | CER | WER | UWER |
+|---|---:|---:|---:|
+| Train | 0,00 % | 0,00 % | 0,00 % |
+| Validation | 41,70 % | 86,80 % | 83,45 % |
+| Test | 35,71 % | 83,48 % | 82,70 % |
+
+L'ajout du canal d'encre ne démontre pas de gain sur ce test : V10 mesurait
+CER 34,88 % et WER 79,78 %. Le train est entièrement reconnu, mais la généralisation
+reste insuffisante. Cette comparaison porte sur une seule graine et ne constitue
+pas une conclusion générale sur les cartes d'encre. Les objectifs CER ≤ 20 % et
+WER ≤ 30 % ne sont pas atteints.
 
 ## Protocole initial archivé — 15 octobre 2026
 
