@@ -9,6 +9,15 @@
 !/hausa_ocr/
 !/tests/
 !/train_hausa.py
+!/train_v13.py
+!/prepare_v13_semantics.py
+!/requirements-v13-semantic.txt
+!/README_V13.md
+!/configs/
+!/preparer_v13.cmd
+!/lancer_v13.cmd
+!/tester_v13.cmd
+!/reprendre_v13.cmd
 !/prepare_hausa.py
 !/prepare_hausa_grouped.py
 !/README_HAUSA_GROUPED_20261016.md

@@ -101,6 +101,21 @@ montre donc pas d'amélioration du WER. Les hypothèses n-best sont enregistrée
 pour préparer un futur reclassement linguistique ; aucun apprentissage sémantique
 n'est effectué dans ce premier essai.
 
+## V13 : supervision sémantique contextuelle
+
+Le [code V13 et son guide CMD](README_V13.md) conservent le split commun
+4 972/200/401 et ajoutent une supervision auxiliaire AfriBERTa figée, préparée
+sur CPU à partir du train uniquement. Le CNN–BiLSTM–CTC est initialisé de zéro ;
+les microbatches, l'accumulation et le budget de pixels visent la GTX 1060 6 Go.
+Le contexte documenté de langue, d'époque et de localité conditionne le réseau.
+Les époques/localités absentes restent inconnues et masquées ; aucune capacité
+historique ou régionale ni aucun gain n'est annoncé sans annotations et résultats.
+
+```cmd
+cd /d "D:\ai_test"
+call preparer_v13.cmd && call lancer_v13.cmd
+```
+
 ## Protocole initial archivé — 15 octobre 2026
 
 Les commandes locales, corrections du dataset, configurations et procédures
@@ -113,7 +128,8 @@ La campagne active du 16 octobre repart de zéro pour les quatre versions,
 avec une initialisation aléatoire et les sorties dans
 `D:\ai_test\runs_hausa_20261016_zero`. Les commandes de lancement imposent
 `--fresh-start` et refusent de charger un ancien checkpoint pour initialiser le train.
-**V13 reste une proposition, sans modèle implémenté ni résultat annoncé.**
+**V13 dispose désormais d'un [code séparé](README_V13.md) ; aucun résultat V13
+n'est annoncé avant son entraînement local et son évaluation.**
 
 Les nouveaux lancements affichent un bilan détaillé à chaque époque, avec cinq
 exemples de validation. Le bilan final exporte CER, WER, UWER (casse et diacritiques

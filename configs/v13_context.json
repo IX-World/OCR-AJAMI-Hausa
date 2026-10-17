@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "calendar": "CE",
+  "notes": "Les references du corpus sont haoussa en alphabet latin. Ne pas confondre origine de l'ecriture, pays de conservation, origine du relecteur et localite linguistique. Les dates sont celles de composition du texte, en annees de l'ere commune. Ne completer une source qu'avec une preuve documentaire. Les dates de copie se documentent dans evidence et ne remplacent pas automatiquement la date du texte.",
+  "defaults": {
+    "language": "ha",
+    "locality": null,
+    "year_start": null,
+    "year_end": null,
+    "evidence": "Corpus IntelligenceResearchLab/Hausa, revision 1fb85fa070b6cf6432f1d45d21f78851d57f8944 : cible haoussa latine. Epoque et localite linguistique non etablies par les metadonnees auditees."
+  },
+  "sources": {}
+}
