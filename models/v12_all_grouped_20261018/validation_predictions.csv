@@ -1,0 +1,201 @@
+﻿partition,file_name,source,reference,prediction,character_errors,word_errors,normalized_word_errors,evaluated_partition
+test,ajami_00151.png,15,zuwa,zua,1,1,1,validation
+test,ajami_00152.png,15,kallonka,k’inka,4,1,1,validation
+test,ajami_00153.png,15,Wannan,wanna,2,1,1,validation
+test,ajami_00154.png,15,karama,karama,0,0,0,validation
+test,ajami_00155.png,15,ce,ce,0,0,0,validation
+test,ajami_00156.png,15,da,Mu,2,1,1,validation
+test,ajami_00157.png,15,Allah,Allāh,1,1,0,validation
+test,ajami_00158.png,15,yai,yai,0,0,0,validation
+test,ajami_00159.png,15,maka,muka,1,1,1,validation
+test,ajami_00160.png,15,Ya,Ya,0,0,0,validation
+test,ajami_00161.png,15,fawwala,fura,5,1,1,validation
+test,ajami_00162.png,15,makhlūqāti,gualwaƙata,9,1,1,validation
+test,ajami_00163.png,15,duk,Duk,1,1,0,validation
+test,ajami_00164.png,15,sun,saa,2,1,1,validation
+test,ajami_00165.png,15,bi,bi,0,0,0,validation
+test,ajami_00166.png,15,ka,ka,0,0,0,validation
+test,ajami_00167.png,15,In,In,0,0,0,validation
+test,ajami_00168.png,15,khāliqi,zalaga,6,1,1,validation
+test,ajami_00169.png,15,ya,Ya,1,1,0,validation
+test,ajami_00170.png,15,so,yawu,4,1,1,validation
+test,ajami_00171.png,15,mutum,ʿata,4,1,1,validation
+test,ajami_00172.png,15,da,da,0,0,0,validation
+test,ajami_00173.png,15,farin,farnin,1,1,1,validation
+test,ajami_00174.png,15,ciki,ciki,0,0,0,validation
+test,ajami_00175.png,15,Fa,fa,1,1,0,validation
+test,ajami_00176.png,15,wurin,waren,2,1,1,validation
+test,ajami_00177.png,15,halitta,Ṣalath,4,1,1,validation
+test,ajami_00178.png,15,duk,duka,1,1,1,validation
+test,ajami_00179.png,15,yake,yake,0,0,0,validation
+test,ajami_00180.png,15,haɗa,ha,2,1,1,validation
+test,ajami_00181.png,15,maka,ba,3,1,1,validation
+train,ajami_00001.png,15,Wa bi nastaʿīnu,Wabih nasatfea,7,3,3,validation
+train,ajami_00002.png,15,Amīru Kano atana yauma sabtin,Ami wannwa  alādu na yama subbe,18,6,6,validation
+train,ajami_00003.png,15,Atana Alimun,Ralāna ʿalāli,10,2,2,validation
+train,ajami_00004.png,15,Sarkinmu Abdullahi ya zo Asabat,Sar kim Mabii laluh ya zuwnasta,18,6,6,validation
+train,ajami_00005.png,15,Ya bar Kano ranar Alhamis ba shakka,Car ka norn a fasan ba schika,19,6,6,validation
+train,ajami_00006.png,15,Muna gaisuwa albarkacinka muke da,Mun gia abar ku cinka ke ba,12,7,7,validation
+train,ajami_00007.png,15,Murna mukai mun marhaban da zuwanka,Ir ā da mai amin ƴar baba da gowanka,16,8,8,validation
+train,ajami_00008.png,15,Sarkin Musulmi ya wuce ya yi sabaqa,San kin jisal ya wa ci ta salābigi,19,7,7,validation
+train,ajami_00009.png,15,Mai gandu na bi duk ana dubinka,Mayi gun wu nabi da ka Rana du wabinka,12,9,9,validation
+train,ajami_00010.png,15,Wannan tawali’u ne da Allah yai maka,Wann to aguwa zu lsah ba yaka,17,7,7,validation
+train,ajami_00011.png,15,Ladabi ya baka da martabar kakanka,N- bi yaba ka da murntabar kakanka,8,5,5,validation
+train,ajami_00012.png,15,Ya Abdu ya ɗan Abdu me kyan Abdu kai,Ya mabada ba ɗan abaka bai kan wa ji kai,18,7,7,validation
+train,ajami_00013.png,15,Ka kai fagen da ake bukatar saninka,Ka ka buƙin ba ƙa iha tarsinda,17,6,6,validation
+train,ajami_00014.png,15,Allah Yakaika Yamaida kai da farin ciki,Allahu yakaik ya mai da ka da farincika,9,7,7,validation
+train,ajami_00015.png,15,Birnin Kano ta yi marhabin da zuwanka,barni kunnata amar habi zan waka,17,7,7,validation
+train,ajami_00016.png,15,Birni tana gorantaka tufar da kai,Barni tana gauruta ka tu furi kai,11,5,5,validation
+train,ajami_00017.png,15,Allah Yakaika gidanka domin Makkah,Allahya kaika gwdonka domir kaka,9,5,5,validation
+train,ajami_00018.png,15,Bana Ingilan ta yi arziƙi da ka je mata,Bana nquli tan a rziƙi da ka jemata,10,6,6,validation
+train,ajami_00019.png,15,Fa sarauniya ta tashi don girmanka,fan wanyata ce chi dkun girimanka,15,6,6,validation
+train,ajami_00020.png,15,Manyan nasaran Britin da birninsu,Mani yai namara ibirka birninasu,12,5,5,validation
+train,ajami_00021.png,15,Har jami’ansu da nufin zuwa kallonka,Harbiqibikinsu da ƙozuwa tllanka,16,5,5,validation
+train,ajami_00022.png,15,Wannan karama ce da Allah yai maka,Wannin barai ci ja shu  i maka,13,6,6,validation
+train,ajami_00023.png,15,Ya fawwala makhlūqāti duk sun bi ka,Ya forakhaluƙatu duk sbika,17,5,5,validation
+train,ajami_00024.png,15,In khāliqi ya so mutum da farin ciki,Rbna lugi ya bū matmu di fra che ji,21,8,8,validation
+train,ajami_00025.png,15,Fa wurin halitta duk yake haɗa maka,Faren astamu ka y koi jarumaa,20,7,7,validation
+train,ajami_00026.png,15,Wa,wa,1,1,0,validation
+train,ajami_00027.png,15,bi,Bada,4,1,1,validation
+train,ajami_00028.png,15,nastaʿīnu,Natafi,6,1,1,validation
+train,ajami_00029.png,15,Amīru,Ammi,3,1,1,validation
+train,ajami_00030.png,15,Kano,hanwa,3,1,1,validation
+train,ajami_00031.png,15,atana,allādāna,5,1,1,validation
+train,ajami_00032.png,15,yauma,Aami,3,1,1,validation
+train,ajami_00033.png,15,sabtin,sabbi,2,1,1,validation
+train,ajami_00034.png,15,Atana,lalāna,4,1,1,validation
+train,ajami_00035.png,15,Alimun,ʿallām,6,1,1,validation
+train,ajami_00036.png,15,Sarkinmu,Sarkama,3,1,1,validation
+train,ajami_00037.png,15,Abdullahi,Mabadalh,7,1,1,validation
+train,ajami_00038.png,15,ya,Ba,1,1,1,validation
+train,ajami_00039.png,15,zo,yi,2,1,1,validation
+train,ajami_00040.png,15,Asabat,ranmbant,5,1,1,validation
+train,ajami_00041.png,15,Ya,Ya,0,0,0,validation
+train,ajami_00042.png,15,bar,bim,2,1,1,validation
+train,ajami_00043.png,15,Kano,kana,2,1,1,validation
+train,ajami_00044.png,15,ranar,ran,2,1,1,validation
+train,ajami_00045.png,15,Alhamis,r-taumasn,6,1,1,validation
+train,ajami_00046.png,15,ba,ba,0,0,0,validation
+train,ajami_00047.png,15,shakka,cika,4,1,1,validation
+train,ajami_00048.png,15,Muna,Mun,1,1,1,validation
+train,ajami_00049.png,15,gaisuwa,gayt,5,1,1,validation
+train,ajami_00050.png,15,albarkacinka,abarkicinka,2,1,1,validation
+train,ajami_00051.png,15,muke,muke,0,0,0,validation
+train,ajami_00052.png,15,da,da,0,0,0,validation
+train,ajami_00053.png,15,Murna,Mara,2,1,1,validation
+train,ajami_00054.png,15,mukai,maka,2,1,1,validation
+train,ajami_00055.png,15,mun,mun,0,0,0,validation
+train,ajami_00056.png,15,marhaban,jarbaba,3,1,1,validation
+train,ajami_00057.png,15,da,da,0,0,0,validation
+train,ajami_00058.png,15,zuwanka,gonaka,4,1,1,validation
+train,ajami_00059.png,15,Sarkin,Sarkin,0,0,0,validation
+train,ajami_00060.png,15,Musulmi,Misla,4,1,1,validation
+train,ajami_00061.png,15,ya,ya,0,0,0,validation
+train,ajami_00062.png,15,wuce,wace,1,1,1,validation
+train,ajami_00063.png,15,ya,yi,1,1,1,validation
+train,ajami_00064.png,15,yi,yi,0,0,0,validation
+train,ajami_00065.png,15,sabaqa,sabiƙi,3,1,1,validation
+train,ajami_00066.png,15,Mai,Mai,0,0,0,validation
+train,ajami_00067.png,15,gandu,gundo,2,1,1,validation
+train,ajami_00068.png,15,na,na,0,0,0,validation
+train,ajami_00069.png,15,bi,bi,0,0,0,validation
+train,ajami_00070.png,15,duk,duk,0,0,0,validation
+train,ajami_00071.png,15,ana,wana,1,1,1,validation
+train,ajami_00072.png,15,dubinka,Dubinka,1,1,0,validation
+train,ajami_00073.png,15,Wannan,wanna,2,1,1,validation
+train,ajami_00074.png,15,tawali’u,tokuqa,7,1,1,validation
+train,ajami_00075.png,15,ne,Ni,2,1,1,validation
+train,ajami_00076.png,15,da,da,0,0,0,validation
+train,ajami_00077.png,15,Allah,AilLāh,3,1,1,validation
+train,ajami_00078.png,15,yai,yabi,1,1,1,validation
+train,ajami_00079.png,15,maka,kaka,1,1,1,validation
+train,ajami_00080.png,15,Ladabi,lahubi,3,1,1,validation
+train,ajami_00081.png,15,ya,ya,0,0,0,validation
+train,ajami_00082.png,15,baka,baka,0,0,0,validation
+train,ajami_00083.png,15,da,da,0,0,0,validation
+train,ajami_00084.png,15,martabar,Murtjir,5,1,1,validation
+train,ajami_00085.png,15,kakanka,kakanka,0,0,0,validation
+train,ajami_00086.png,15,Ya,Ya,0,0,0,validation
+train,ajami_00087.png,15,Abdu,Mabidi,4,1,1,validation
+train,ajami_00088.png,15,ya,ba,1,1,1,validation
+train,ajami_00089.png,15,ɗan,ɗan,0,0,0,validation
+train,ajami_00090.png,15,Abdu,ḥabka,4,1,1,validation
+train,ajami_00091.png,15,me,ba,2,1,1,validation
+train,ajami_00092.png,15,kyan,yakan,3,1,1,validation
+train,ajami_00093.png,15,Abdu,uɓi,4,1,1,validation
+train,ajami_00094.png,15,kai,Kai,1,1,0,validation
+train,ajami_00095.png,15,Ka,Ka,0,0,0,validation
+train,ajami_00096.png,15,kai,kai,0,0,0,validation
+train,ajami_00097.png,15,fagen,buƙin,4,1,1,validation
+train,ajami_00098.png,15,da,da,0,0,0,validation
+train,ajami_00099.png,15,ake,akan,2,1,1,validation
+train,ajami_00100.png,15,bukatar,bikatar,1,1,1,validation
+train,ajami_00101.png,15,saninka,Sanuka,3,1,1,validation
+train,ajami_00102.png,15,Allah,Allāhu,2,1,1,validation
+train,ajami_00103.png,15,Yakaika,yaka,4,1,1,validation
+train,ajami_00104.png,15,Yamaida,Yaḥīdi,4,1,1,validation
+train,ajami_00105.png,15,kai,kai,0,0,0,validation
+train,ajami_00106.png,15,da,da,0,0,0,validation
+train,ajami_00107.png,15,farin,farn,1,1,1,validation
+train,ajami_00108.png,15,ciki,cika,1,1,1,validation
+train,ajami_00109.png,15,Birnin,buri,4,1,1,validation
+train,ajami_00110.png,15,Kano,kanwa,3,1,1,validation
+train,ajami_00111.png,15,ta,ga,1,1,1,validation
+train,ajami_00112.png,15,yi,ya,1,1,1,validation
+train,ajami_00113.png,15,marhabin,murkibi,4,1,1,validation
+train,ajami_00114.png,15,da,ka,1,1,1,validation
+train,ajami_00115.png,15,zuwanka,ruka,4,1,1,validation
+train,ajami_00116.png,15,Birni,barni,2,1,1,validation
+train,ajami_00117.png,15,tana,ina,2,1,1,validation
+train,ajami_00118.png,15,gorantaka,ʿaurtaka,5,1,1,validation
+train,ajami_00119.png,15,tufar,Tafur,3,1,1,validation
+train,ajami_00120.png,15,da,da,0,0,0,validation
+train,ajami_00121.png,15,kai,kai,0,0,0,validation
+train,ajami_00122.png,15,Allah,Allah,0,0,0,validation
+train,ajami_00123.png,15,Yakaika,bakaka,2,1,1,validation
+train,ajami_00124.png,15,gidanka,gunka,3,1,1,validation
+train,ajami_00125.png,15,domin,domun,1,1,1,validation
+train,ajami_00126.png,15,Makkah,ka,4,1,1,validation
+train,ajami_00127.png,15,Bana,bana,1,1,0,validation
+train,ajami_00128.png,15,Ingilan,inkuli,5,1,1,validation
+train,ajami_00129.png,15,ta,la,1,1,1,validation
+train,ajami_00130.png,15,yi,yi,0,0,0,validation
+train,ajami_00131.png,15,arziƙi,arziki,1,1,1,validation
+train,ajami_00132.png,15,da,da,0,0,0,validation
+train,ajami_00133.png,15,ka,ka,0,0,0,validation
+train,ajami_00134.png,15,je,ji,1,1,1,validation
+train,ajami_00135.png,15,mata,mata,0,0,0,validation
+train,ajami_00136.png,15,Fa,fa,1,1,0,validation
+train,ajami_00137.png,15,sarauniya,Sar uwuna,5,2,2,validation
+train,ajami_00138.png,15,ta,wa,1,1,1,validation
+train,ajami_00139.png,15,tashi,cecin,5,1,1,validation
+train,ajami_00140.png,15,don,kon,1,1,1,validation
+train,ajami_00141.png,15,girmanka,ƙirmanka,1,1,1,validation
+train,ajami_00142.png,15,Manyan,Mai yai,3,2,2,validation
+train,ajami_00143.png,15,nasaran,namarai,2,1,1,validation
+train,ajami_00144.png,15,Britin,beri,5,1,1,validation
+train,ajami_00145.png,15,da,ka,1,1,1,validation
+train,ajami_00146.png,15,birninsu,birinasu,2,1,1,validation
+train,ajami_00147.png,15,Har,har,1,1,0,validation
+train,ajami_00148.png,15,jami’ansu,Baɗabizinsu,6,1,1,validation
+train,ajami_00149.png,15,da,da,0,0,0,validation
+train,ajami_00150.png,15,nufin,li,4,1,1,validation
+train,j_ajami_00001.png,7,"Bismi l-Lāhi al-Raḥmāni al-Raḥīm, ṣalla l-Lāhu ʿalā man lā nabiyya baʿdahu",Abi l-Lāhu alraulan al-Raḥīm ʿala l-Lāhu ʿaluma la tauafī,30,10,9,validation
+train,j_ajami_00002.png,7,Gode Allahu Mai Sarauta ḥaqīqan,goda lahu mai sarau ta yaƙiqa,11,6,5,validation
+train,j_ajami_00003.png,7,Wanda ya yi ma kowa tabbat ḥaqīqan,Wan da yayid ko aw taa maƙina,15,7,7,validation
+train,j_ajami_00004.png,7,Mu yi Ṣalāti da sallama bisa fiyayye,Mai lalaāta da salma tishefiyayi,13,6,6,validation
+train,j_ajami_00005.png,7,Ahmadu ya fi kowa tabbat ḥaqīqan,Adadu ya fi kowa tabatu maƙiƙa,9,3,3,validation
+train,j_ajami_00006.png,7,Duk ku saurara za ni waƙa ku tuba,"Dak kusaura, Rabhuruwa ƙa kata ba",15,8,8,validation
+train,j_ajami_00007.png,7,Don ku samu ku tsira tabbat ḥaqīqan,Dan kubamu ku hjira hata ḥaqiqa,11,6,6,validation
+train,j_ajami_00008.png,7,Wanda bai girgiza ma Sarkin Musulmi,Wanda ba ini ginarahaki Musulmi,11,4,4,validation
+train,j_ajami_00009.png,7,Shi ka mutu da Jahlu tabbat ḥaqīqan,Shi ka mutuwa da jae tata ḥaqīqa,10,4,4,validation
+train,j_ajami_00010.png,7,Wanda dai ya ƙi bin hukunci da ya yi,wundadni ƙi bin kumci da yaiji,12,6,6,validation
+train,j_ajami_00011.png,7,Ba shi Hujja ga gobe tabbat ḥaqīqan,Ba shi niya gako bitabta gaƙiqa,15,5,5,validation
+train,j_ajami_00012.png,7,Wanda ya zam imamu ya yi ko adalci,Wada yanu ka maymu alanci,17,8,8,validation
+train,j_ajami_00013.png,7,Shi adda yalwa ga gobe tabbat ḥaqīqan,Shiya yawa gagobi tatnci ḥa’iga,15,7,7,validation
+train,j_ajami_00014.png,7,Wanda ya zam imamu don cutar mutane,Wadda yam ra bamu nan citani,16,7,7,validation
+train,j_ajami_00015.png,7,Shi wuta kan ci gobe tabbat ḥaqīqan,Shi wuta kanci gari tata magiga,12,5,5,validation
+train,j_ajami_00016.png,7,Masu aza dukiya garin bin sarauta,Kalthi h-di kaka garnin sauna,18,6,6,validation
+train,j_ajami_00017.png,7,Babu shakka su ƙuna tabbat ḥaqīqan,Babu shakka su kuwaratata ḥaqīqa,8,3,3,validation
+train,j_ajami_00018.png,7,Wanda ya zama hakimi ya yi raḥma,wunda ya zam’ara kimi ya yi wamma,8,4,4,validation
+train,j_ajami_00019.png,7,Shi ka tsira ga gobe tabbat ḥaqīqan,Shi ka tira na gobi tatbat ḥaqiqa,6,5,5,validation

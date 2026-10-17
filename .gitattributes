@@ -25,6 +25,8 @@ models/v9_20261016/*.csv text eol=lf
 models/v9_all_grouped_20261016/* -text whitespace=cr-at-eol
 models/v10_all_grouped_20261016/* -text whitespace=cr-at-eol
 models/v11_all_grouped_20261017/* -text whitespace=cr-at-eol
+models/v12_all_grouped_20261018/* -text whitespace=cr-at-eol
+models/v12_all_grouped_20261018/training_curves.svg -whitespace
 install_local.py text eol=lf
 tests/*.py text eol=lf
 README_HAUSA_20261015.md text eol=lf

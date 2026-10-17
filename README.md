@@ -60,7 +60,8 @@ V10 et V11 partagent le même CNN à six convolutions, BiLSTM–CTC, huit vues,
 batch 24 et split 4 972/200/401. V11 ajoute un canal d'encre locale à l'image
 en niveaux de gris : fond gaussien de rayon 5 pixels, différence positive fond–gris,
 gain 1,6, puis normalisation. Les deux apprentissages partent d'une initialisation
-aléatoire ; les résultats V11 sont rapportés ci-dessous. V13 reste une proposition.
+aléatoire ; les résultats V11 sont rapportés ci-dessous. Le code V13 est documenté
+dans [son guide distinct](README_V13.md), sans résultat V13 annoncé.
 
 ### V11 entraînée — publication du 17 octobre 2026
 
@@ -82,6 +83,28 @@ CER 34,88 % et WER 79,78 %. Le train est entièrement reconnu, mais la général
 reste insuffisante. Cette comparaison porte sur une seule graine et ne constitue
 pas une conclusion générale sur les cartes d'encre. Les objectifs CER ≤ 20 % et
 WER ≤ 30 % ne sont pas atteints.
+
+### V12 entraînée — publication du 18 octobre 2026
+
+Le checkpoint de l'époque **50**, sélectionné après **65 époques**, est publié sur
+[Hugging Face](https://huggingface.co/IntelligenceResearchLab/Hausa-OCR-AJAMI-v12-20261015)
+et dans la [release GitHub](https://github.com/IX-World/OCR-AJAMI-Hausa/releases/tag/v12-hausa-all-grouped-20261018).
+Voir le [README V12](models/v12_all_grouped_20261018/README.md),
+les [65 époques et leurs courbes](models/v12_all_grouped_20261018/EPOCHS.md)
+et la [comparaison V9–V12](models/v12_all_grouped_20261018/COMPARISON.md).
+
+| Partition | CER | WER | UWER |
+|---|---:|---:|---:|
+| Train | 0,00 % | 0,00 % | 0,00 % |
+| Validation | 41,97 % | 84,12 % | 81,43 % |
+| Test | 33,54 % | 79,68 % | 78,85 % |
+
+V12 utilise neuf convolutions, deux canaux gris/encre et 7 621 840 paramètres.
+Sur ce test, le CER baisse de 1,3376 point par rapport à V10 ; le WER baisse
+de seulement 0,0975 point, soit deux erreurs de mots en moins sur 2 052 mots.
+Le train sans erreur et le test encore difficile montrent un fort écart de
+généralisation. Les changements de profondeur, pooling, dropout et batch ne
+constituent pas une ablation isolant l'effet des couches supplémentaires.
 
 ### Beam search V10 sur validation uniquement
 

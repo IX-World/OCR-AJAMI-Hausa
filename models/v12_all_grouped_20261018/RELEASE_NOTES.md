@@ -1,0 +1,215 @@
+# V12 — corpus Hausa complet, CNN neuf convolutions — IX-World
+
+Entraînement local terminé le **17 octobre 2026**, publication le **18 octobre 2026**. **65 époques exécutées ; checkpoint publié : époque 50**, sélectionné au minimum du CER de validation. Initialisation aléatoire, sans reprise d'ancien checkpoint.
+
+| Partition | Segments | CER | WER | UWER | Segments exacts |
+|---|---:|---:|---:|---:|---:|
+| train | 4972 | 0.0000% | 0.0000% | 0.0000% | 100.0000% |
+| validation | 200 | 41.9691% | 84.1163% | 81.4318% | 21.5000% |
+| test | 401 | 33.5425% | 79.6784% | 78.8499% | 1.2469% |
+
+Le train est réévalué sur les originaux sans augmentation. Les trois partitions utilisent le même checkpoint. UWER désigne ici le WER après casefold et suppression des diacritiques Unicode Mn ; le WER strict reste rapporté.
+
+Neuf convolutions, deux canaux gris/encre, BiLSTM deux couches, CTC et décodage glouton : **7,621,840 paramètres**, 80 classes, hauteur 96, huit vues fixes par image, 39 776 vues par époque, batch 20. Le canal d'encre utilise un fond gaussien de rayon 5 pixels et un gain 1,6. V12 n'utilise ni AfriBERTa ni supervision sémantique.
+
+Durée enregistrée : **17.64 heures** ; pic mémoire allouée : **5108.3 MiB**, sur GTX 1060 6 Go. Source de départ : `c4f91a496c11321d5b24f32d3d22021a5243f1bf`. Le dossier evaluation_source peut contenir des modules ajoutés au projet pendant l'exécution ; le réseau V12 utilisé est celui défini dans models.py et config.json.
+
+Le modèle est publié comme résultat expérimental reproductible. Le train parfait et le WER de test élevé montrent un fort surapprentissage et une généralisation insuffisante. Aucune transcription autonome fiable n'est revendiquée.
+
+## Comparaison V9–V12 sur le même split — IX-World
+
+Protocole commun : 4 972 train / 200 validation / 401 test, mêmes identifiants et vocabulaire, graine 42. Chaque checkpoint est sélectionné sur son CER de validation.
+
+| Modèle | Époque retenue | Époques exécutées | Test CER | Test WER | Test UWER | Segments exacts |
+|---|---:|---:|---:|---:|---:|---:|
+| V9 | 33 | 48 | 40.6935% | 86.9396% | 86.1598% | 1.2469% |
+| V10 | 39 | 54 | 34.8801% | 79.7758% | 79.2398% | 1.2469% |
+| V11 | 39 | 54 | 35.7136% | 83.4795% | 82.6998% | 2.2444% |
+| V12 | 50 | 65 | 33.5425% | 79.6784% | 78.8499% | 1.2469% |
+
+V12 réduit le CER de test de 1.3376 point par rapport à V10 : 130 erreurs de caractères en moins sur 9719 caractères. Le WER baisse de 0.0975 point, soit seulement 2 erreurs de mots en moins sur 2052 mots. Il reste élevé. Le nombre de segments exactement reconnus reste de 5 sur 401.
+
+Le train de V12 est reconnu sans erreur, face à 41,97 % de CER de validation et 33,54 % de CER de test. L'écart de généralisation reste important. Les objectifs CER ≤ 20 % et WER ≤ 30 % ne sont pas atteints. Une seule graine ne permet pas de conclure à une supériorité générale ni à la significativité des écarts.
+
+V10 : six convolutions, un canal gris, batch 24. V11 : six convolutions, gris + encre, batch 24. V12 : neuf convolutions, gris + encre, dropout CNN 0,05, batch 20 et organisation des poolings différente. L'effet de la seule profondeur n'est donc pas isolé. Les autres protocoles et anciens tests ne sont pas directement comparables à cette campagne.
+
+Les scores de test sont rapportés pour documenter ces expériences terminées. Les réglages des expériences suivantes doivent être sélectionnés sur la validation. Les dénominateurs, compteurs et empreintes sont dans comparison_v9_v10_v11_v12.json. Les CER/WER/UWER de train et test ne sont pas disponibles à chaque époque : seul leur bilan final est mesuré.
+
+## Intégrité et diffusion
+
+Les références, partitions et compteurs des trois ensembles ont été vérifiés et les taux recalculés depuis les prédictions. Aucun identifiant, hash de pixels exact, manuscrit ou groupe de copiste identifié n'est partagé entre partitions. Les sources 1 et 2 sont regroupées. Les identités de copistes non documentées et les quasi-doublons restent à vérifier. Le test reconstruit diffère du test public initial de 400 images.
+
+Le checkpoint passe un chargement strict et reproduit les 20 prédictions du premier batch de validation sur CPU. Les poids, le vocabulaire, le split, les configurations, le code archivé d'entraînement et d'évaluation, les scores, prédictions, audit et historiques sont inclus dans l'archive. Aucune image du corpus n'est redistribuée dans ce package. La publication de fichiers ne crée pas de serveur d'inférence.
+
+Modèle : https://huggingface.co/IntelligenceResearchLab/Hausa-OCR-AJAMI-v12-20261015
+
+Le nom HF conserve la date de référence de la campagne ; les dates réelles d'entraînement et de publication sont indiquées ci-dessus.
+
+# Valeurs enregistrées à chaque époque
+
+**65 époques exécutées ; checkpoint publié : époque 50, minimum du CER de validation.**
+
+[CSV brut, précision d'origine](https://github.com/IX-World/OCR-AJAMI-Hausa/releases/download/v12-hausa-all-grouped-20261018/history.csv) · [JSON avec unités et provenance](https://github.com/IX-World/OCR-AJAMI-Hausa/releases/download/v12-hausa-all-grouped-20261018/epochs.json)
+
+La loss du train est la moyenne des pertes CTC des batches pendant l'apprentissage avec augmentation. Les taux CER/WER/UWER et exact ci-dessous concernent uniquement la validation, sur images originales. Les CER/WER/UWER du train et du test ne sont pas enregistrés à chaque époque : ils figurent dans [metrics.csv](metrics.csv), pour le checkpoint sélectionné. Aucun score manquant n'a été reconstruit.
+
+![Courbes des mesures enregistrées par époque](https://raw.githubusercontent.com/IX-World/OCR-AJAMI-Hausa/main/models/v12_all_grouped_20261018/training_curves.png)
+
+[Télécharger les courbes vectorielles SVG](https://github.com/IX-World/OCR-AJAMI-Hausa/releases/download/v12-hausa-all-grouped-20261018/training_curves.svg). Courbes brutes sans lissage ; le trait pointillé indique le checkpoint sélectionné.
+
+## Optima observés sur la validation
+
+| Mesure | Meilleure valeur | Première époque correspondante |
+|---|---:|---:|
+| CER | 41.9691% | 50 |
+| WER | 84.1163% | 50 |
+| UWER | 81.4318% | 50 |
+| Exact | 22.5000% | 34 |
+
+Seul le minimum du CER détermine le checkpoint publié ; les autres optima ne désignent pas d'autres poids conservés. Ces scores de validation interviennent dans la sélection et ne constituent pas des résultats de test indépendants.
+
+## Apprentissage et validation — toutes les époques
+
+Les taux sont exprimés en pourcentage ; les valeurs exactes non arrondies sont dans le CSV et le JSON. LR utilisé = apprentissage de cette époque ; LR suivant = valeur après le scheduler.
+
+| Époque | Loss train | VAL CER % | VAL WER % | VAL UWER % | VAL exact % | LR utilisé | LR suivant | Temps (s) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 2.435585 | 62.6588 | 97.3154 | 97.3154 | 7.5000 | 0.001 | 0.001 | 2524.250 |
+| 2 | 0.812492 | 50.8167 | 91.4989 | 89.2617 | 12.0000 | 0.001 | 0.001 | 967.562 |
+| 3 | 0.368094 | 47.4592 | 90.6040 | 87.2483 | 15.5000 | 0.001 | 0.001 | 819.032 |
+| 4 | 0.193094 | 48.3666 | 86.5772 | 85.2349 | 18.5000 | 0.001 | 0.001 | 934.781 |
+| 5 | 0.127425 | 47.1869 | 90.8277 | 87.4720 | 14.5000 | 0.001 | 0.001 | 1010.266 |
+| 6 | 0.080849 | 45.8711 | 88.8143 | 86.1298 | 18.5000 | 0.001 | 0.001 | 616.531 |
+| 7 | 0.071576 | 43.3303 | 85.6823 | 82.3266 | 18.5000 | 0.001 | 0.001 | 636.079 |
+| 8 | 0.048680 | 47.4592 | 92.3937 | 89.2617 | 16.0000 | 0.001 | 0.001 | 976.016 |
+| 9 | 0.048564 | 47.8221 | 89.7092 | 87.2483 | 11.0000 | 0.001 | 0.001 | 1853.047 |
+| 10 | 0.034982 | 50.2722 | 93.5123 | 91.7226 | 13.5000 | 0.001 | 0.001 | 1113.813 |
+| 11 | 0.046565 | 44.9183 | 87.4720 | 84.3400 | 17.5000 | 0.001 | 0.0005 | 1461.578 |
+| 12 | 0.009004 | 44.2831 | 87.2483 | 84.7875 | 20.5000 | 0.0005 | 0.0005 | 828.391 |
+| 13 | 0.005930 | 44.4192 | 87.6957 | 85.4586 | 19.0000 | 0.0005 | 0.0005 | 1302.235 |
+| 14 | 0.012057 | 43.1942 | 87.6957 | 85.2349 | 20.0000 | 0.0005 | 0.0005 | 629.735 |
+| 15 | 0.005986 | 42.9220 | 87.2483 | 84.7875 | 20.0000 | 0.0005 | 0.0005 | 1182.906 |
+| 16 | 0.005898 | 43.9201 | 87.2483 | 85.4586 | 18.5000 | 0.0005 | 0.0005 | 685.188 |
+| 17 | 0.009939 | 43.6479 | 87.4720 | 85.2349 | 19.5000 | 0.0005 | 0.0005 | 696.187 |
+| 18 | 0.004901 | 44.0563 | 86.8009 | 84.3400 | 20.0000 | 0.0005 | 0.0005 | 1262.954 |
+| 19 | 0.005830 | 45.1452 | 91.7226 | 88.5906 | 19.5000 | 0.0005 | 0.00025 | 550.000 |
+| 20 | 0.002712 | 43.0581 | 87.9195 | 85.2349 | 20.5000 | 0.00025 | 0.00025 | 601.343 |
+| 21 | 0.001780 | 43.5118 | 86.8009 | 84.3400 | 22.0000 | 0.00025 | 0.00025 | 762.359 |
+| 22 | 0.001213 | 43.7840 | 87.4720 | 85.4586 | 20.0000 | 0.00025 | 0.00025 | 775.750 |
+| 23 | 0.000919 | 44.3285 | 87.6957 | 85.4586 | 19.5000 | 0.00025 | 0.000125 | 636.813 |
+| 24 | 0.000748 | 42.8766 | 89.4855 | 86.8009 | 19.0000 | 0.000125 | 0.000125 | 626.734 |
+| 25 | 0.000384 | 43.1942 | 87.6957 | 85.2349 | 20.0000 | 0.000125 | 0.000125 | 580.562 |
+| 26 | 0.000385 | 42.9673 | 88.3669 | 85.4586 | 19.0000 | 0.000125 | 0.000125 | 736.032 |
+| 27 | 0.000308 | 43.2396 | 87.9195 | 85.4586 | 19.0000 | 0.000125 | 0.000125 | 633.093 |
+| 28 | 0.000333 | 42.8312 | 86.8009 | 83.6689 | 21.0000 | 0.000125 | 0.000125 | 633.609 |
+| 29 | 0.000470 | 44.1016 | 87.4720 | 84.5638 | 20.0000 | 0.000125 | 0.000125 | 586.250 |
+| 30 | 0.000244 | 42.6497 | 87.2483 | 84.5638 | 20.0000 | 0.000125 | 0.000125 | 577.813 |
+| 31 | 0.000244 | 42.8766 | 88.1432 | 85.0112 | 20.0000 | 0.000125 | 0.000125 | 581.421 |
+| 32 | 0.000248 | 43.1488 | 88.8143 | 85.2349 | 19.5000 | 0.000125 | 0.000125 | 593.735 |
+| 33 | 0.000318 | 42.4229 | 90.1566 | 87.0246 | 21.5000 | 0.000125 | 0.000125 | 584.219 |
+| 34 | 0.000172 | 42.2414 | 85.2349 | 82.5503 | 22.5000 | 0.000125 | 0.000125 | 885.922 |
+| 35 | 0.000171 | 42.9220 | 86.5772 | 83.2215 | 19.5000 | 0.000125 | 0.000125 | 2126.329 |
+| 36 | 0.000134 | 42.0599 | 86.8009 | 83.2215 | 20.0000 | 0.000125 | 0.000125 | 674.312 |
+| 37 | 0.000214 | 43.1034 | 86.5772 | 83.2215 | 19.0000 | 0.000125 | 0.000125 | 574.093 |
+| 38 | 0.000239 | 43.2396 | 88.1432 | 85.0112 | 19.0000 | 0.000125 | 0.000125 | 690.563 |
+| 39 | 0.000165 | 43.1034 | 87.9195 | 84.7875 | 19.0000 | 0.000125 | 0.000125 | 2204.016 |
+| 40 | 0.000157 | 42.9220 | 86.3535 | 82.7740 | 20.0000 | 0.000125 | 6.25e-05 | 1192.656 |
+| 41 | 0.000082 | 43.1034 | 86.1298 | 82.7740 | 21.0000 | 6.25e-05 | 6.25e-05 | 827.172 |
+| 42 | 0.000069 | 42.8312 | 86.5772 | 83.6689 | 20.0000 | 6.25e-05 | 6.25e-05 | 573.312 |
+| 43 | 0.000067 | 42.8312 | 85.6823 | 82.7740 | 21.5000 | 6.25e-05 | 6.25e-05 | 703.516 |
+| 44 | 0.000074 | 42.5590 | 86.1298 | 82.7740 | 22.0000 | 6.25e-05 | 3.125e-05 | 597.063 |
+| 45 | 0.000055 | 42.7858 | 85.2349 | 82.5503 | 22.0000 | 3.125e-05 | 3.125e-05 | 768.407 |
+| 46 | 0.000050 | 43.3757 | 85.9060 | 83.4452 | 21.0000 | 3.125e-05 | 3.125e-05 | 1013.625 |
+| 47 | 0.000044 | 42.4682 | 86.1298 | 84.1163 | 22.0000 | 3.125e-05 | 3.125e-05 | 1038.516 |
+| 48 | 0.000037 | 43.0127 | 86.1298 | 82.9978 | 19.5000 | 3.125e-05 | 1.5625e-05 | 1013.438 |
+| 49 | 0.000035 | 42.2868 | 87.2483 | 84.5638 | 21.5000 | 1.5625e-05 | 1.5625e-05 | 718.485 |
+| **50 retenue** | 0.000030 | 41.9691 | 84.1163 | 81.4318 | 21.5000 | 1.5625e-05 | 1.5625e-05 | 584.578 |
+| 51 | 0.000029 | 42.6044 | 86.1298 | 82.3266 | 18.5000 | 1.5625e-05 | 1.5625e-05 | 572.516 |
+| 52 | 0.000032 | 42.2414 | 85.2349 | 82.1029 | 21.0000 | 1.5625e-05 | 1.5625e-05 | 583.406 |
+| 53 | 0.000028 | 42.0599 | 85.4586 | 82.3266 | 19.5000 | 1.5625e-05 | 1.5625e-05 | 656.219 |
+| 54 | 0.000026 | 42.3321 | 85.9060 | 82.5503 | 19.0000 | 1.5625e-05 | 7.8125e-06 | 1169.781 |
+| 55 | 0.000023 | 42.4682 | 85.2349 | 82.5503 | 20.0000 | 7.8125e-06 | 7.8125e-06 | 890.812 |
+| 56 | 0.000022 | 43.1488 | 87.6957 | 84.1163 | 18.5000 | 7.8125e-06 | 7.8125e-06 | 589.953 |
+| 57 | 0.000024 | 42.1960 | 87.0246 | 84.3400 | 21.5000 | 7.8125e-06 | 7.8125e-06 | 607.094 |
+| 58 | 0.000022 | 42.2868 | 86.3535 | 82.7740 | 18.5000 | 7.8125e-06 | 3.90625e-06 | 676.625 |
+| 59 | 0.000021 | 42.2868 | 84.7875 | 82.1029 | 21.5000 | 3.90625e-06 | 3.90625e-06 | 1236.750 |
+| 60 | 0.000021 | 42.4229 | 86.1298 | 83.4452 | 21.0000 | 3.90625e-06 | 3.90625e-06 | 994.594 |
+| 61 | 0.000022 | 42.2414 | 85.2349 | 82.1029 | 21.0000 | 3.90625e-06 | 3.90625e-06 | 1325.750 |
+| 62 | 0.000020 | 42.1960 | 85.9060 | 82.7740 | 20.0000 | 3.90625e-06 | 1.953125e-06 | 946.547 |
+| 63 | 0.000020 | 42.8312 | 86.1298 | 82.5503 | 19.0000 | 1.953125e-06 | 1.953125e-06 | 2852.906 |
+| 64 | 0.000020 | 42.0599 | 85.0112 | 82.1029 | 21.5000 | 1.953125e-06 | 1.953125e-06 | 2542.141 |
+| 65 | 0.000020 | 42.4229 | 85.9060 | 82.7740 | 21.0000 | 1.953125e-06 | 1.953125e-06 | 2712.672 |
+
+## Mémoire et évolution du CER
+
+Mémoire en MiB : allocation mesurée en fin de validation, pic de l'époque et pic cumulé. Il s'agit de mémoire allouée par PyTorch, pas de toute la mémoire réservée ou occupée sur la carte. La pente est une régression sur au plus cinq époques récentes ; le gain est le CER du début moins celui de la fin de cette fenêtre. Une pente négative ou un gain positif indique une amélioration sur cette fenêtre.
+
+| Époque | VRAM fin (MiB) | Pic époque (MiB) | Pic cumulé (MiB) | Pente CER (points/époque) | Gain CER (points) |
+|---|---:|---:|---:|---:|---:|
+| 1 | 135.869 | 5108.280 | 5108.280 | n/a | n/a |
+| 2 | 138.525 | 4429.530 | 5108.280 | -11.842105 | +11.842105 |
+| 3 | 137.961 | 4214.104 | 5108.280 | -7.599819 | +15.199637 |
+| 4 | 137.876 | 4485.319 | 5108.280 | -4.623412 | +14.292196 |
+| 5 | 136.450 | 4213.224 | 5108.280 | -3.339383 | +15.471869 |
+| 6 | 140.072 | 4213.182 | 5108.280 | -1.016334 | +4.945554 |
+| 7 | 136.674 | 4217.396 | 5108.280 | -1.075318 | +4.128857 |
+| 8 | 142.322 | 4212.729 | 5108.280 | -0.567151 | +0.907441 |
+| 9 | 142.262 | 4212.239 | 5108.280 | +0.285844 | -0.635209 |
+| 10 | 138.208 | 4212.994 | 5108.280 | +1.329401 | -4.401089 |
+| 11 | 136.246 | 4213.018 | 5108.280 | +0.598911 | -1.588022 |
+| 12 | 141.346 | 4212.192 | 5108.280 | -0.925590 | +3.176044 |
+| 13 | 136.246 | 4213.416 | 5108.280 | -1.279492 | +3.402904 |
+| 14 | 138.687 | 4213.416 | 5108.280 | -1.465517 | +7.078040 |
+| 15 | 139.399 | 4213.822 | 5108.280 | -0.508167 | +1.996370 |
+| 16 | 136.103 | 4213.150 | 5108.280 | -0.222323 | +0.362976 |
+| 17 | 138.658 | 4213.385 | 5108.280 | -0.081670 | +0.771325 |
+| 18 | 138.193 | 4212.192 | 5108.280 | +0.245009 | -0.862069 |
+| 19 | 141.787 | 4212.942 | 5108.280 | +0.458258 | -2.223230 |
+| 20 | 147.231 | 4212.994 | 5108.280 | -0.022686 | +0.862069 |
+| 21 | 138.358 | 4214.791 | 5108.280 | -0.127042 | +0.136116 |
+| 22 | 141.348 | 4212.792 | 5108.280 | -0.217786 | +0.272232 |
+| 23 | 138.482 | 4212.896 | 5108.280 | -0.090744 | +0.816697 |
+| 24 | 139.033 | 4212.192 | 5108.280 | +0.045372 | +0.181488 |
+| 25 | 140.148 | 4212.192 | 5108.280 | -0.154265 | +0.317604 |
+| 26 | 138.712 | 4213.768 | 5108.280 | -0.276770 | +0.816697 |
+| 27 | 137.001 | 4214.682 | 5108.280 | -0.208711 | +1.088929 |
+| 28 | 137.773 | 4212.792 | 5108.280 | -0.004537 | +0.045372 |
+| 29 | 142.935 | 4213.971 | 5108.280 | +0.167877 | -0.907441 |
+| 30 | 136.974 | 4214.682 | 5108.280 | +0.022686 | +0.317604 |
+| 31 | 140.852 | 4213.275 | 5108.280 | -0.090744 | +0.362976 |
+| 32 | 140.732 | 4213.275 | 5108.280 | -0.058984 | -0.317604 |
+| 33 | 136.103 | 4213.275 | 5108.280 | -0.285844 | +1.678766 |
+| 34 | 137.879 | 4212.708 | 5108.280 | -0.127042 | +0.408348 |
+| 35 | 137.924 | 4212.239 | 5108.280 | -0.081670 | -0.045372 |
+| 36 | 138.206 | 4214.621 | 5108.280 | -0.167877 | +1.088929 |
+| 37 | 143.054 | 4213.791 | 5108.280 | +0.117967 | -0.680581 |
+| 38 | 137.638 | 4212.583 | 5108.280 | +0.217786 | -0.998185 |
+| 39 | 141.203 | 4213.064 | 5108.280 | +0.154265 | -0.181488 |
+| 40 | 136.246 | 4212.614 | 5108.280 | +0.172414 | -0.862069 |
+| 41 | 139.171 | 4214.057 | 5108.280 | -0.031760 | +0.000000 |
+| 42 | 139.718 | 4212.839 | 5108.280 | -0.081670 | +0.408348 |
+| 43 | 138.312 | 4213.182 | 5108.280 | -0.063521 | +0.272232 |
+| 44 | 140.057 | 4214.682 | 5108.280 | -0.099819 | +0.362976 |
+| 45 | 141.309 | 4213.074 | 5108.280 | -0.090744 | +0.317604 |
+| 46 | 138.184 | 4213.074 | 5108.280 | +0.104356 | -0.544465 |
+| 47 | 138.436 | 4214.588 | 5108.280 | +0.009074 | +0.362976 |
+| 48 | 146.724 | 4214.588 | 5108.280 | +0.058984 | -0.453721 |
+| 49 | 137.303 | 4214.588 | 5108.280 | -0.136116 | +0.499093 |
+| 50 | 147.323 | 4213.104 | 5108.280 | -0.299456 | +1.406534 |
+| 51 | 137.924 | 4213.119 | 5108.280 | -0.077132 | -0.136116 |
+| 52 | 137.306 | 4212.192 | 5108.280 | -0.122505 | +0.771325 |
+| 53 | 139.453 | 4212.239 | 5108.280 | -0.018149 | +0.226860 |
+| 54 | 142.561 | 4214.775 | 5108.280 | +0.018149 | -0.362976 |
+| 55 | 141.703 | 4212.792 | 5108.280 | -0.018149 | +0.136116 |
+| 56 | 138.873 | 4212.792 | 5108.280 | +0.222323 | -0.907441 |
+| 57 | 136.611 | 4212.792 | 5108.280 | +0.108893 | -0.136116 |
+| 58 | 142.352 | 4214.400 | 5108.280 | -0.036298 | +0.045372 |
+| 59 | 140.591 | 4213.130 | 5108.280 | -0.122505 | +0.181488 |
+| 60 | 143.094 | 4215.333 | 5108.280 | -0.136116 | +0.725953 |
+| 61 | 142.598 | 4212.893 | 5108.280 | +0.022686 | -0.045372 |
+| 62 | 146.289 | 4213.833 | 5108.280 | -0.022686 | +0.090744 |
+| 63 | 140.844 | 4212.255 | 5108.280 | +0.086207 | -0.544465 |
+| 64 | 146.848 | 4213.396 | 5108.280 | -0.013612 | +0.362976 |
+| 65 | 145.832 | 4213.396 | 5108.280 | +0.022686 | -0.181488 |
+
+SHA-256 du CSV d'origine : `db0f558698fc9227ac9c0da654e320ff4409e5505768a4f58637041d8a6dc7bb`. Le JSON conserve les valeurs numériques du journal, avec `null` pour les mesures non disponibles. Les temps incluent train et validation, avant la sauvegarde du checkpoint ; ils n'incluent pas le bilan final sur les trois ensembles. Une seule graine est mesurée ; les comparaisons entre versions exigent le même protocole.

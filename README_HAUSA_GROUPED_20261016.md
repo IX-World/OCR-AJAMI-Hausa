@@ -147,7 +147,17 @@ Le train entièrement reconnu et les scores de validation/test indiquent un fort
 les [54 époques](models/v11_all_grouped_20261017/EPOCHS.md),
 le [modèle HF](https://huggingface.co/IntelligenceResearchLab/Hausa-OCR-AJAMI-v11-20261015)
 et la [release GitHub](https://github.com/IX-World/OCR-AJAMI-Hausa/releases/tag/v11-hausa-all-grouped-20261017).
-Les autres modèles seront publiés après leurs entraînements et évaluations réels.
+La **V12 est publiée le 18 octobre 2026** : 65 époques, checkpoint CER à l'époque 50.
+Test : CER **33,5425 %**, WER **79,6784 %**, UWER **78,8499 %**. Les neuf
+convolutions et le canal d'encre produisent ici un CER inférieur à V10, mais le
+WER ne baisse que de deux erreurs de mots sur 2 052 mots de référence. Les
+variations de pooling, dropout et batch empêchent d'isoler l'effet de la profondeur.
+Voir le [README V12](models/v12_all_grouped_20261018/README.md),
+les [65 époques](models/v12_all_grouped_20261018/EPOCHS.md),
+la [comparaison V9–V12](models/v12_all_grouped_20261018/COMPARISON.md),
+le [modèle HF](https://huggingface.co/IntelligenceResearchLab/Hausa-OCR-AJAMI-v12-20261015)
+et la [release GitHub](https://github.com/IX-World/OCR-AJAMI-Hausa/releases/tag/v12-hausa-all-grouped-20261018).
 Les scripts HF/GitHub refusent un protocole partageant les manuscrits ou écartant
 une partie du corpus valide. Le code et les commits GitHub sont attribués à
-**IX-World**. V13 reste une proposition.
+**IX-World**. V13 dispose d'un [code séparé](README_V13.md), sans résultat
+d'entraînement annoncé ; les métadonnées temporelles/locales inconnues sont masquées.

@@ -1,0 +1,13 @@
+{
+  "checkpoint_sha256": "99a0d0f2c824a242b1b5e4864a5af2f4df0c291064ad0f1eba2ddeb6d5c3f6c1",
+  "split_sha256": "fdb453e5f92147f31bc236998e067823b07bdce4b965811081b1d54edcaae7b5",
+  "original_training_source_hashes_verified": true,
+  "evaluation_source_hashes_verified": true,
+  "prediction_counts_and_CER_WER_UWER_recomputed": true,
+  "cpu_strict_state_load": true,
+  "cpu_validation_predictions_matching_archive": 20,
+  "completed_epochs": 65,
+  "selected_epoch": 50,
+  "weights_modified": false,
+  "full_OCR_training_performed_for_publication": false
+}

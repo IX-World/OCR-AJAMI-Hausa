@@ -280,7 +280,7 @@ Une seule graine ne mesure pas la variabilité entre entraînements.
 
 {measured_limit}
 
-V13 reste une proposition : aucune amélioration ni aucun résultat V13 n'est revendiqué.
+V13 dispose d'un code expérimental distinct ; aucun résultat ni aucune amélioration V13 n'est revendiqué avant son évaluation.
 '''
     (run / "README.md").write_text(card, encoding="utf-8")
 
