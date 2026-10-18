@@ -38,7 +38,7 @@ def publish(args):
     with zipfile.ZipFile(args.asset) as archive:
         manifest = json.loads(archive.read("manifest.json"))
         files = set(archive.namelist())
-        if manifest["author"] != "IX-World" or manifest["version"] not in ("v9", "v10", "v11", "v12") or files != set(manifest["files"]) | {"manifest.json"}:
+        if manifest["author"] != "IX-World" or manifest["version"] not in ("v9", "v10", "v11", "v12", "v13") or files != set(manifest["files"]) | {"manifest.json"}:
             raise ValueError("Contenu ou attribution du package incorrect.")
         for name, expected in manifest["files"].items():
             if hashlib.sha256(archive.read(name)).hexdigest() != expected:

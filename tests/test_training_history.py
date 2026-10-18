@@ -8,7 +8,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from hausa_ocr.training_history import UNITS, read_epoch_history, write_epoch_report
+from hausa_ocr.publication_history import UNITS, V13_UNITS, read_epoch_history, write_epoch_report
 
 
 class TrainingHistoryTests(unittest.TestCase):
@@ -54,6 +54,55 @@ class TrainingHistoryTests(unittest.TestCase):
             selected = json.loads((root / "test_metrics.json").read_text())
             selected["selected_epoch"] = 3
             (root / "test_metrics.json").write_text(json.dumps(selected))
+            with self.assertRaises(ValueError):
+                read_epoch_history(root)
+
+    def v13_fixture(self, root):
+        self.fixture(root)
+        selected = json.loads((root / "test_metrics.json").read_text())
+        selected["version"] = "v13"
+        validation = dict(selected.pop("validation_at_selected_epoch"), selected_epoch=2, checkpoint_sha256="weights")
+        (root / "validation_metrics.json").write_text(json.dumps(validation))
+        (root / "test_metrics.json").write_text(json.dumps(selected))
+        with (root / "history.csv").open(newline="") as handle:
+            rows = list(csv.DictReader(handle))
+        for row in rows:
+            row.update(train_ctc_loss=float(row["train_loss"]) - 0.1, train_semantic_loss=1.0,
+                       train_cosine_loss=0.5, train_contrastive_loss=1.5, semantic_weight=0.1, optimizer_steps=4)
+        with (root / "history.csv").open("w", newline="") as handle:
+            writer = csv.DictWriter(handle, fieldnames=V13_UNITS)
+            writer.writeheader()
+            writer.writerows(rows)
+
+    def test_v13_combined_loss_and_auxiliary_units_are_preserved(self):
+        with tempfile.TemporaryDirectory(dir=Path(__file__).parent) as folder:
+            root = Path(folder)
+            self.v13_fixture(root)
+            original = (root / "history.csv").read_bytes()
+            report = write_epoch_report(root)
+            self.assertEqual((root / "history.csv").read_bytes(), original)
+            self.assertIn("CTC + semantic_weight", report["units"]["train_loss"])
+            self.assertEqual(report["epochs"][0]["optimizer_steps"], 4)
+            self.assertIn("Décomposition des pertes V13", (root / "EPOCHS.md").read_text(encoding="utf-8"))
+            self.assertNotIn("moyenne des pertes CTC des batches", (root / "EPOCHS.md").read_text(encoding="utf-8"))
+
+    def test_v13_inconsistent_combined_loss_and_selected_validation_rejected(self):
+        with tempfile.TemporaryDirectory(dir=Path(__file__).parent) as folder:
+            root = Path(folder)
+            self.v13_fixture(root)
+            with (root / "history.csv").open(newline="") as handle:
+                rows = list(csv.DictReader(handle))
+            rows[0]["train_ctc_loss"] = 0.7
+            with (root / "history.csv").open("w", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=V13_UNITS)
+                writer.writeheader()
+                writer.writerows(rows)
+            with self.assertRaises(ValueError):
+                read_epoch_history(root)
+            self.v13_fixture(root)
+            validation = json.loads((root / "validation_metrics.json").read_text())
+            validation["wer"] = 0.1
+            (root / "validation_metrics.json").write_text(json.dumps(validation))
             with self.assertRaises(ValueError):
                 read_epoch_history(root)
 

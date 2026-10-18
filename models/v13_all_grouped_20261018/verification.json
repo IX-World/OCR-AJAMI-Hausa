@@ -1,0 +1,17 @@
+{
+  "checkpoint_sha256": "3b75305f19eb604974b93f47e4aeb99f020299e2ab97b7c24497b4dc004c6aac",
+  "split_sha256": "fdb453e5f92147f31bc236998e067823b07bdce4b965811081b1d54edcaae7b5",
+  "original_training_and_evaluation_source_hashes_verified": true,
+  "cpu_strict_state_load": true,
+  "checkpoint_embedded_config_and_vocab_verified": true,
+  "cpu_validation_predictions_matching_archive": 6,
+  "semantic_cache_train_identifiers_targets_and_norms_verified": true,
+  "semantic_cache_sha256": "78182ac20e5fc53943bf8f964f18eeda8dde609c7d63ea8e3266bcb3997f4faf",
+  "weights_modified": false,
+  "full_OCR_training_performed_for_publication": false,
+  "prediction_counts_and_CER_WER_UWER_recomputed": true,
+  "completed_epochs": 49,
+  "selected_epoch": 34,
+  "single_image_inference_without_teacher_verified": true,
+  "single_image_prediction": "zuwa"
+}

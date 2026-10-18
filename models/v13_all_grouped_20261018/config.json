@@ -1,0 +1,128 @@
+{
+  "author": "IX-World",
+  "source_repository": "https://github.com/IX-World/OCR-AJAMI-Hausa",
+  "source_commit": "32a9a0ece7fd27177068bced053a179cc17a37d7",
+  "version": "v13",
+  "dataset": "D:\\ai_test\\Hausa_repo_2026-10-15",
+  "dataset_repo": "IntelligenceResearchLab/Hausa",
+  "dataset_revision": "1fb85fa070b6cf6432f1d45d21f78851d57f8944",
+  "protocol_id": "hausa_all_grouped_20261016",
+  "split_sha256": "fdb453e5f92147f31bc236998e067823b07bdce4b965811081b1d54edcaae7b5",
+  "vocab_sha256": "f92c368520aad95130f909a708fb58864e1f766f10f87d18c96690d1b20ced59",
+  "counts": {
+    "train": 4972,
+    "validation": 200,
+    "test": 401
+  },
+  "height": 96,
+  "channels": 1,
+  "rtl_mirror": true,
+  "padding": {
+    "grayscale": 1.0
+  },
+  "classes": 80,
+  "cnn_convolutions": 6,
+  "normalization": "GroupNorm_8_groups",
+  "cnn_dropout": 0.1,
+  "lstm_hidden_per_direction": 256,
+  "lstm_layers": 2,
+  "lstm_dropout": 0.2,
+  "sequence_dropout": 0.2,
+  "packed_lstm": true,
+  "semantic_dim": 768,
+  "context_schema": {
+    "schema_version": 1,
+    "languages": [
+      null,
+      "ha"
+    ],
+    "localities": [
+      null
+    ],
+    "time_available": false,
+    "training_period_range": null
+  },
+  "context_coverage": {
+    "train": {
+      "examples": 4972,
+      "known_language": 4972,
+      "known_period": 0,
+      "known_locality": 0
+    },
+    "validation": {
+      "examples": 200,
+      "known_language": 200,
+      "known_period": 0,
+      "known_locality": 0
+    },
+    "test": {
+      "examples": 401,
+      "known_language": 401,
+      "known_period": 0,
+      "known_locality": 0
+    }
+  },
+  "context_sha256": "94c4cb1bff225ddd50e00530a6f584bb449b688152b88358be37a00201fd061a",
+  "resolved_context_sha256": "a068049c4bdc4ff6406c738dae77948b58218913b8e9eb17cd2e44574a9d3bac",
+  "teacher_repo": "castorini/afriberta_base",
+  "teacher_revision": "95b703f498c9cee56be5f5bbc5140022dc86099e",
+  "teacher_frozen": true,
+  "teacher_device": "cpu_preparation_only",
+  "semantic_identity_sha256": "4b5fcdee26da746cd8fa7162812b89c9949432abe2daeda66d991cfa578f600d",
+  "semantic_cache_sha256": "78182ac20e5fc53943bf8f964f18eeda8dde609c7d63ea8e3266bcb3997f4faf",
+  "verified_contextual_annotations": 0,
+  "semantic_weight": 0.1,
+  "semantic_start_epoch": 4,
+  "semantic_warmup": 5,
+  "semantic_loss": "0.5_cosine_plus_0.5_same_language_multi_positive_contrastive_temperature_0.1",
+  "semantic_negatives": "actual_microbatch_only",
+  "parameter_count": 6553393,
+  "augmentation": "fixed_8_views",
+  "views_per_image": 8,
+  "virtual_train_size": 39776,
+  "optimizer": "AdamW",
+  "learning_rate": 0.0005,
+  "weight_decay": 0.001,
+  "gradient_clip": 5.0,
+  "batch_size": 6,
+  "accumulate": 4,
+  "max_batch_pixels": 600000,
+  "max_epochs": 100,
+  "min_epochs": 30,
+  "patience": 15,
+  "seed": 42,
+  "from_scratch": true,
+  "ocr_checkpoint_initialization": null,
+  "precision": "float32",
+  "python": "3.12.14",
+  "torch": "2.5.1+cu121",
+  "cuda": "12.1",
+  "gpu": "NVIDIA GeForce GTX 1060 6GB",
+  "uwer_definition": "Unicode casefold, NFD, suppression des marques Mn, puis NFC et separation des mots par les espaces ; ponctuation et lettres haoussa non decomposees conservees.",
+  "final_evaluation": "train_validation_test_originals_using_minimum_validation_CER_checkpoint",
+  "automatic_language_detection": false,
+  "online_self_training": false,
+  "scheduler": {
+    "name": "ReduceLROnPlateau",
+    "factor": 0.5,
+    "patience": 3,
+    "min_lr": 1e-06
+  },
+  "source_sha256": {
+    "hausa_ocr/__init__.py": "e8c90799320990fe6ccb161c1f588fd76275572e5b8561dd3b2a6cb1148f1317",
+    "hausa_ocr/augmentations.py": "229781c3704333b8195e514a82c4301637e8066d4d826c7d7c9872233abbf308",
+    "hausa_ocr/ctc_beam.py": "2a72d29629943ae799c10e018ad0d1e83a6d11e321d376c1f7445fc0907fc315",
+    "hausa_ocr/data.py": "c07b7927ad9f0533e98400671f041bf1901d828de17b6f09ae1ba88091c2d054",
+    "hausa_ocr/metrics.py": "1f2181610459bde506383e873312cccd7efb99d304a69feba181946f6f347e29",
+    "hausa_ocr/models.py": "037209b8cb1e409b0f2b5d3fa9f6209d932594776707b4dc099a1ce923a91735",
+    "hausa_ocr/protocol.py": "be38f84086882b334ef8c9dd98551f6c8e3aec8c80c64de2c970e03b107818cf",
+    "hausa_ocr/reporting.py": "f3c16b7b44b05f4240bb026124669df39b6935d193403cbe46c436f765e41d90",
+    "hausa_ocr/semantic.py": "f22221d219f4bca7339f218691493c0361f879b14a8531724a958e5553346f78",
+    "hausa_ocr/training_history.py": "66c890c844ff75e3618dd2256ced377f48b961adb6d5fa9700acc65a1ac6ba34",
+    "hausa_ocr/v13.py": "d46fb2612d0964aebf6ef77727738b6f451cf915b5d6e27a53f4934f656981b1",
+    "prepare_hausa.py": "8bc295cd7d94045026b1238881ac97917e61b768f106212c85b1de79cff2117f",
+    "prepare_v13_semantics.py": "81e75437359b94058f626224f68830fd5a2aa143e3c2369d3c40d7133d7caa09",
+    "train_hausa.py": "596dcc88fd3fe05cca659487fa3e35d77ee66e312f62e7e4d4d99b005a66555c",
+    "train_v13.py": "1e08a980ae26a566560bfa7bcfef6bbfb2de725bf33e3a262d098feca5bb700d"
+  }
+}

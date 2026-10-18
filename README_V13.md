@@ -4,8 +4,28 @@ V13 apprend directement à transcrire une image Ajami vers le haoussa latin.
 Il ajoute une supervision auxiliaire issue d'un encodeur textuel préentraîné
 figé. La langue, l'époque et la localité documentées conditionnent le réseau.
 Le code conserve exactement le protocole commun **4 972 train / 200 validation /
-401 test**, sans reprendre de checkpoint OCR V9–V12. Aucun gain de CER/WER ni
-résultat V13 n'est annoncé avant l'entraînement et l'évaluation.
+401 test**, sans reprendre de checkpoint OCR V9–V12.
+
+## Résultat du 18 octobre 2026
+
+V13 a terminé **49 époques**, checkpoint retenu à l'époque **34**.
+Le test donne **CER 39,0987 % / WER 86,3060 % / UWER 86,0136 %**.
+Le surapprentissage persiste ; ces résultats sont moins bons que V10 et V12.
+Ce run est parti de poids OCR aléatoires. La langue est renseignée comme haoussa,
+mais toutes les époques/localités restent inconnues et les branches correspondantes
+sont masquées ; aucun contexte textuel complémentaire n'a été annoté.
+
+[Modèle HF et fiche complète](https://huggingface.co/IntelligenceResearchLab/Hausa-OCR-AJAMI-v13-20261015)
+· [Release et poids](https://github.com/IX-World/OCR-AJAMI-Hausa/releases/tag/v13-hausa-all-grouped-20261018)
+· [Comparaison V9–V13](models/v13_all_grouped_20261018/COMPARISON.md)
+· [Toutes les époques](models/v13_all_grouped_20261018/EPOCHS.md).
+
+Le pic enregistré est de **892,3 MiB alloués par PyTorch**, hors mémoire totale
+réservée/occupée sur la carte ; durée train + validation enregistrée : **7,86 h**.
+Le package inclut un script `infer_v13.py` qui utilise les sources archivées,
+sans enseignant. La préparation et les commandes ci-dessous documentent le run
+initial : conserver le dossier existant et choisir un nouvel `--output` pour
+une nouvelle expérience.
 
 ## Commande CMD depuis D:\ai_test
 

@@ -23,6 +23,8 @@
 !/README_HAUSA_GROUPED_20261016.md
 !/download_hausa_latest.py
 !/publish_hausa.py
+!/publish_v13.py
+!/infer_v13.py
 !/audit_hausa_run.py
 !/eval_beam_v10_validation.py
 !/tester_beam_v10_validation.cmd

@@ -15,6 +15,8 @@ requirements-v13-semantic.txt text eol=lf
 README_V13.md text eol=lf
 configs/*.json text eol=lf
 publish_hausa.py text eol=lf
+publish_v13.py text eol=lf
+infer_v13.py text eol=lf
 audit_hausa_run.py text eol=lf
 eval_beam_v10_validation.py text eol=lf
 README_BEAM_V10_VALIDATION.md text eol=lf
@@ -27,6 +29,8 @@ models/v10_all_grouped_20261016/* -text whitespace=cr-at-eol
 models/v11_all_grouped_20261017/* -text whitespace=cr-at-eol
 models/v12_all_grouped_20261018/* -text whitespace=cr-at-eol
 models/v12_all_grouped_20261018/training_curves.svg -whitespace
+models/v13_all_grouped_20261018/* -text whitespace=cr-at-eol
+models/v13_all_grouped_20261018/training_curves.svg -whitespace
 install_local.py text eol=lf
 tests/*.py text eol=lf
 README_HAUSA_20261015.md text eol=lf

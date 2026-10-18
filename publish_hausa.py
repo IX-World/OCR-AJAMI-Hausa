@@ -17,6 +17,9 @@ from prepare_hausa import sha256, write_json
 def load_run(run, require_group_disjoint=False):
     config = json.loads((run / "config.json").read_text(encoding="utf-8"))
     metrics = json.loads((run / "test_metrics.json").read_text(encoding="utf-8"))
+    if config["version"] == "v13":
+        summary = json.loads((run / "metrics.json").read_text(encoding="utf-8"))
+        metrics = dict(metrics, **{field: summary[field] for field in ("selection", "elapsed_training_seconds", "peak_vram_mib")})
     protocol = json.loads((run / "protocol.json").read_text(encoding="utf-8"))
     if config.get("protocol_sha256") and sha256(run/"protocol.json") != config["protocol_sha256"]:
         raise ValueError("Le protocole archive a ete modifie depuis l'entrainement.")
@@ -28,7 +31,7 @@ def load_run(run, require_group_disjoint=False):
         for name,field in (("source_groups.json","source_groups_sha256"),("excluded_public_train.json","excluded_public_train_sha256")):
             if sha256(run/name) != protocol[field]:
                 raise ValueError("Manifeste de separation modifie dans le run.")
-    if config["author"] != AUTHOR or config["version"] not in ("v9", "v10", "v11", "v12"):
+    if config["author"] != AUTHOR or config["version"] not in ("v9", "v10", "v11", "v12", "v13"):
         raise ValueError("Version ou attribution non reconnue.")
     if metrics["examples"] != config["counts"]["test"] or metrics["selection"] != "minimum_validation_CER":
         raise ValueError("La publication exige le resultat reel du test fige dans le protocole.")
@@ -41,8 +44,11 @@ def load_run(run, require_group_disjoint=False):
     for name, expected in config["source_sha256"].items():
         if sha256(run / "source" / name) != expected:
             raise ValueError(f"Code source modifie : {name}")
-    load_complete_metrics(run, config, metrics)
-    load_split_audit(run, config, metrics)
+    complete = load_complete_metrics(run, config, metrics)
+    audit = load_split_audit(run, config, metrics)
+    if config["version"] == "v13":
+        from publish_v13 import validate_v13_run
+        validate_v13_run(run, config, complete, audit)
     return config, metrics, protocol
 
 
@@ -60,8 +66,10 @@ def load_complete_metrics(run, config, test_metrics):
             raise ValueError(f"Evaluation incoherente pour {part}.")
         if json.loads((run / f"{part}_metrics.json").read_text(encoding="utf-8")) != values:
             raise ValueError(f"Scores {part} differents du bilan complet.")
-    for name, expected in summary["evaluation_source_sha256"].items():
-        if sha256(run / "evaluation_source" / name) != expected:
+    source_folder = "source" if config["version"] == "v13" else "evaluation_source"
+    hashes = config["source_sha256"] if config["version"] == "v13" else summary["evaluation_source_sha256"]
+    for name, expected in hashes.items():
+        if sha256(run / source_folder / name) != expected:
             raise ValueError(f"Code d'evaluation modifie : {name}")
     return summary
 
@@ -88,6 +96,9 @@ def load_split_audit(run, config, metrics):
 def write_model_card(run):
     run = Path(run)
     config, metrics, protocol = load_run(run)
+    if config["version"] == "v13":
+        from publish_v13 import write_v13_card
+        return write_v13_card(run)
     version = config["version"].upper()
     counts = config["counts"]
     unknown = json.dumps(config["unseen_characters"], ensure_ascii=False)
@@ -287,6 +298,8 @@ V13 dispose d'un code expérimental distinct ; aucun résultat ni aucune amélio
 
 def package_run(run, destination):
     run, destination = Path(run).resolve(), Path(destination).resolve()
+    if json.loads((run / "config.json").read_text(encoding="utf-8"))["version"] == "v13":
+        raise ValueError("Pour V13 utiliser publish_v13.py package avec --semantics, afin d'archiver aussi les cibles du TRAIN.")
     config, metrics, _ = load_run(run, require_group_disjoint=True)
     write_model_card(run)
     predictions = list(csv.DictReader((run / "test_predictions.csv").open(encoding="utf-8-sig", newline="")))
@@ -344,7 +357,7 @@ def package_run(run, destination):
 def publish_package(folder, repo, receipt_path=None):
     folder = Path(folder)
     manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
-    if manifest["author"] != AUTHOR or manifest["version"] not in ("v9", "v10", "v11", "v12"):
+    if manifest["author"] != AUTHOR or manifest["version"] not in ("v9", "v10", "v11", "v12", "v13"):
         raise ValueError("Attribution ou version incorrecte.")
     actual_files = {str(path.relative_to(folder)).replace("\\", "/") for path in folder.rglob("*") if path.is_file()}
     if actual_files != set(manifest["files"]) | {"manifest.json"}:

@@ -20,7 +20,7 @@ from hausa_ocr.protocol import validate_partitions
 
 
 def sample_id(row):
-    return row["partition"], row["file_name"]
+    return row.get("partition", row.get("public_origin")), row["file_name"]
 
 
 def text_record(row):
@@ -95,10 +95,15 @@ def audit(run, dataset, output):
         expected = {sample_id(row): row["transcript"] for row in rows}
         if len(predictions) != len(expected) or {sample_id(row): row["reference"] for row in predictions} != expected:
             raise ValueError(f"Couverture ou references incorrectes : {part}")
+        expected_sources = {sample_id(row): str(row["source"]) for row in rows}
+        if any(str(row["source"]) != expected_sources[sample_id(row)] or row.get("evaluated_partition", part) != part for row in predictions):
+            raise ValueError(f"Provenance des predictions incorrecte : {part}")
         groups = {name: defaultdict(Counter) for name in ("all", "by_source", "by_source_exposure", "by_word_count", "by_reference_exposure")}
         for row in predictions:
             if edit_distance(row["reference"], row["prediction"]) != int(row["character_errors"]) or edit_distance(row["reference"].split(), row["prediction"].split()) != int(row["word_errors"]):
                 raise ValueError("Compteurs individuels incorrects.")
+            if edit_distance(normalize_uwer(row["reference"]).split(), normalize_uwer(row["prediction"]).split()) != int(row["normalized_word_errors"]):
+                raise ValueError("Compteur UWER individuel incorrect.")
             n_words = len(row["reference"].split())
             categories = {"all": "all", "by_source": str(row["source"]), "by_source_exposure": "seen" if str(row["source"]) in train_sources else "unseen", "by_word_count": "1" if n_words == 1 else "2-4" if n_words <= 4 else "5+", "by_reference_exposure": "seen" if row["reference"] in train_texts else "unseen"}
             for category, key in categories.items():

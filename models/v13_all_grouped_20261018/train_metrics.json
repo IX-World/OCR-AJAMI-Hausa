@@ -1,0 +1,22 @@
+{
+  "character_errors": 1,
+  "reference_characters": 47791,
+  "word_errors": 1,
+  "reference_words": 10657,
+  "normalized_word_errors": 1,
+  "normalized_reference_words": 10657,
+  "exact": 4971,
+  "examples": 4972,
+  "cer": 2.0924441840513905e-05,
+  "wer": 9.38350380031904e-05,
+  "uwer": 9.38350380031904e-05,
+  "exact_rate": 0.9997988736926791,
+  "version": "v13",
+  "evaluated_partition": "train",
+  "selected_epoch": 34,
+  "checkpoint_sha256": "3b75305f19eb604974b93f47e4aeb99f020299e2ab97b7c24497b4dc004c6aac",
+  "split_sha256": "fdb453e5f92147f31bc236998e067823b07bdce4b965811081b1d54edcaae7b5",
+  "dataset_revision": "1fb85fa070b6cf6432f1d45d21f78851d57f8944",
+  "augmented": false,
+  "uwer_definition": "Unicode casefold, NFD, suppression des marques Mn, puis NFC et separation des mots par les espaces ; ponctuation et lettres haoussa non decomposees conservees."
+}

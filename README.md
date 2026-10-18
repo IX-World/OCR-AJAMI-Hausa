@@ -61,7 +61,7 @@ batch 24 et split 4 972/200/401. V11 ajoute un canal d'encre locale à l'image
 en niveaux de gris : fond gaussien de rayon 5 pixels, différence positive fond–gris,
 gain 1,6, puis normalisation. Les deux apprentissages partent d'une initialisation
 aléatoire ; les résultats V11 sont rapportés ci-dessous. Le code V13 est documenté
-dans [son guide distinct](README_V13.md), sans résultat V13 annoncé.
+dans [son guide distinct](README_V13.md), avec ses résultats du 18 octobre ci-dessous.
 
 ### V11 entraînée — publication du 17 octobre 2026
 
@@ -126,6 +126,25 @@ n'est effectué dans ce premier essai.
 
 ## V13 : supervision sémantique contextuelle
 
+Entraînement terminé le **18 octobre 2026**, **49 époques**, checkpoint **34**.
+Les poids et le README complet sont sur
+[HF](https://huggingface.co/IntelligenceResearchLab/Hausa-OCR-AJAMI-v13-20261015)
+et dans la [release GitHub](https://github.com/IX-World/OCR-AJAMI-Hausa/releases/tag/v13-hausa-all-grouped-20261018).
+Voir la [comparaison V9–V13](models/v13_all_grouped_20261018/COMPARISON.md)
+et les [49 époques, pertes séparées et courbes](models/v13_all_grouped_20261018/EPOCHS.md).
+
+| Partition | CER | WER | UWER |
+|---|---:|---:|---:|
+| Train | 0,0021 % | 0,0094 % | 0,0094 % |
+| Validation | 44,37 % | 93,29 % | 91,50 % |
+| Test | 39,10 % | 86,31 % | 86,01 % |
+
+**V13 régresse face à V10/V12 et le surapprentissage persiste.** Il est parti
+de poids OCR aléatoires. Les branches époque/localité sont restées masquées,
+faute de métadonnées ; aucune compréhension historique/régionale n'est démontrée.
+Les changements d'architecture et de recette ne permettent pas d'isoler l'effet
+de la supervision sémantique sans une ablation supplémentaire.
+
 Le [code V13 et son guide CMD](README_V13.md) conservent le split commun
 4 972/200/401 et ajoutent une supervision auxiliaire AfriBERTa figée, préparée
 sur CPU à partir du train uniquement. Le CNN–BiLSTM–CTC est initialisé de zéro ;
@@ -151,8 +170,8 @@ La campagne active du 16 octobre repart de zéro pour les quatre versions,
 avec une initialisation aléatoire et les sorties dans
 `D:\ai_test\runs_hausa_20261016_zero`. Les commandes de lancement imposent
 `--fresh-start` et refusent de charger un ancien checkpoint pour initialiser le train.
-**V13 dispose désormais d'un [code séparé](README_V13.md) ; aucun résultat V13
-n'est annoncé avant son entraînement local et son évaluation.**
+**V13 dispose d'un [code séparé](README_V13.md) et de résultats du 18 octobre 2026
+sur le protocole actif 4 972/200/401 présenté plus haut.**
 
 Les nouveaux lancements affichent un bilan détaillé à chaque époque, avec cinq
 exemples de validation. Le bilan final exporte CER, WER, UWER (casse et diacritiques
