@@ -1,0 +1,27 @@
+{
+  "gpu": "NVIDIA GeForce GTX 1060 6GB",
+  "synthetic_inputs_only": true,
+  "corpus_images_used": 0,
+  "weights_saved": false,
+  "input_shape": [
+    4,
+    2,
+    96,
+    640
+  ],
+  "accumulate": 5,
+  "trials": {
+    "C": {
+      "finite_loss": true,
+      "peak_allocated_mib": 1398.01416015625,
+      "peak_reserved_mib": 1680.0,
+      "mwer_examples": 0
+    },
+    "D": {
+      "finite_loss": true,
+      "peak_allocated_mib": 792.0302734375,
+      "peak_reserved_mib": 1370.0,
+      "mwer_examples": 1
+    }
+  }
+}

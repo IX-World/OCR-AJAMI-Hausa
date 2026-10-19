@@ -10,6 +10,17 @@
 !/tests/
 !/train_hausa.py
 !/train_v13.py
+!/train_v14.py
+!/README_V14.md
+!/v14_python.cmd
+!/lancer_v14_a.cmd
+!/lancer_v14_b.cmd
+!/lancer_v14_c.cmd
+!/lancer_v14_d.cmd
+!/comparer_v14.cmd
+!/tester_v14.cmd
+!/reprendre_v14.cmd
+!/verifier_v14.cmd
 !/prepare_v13_semantics.py
 !/requirements-v13-semantic.txt
 !/README_V13.md

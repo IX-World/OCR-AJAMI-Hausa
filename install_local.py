@@ -23,7 +23,8 @@ def main():
         if not template.is_file():
             raise FileNotFoundError("Modele de contexte absent : recuperer configs/v13_context.json depuis Git avant l'installation.")
         shutil.copy2(template, context)
-    for name in ["run_v9_v12.cmd", "test_v9_v12.cmd", "preparer_v13.cmd", "lancer_v13.cmd", "tester_v13.cmd", "reprendre_v13.cmd", "tester_beam_v10_validation.cmd"] + [f"{action}_{version}.cmd" for action in ("lancer", "tester", "affiner") for version in ("v9", "v10", "v11", "v12")]:
+    for name in ["run_v9_v12.cmd", "test_v9_v12.cmd", "preparer_v13.cmd", "lancer_v13.cmd", "tester_v13.cmd", "reprendre_v13.cmd", "tester_beam_v10_validation.cmd",
+                 "lancer_v14_a.cmd", "lancer_v14_b.cmd", "lancer_v14_c.cmd", "lancer_v14_d.cmd", "verifier_v14.cmd", "comparer_v14.cmd", "tester_v14.cmd", "reprendre_v14.cmd"] + [f"{action}_{version}.cmd" for action in ("lancer", "tester", "affiner") for version in ("v9", "v10", "v11", "v12")]:
         text = f'@echo off\r\ncall "%~dp0OCR-AJAMI-Hausa\\{name}" %*\r\nexit /b %errorlevel%\r\n'
         target = base / name
         if target.exists() and target.read_bytes() != text.encode("ascii"):

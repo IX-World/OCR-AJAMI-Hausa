@@ -1,5 +1,14 @@
 # OCR AJAMI Hausa — IX-World
 
+## V14 — quatre essais depuis les mêmes poids V12
+
+Le [code et les commandes CMD V14](README_V14.md) préparent A (affinage témoin),
+B (vues renouvelées), C (B + SAM) et D (C + perte MWER auxiliaire échantillonnée).
+Chaque essai repart indépendamment du même checkpoint V12 et d'un optimiseur
+neuf, avec le split 4 972/200/401 inchangé et une recette pour GTX 1060 6 Go.
+Les essais comparent train et validation ; une commande de test séparée est
+prévue après la sélection. Aucun entraînement V14 du corpus n'est encore réalisé.
+
 ## Campagne active — tout le corpus et manuscrits séparés — 16 octobre 2026
 
 Voir [le guide actuel](README_HAUSA_GROUPED_20261016.md) : **4 972 train /
